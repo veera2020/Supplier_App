@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.input-primary {
+    @apply w-full rounded-xl border-2 placeholder-opacity-50 px-3 py-2 text-sm cursor-pointer lg:text-base focus:outline-none;
+  }
+  .input-inline-icon {
+    @apply absolute inset-y-0 right-0 flex items-center cursor-pointer pr-4 text-opacity-50 ;
+  }
