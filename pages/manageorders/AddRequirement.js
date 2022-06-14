@@ -90,6 +90,7 @@ const AddRequirement = ({ setreload, reload }) => {
     }),
     onSubmit: (values) => {
       console.log(values, "hema");
+      
       // const data = {
       //   type: values.type,
       //   tradeName: values.tradename,
