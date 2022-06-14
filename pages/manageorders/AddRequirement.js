@@ -57,6 +57,8 @@ const AddRequirement = ({ setreload, reload }) => {
     expquantity: "",
     expprice: "",
     paymentmode: "",
+    // supplierid:"",
+    // buyerid:""
   };
   //formik validation
   const formik = useFormik({
@@ -90,24 +92,25 @@ const AddRequirement = ({ setreload, reload }) => {
     }),
     onSubmit: (values) => {
       console.log(values, "hema");
-      
       // const data = {
       //   type: values.type,
-      //   tradeName: values.tradename,
-      //   companytype: values.ctype,
-      //   primaryContactNumber: values.contactno,
-      //   primaryContactName: values.contactname,
-      //   secondaryContactName: values.contactname2,
-      //   secondaryContactNumber: values.contactno2,
-      //   RegisteredAddress: values.address,
-      //   countries: values.country,
-      //   state: values.state,
-      //   district: values.district,
-      //   gpsLocat: values.location,
-      //   gstNo: values.gstno,
-      //   email: values.email,
-      //   pinCode: values.pincode,
-      //   productDealingWith: values.products,
+      //   tradeName: values.name,
+      //   companytype: values.buyerpname,
+      //   primaryContactNumber: values.minrange,
+      //   primaryContactName: values.maxrange,
+      //   secondaryContactName: values.minprice,
+      //   secondaryContactNumber: values.maxprice,
+      //   RegisteredAddress: values.pdelivery,
+      //   countries: values.deliverylocation,
+      //   state: values.buyerdeliverydate,
+      //   district: values.supplierpname,
+      //   gpsLocat: values.stocklocation,
+      //   gstNo: values.stockposition,
+      //   email: values.stockavailabilitydate,
+      //   pinCode: values.packtype,
+      //   productDealingWith: values.expprice,
+      //   pinCode: values.expquantity,
+      //   productDealingWith: values.paymentmode,
       // };
       // axios
       //   .post("/v1/supplierBuyer",data)
@@ -137,7 +140,7 @@ const AddRequirement = ({ setreload, reload }) => {
       <Modal isOpen={isOpen} size="xl" onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add Requirement</ModalHeader>
+          <ModalHeader>Post Order</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {errorMessage && (
@@ -385,32 +388,32 @@ const AddRequirement = ({ setreload, reload }) => {
                           {formik.errors.deliverylocation}
                         </FormikErrorMessage>
                       ) : null}
-                      <div className="flex flex-col gap-2">
-                        <label className="font-semibold">
-                          Estimate Delivery Date
-                          <span className="text-secondary pb-2">*</span>
-                        </label>
-                        <input
-                          type="date"
-                          name="buyerdeliverydate"
-                          onChange={(e) => {
-                            e.target.classList.add("change_color");
-                            formik.setFieldValue(
-                              "buyerdeliverydate",
-                              e.target.value
-                            );
-                          }}
-                          onBlur={formik.handleBlur}
-                          className={
-                            formik.touched.buyerdeliverydate &&
-                            formik.errors.buyerdeliverydate
-                              ? "input-primary ring-2 ring-secondary border-none experience"
-                              : "input-primary experience"
-                          }
-                        />
-                      </div>
                     </>
                   ) : null}
+                  <div className="flex flex-col gap-2">
+                    <label className="font-semibold">
+                      Estimate Delivery Date
+                      <span className="text-secondary pb-2">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      name="buyerdeliverydate"
+                      onChange={(e) => {
+                        e.target.classList.add("change_color");
+                        formik.setFieldValue(
+                          "buyerdeliverydate",
+                          e.target.value
+                        );
+                      }}
+                      onBlur={formik.handleBlur}
+                      className={
+                        formik.touched.buyerdeliverydate &&
+                        formik.errors.buyerdeliverydate
+                          ? "input-primary ring-2 ring-secondary border-none experience"
+                          : "input-primary experience"
+                      }
+                    />
+                  </div>
                 </>
               ) : (
                 <>

@@ -151,7 +151,6 @@ const AddUser = ({ setreload, reload }) => {
     onClose();
     formik.resetForm();
   };
-  const countryselect = (e) => {};
 
   return (
     <>

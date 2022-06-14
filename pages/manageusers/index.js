@@ -197,7 +197,7 @@ const Users = () => {
   return (
     <>
       <Head>
-        <title>Supplier - Manage Users</title>
+        <title>Supplier/Buyer App - Manage Users</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="p-4 ">
