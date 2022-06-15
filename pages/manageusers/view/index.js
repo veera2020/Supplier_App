@@ -25,7 +25,7 @@ const Home = (props) => {
   useEffect(() => {
     axios
       .get(`/v1/supplierBuyer/${id}`)
-      .then((res) => {
+      .then((res) => {    
         setuser(res.data);
       })
       .catch((err) => {
