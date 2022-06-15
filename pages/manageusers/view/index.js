@@ -8,6 +8,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { Breadcrumb } from "antd";
 import { Button } from "@chakra-ui/react";
+import Cookies from "js-cookie";
 //components
 import EditUser from "../EditUser";
 import axios from "../../../axios";
@@ -18,10 +19,12 @@ const Home = (props) => {
   const [reload, setreload] = useState(false);
   //router
   const router = useRouter();
+  let id = Cookies.get("viewid");
+
   //useEffect
   useEffect(() => {
     axios
-      .get(`/v1/supplierBuyer/${router.query.id}`)
+      .get(`/v1/supplierBuyer/${id}`)
       .then((res) => {
         setuser(res.data);
       })
@@ -37,7 +40,7 @@ const Home = (props) => {
     setIseditopen(false);
     setreload(!reload);
     axios
-      .get(`/v1/supplierBuyer/${router.query.id}`)
+      .get(`/v1/supplierBuyer/${id}`)
       .then((res) => {
         setuser(res.data);
       })
@@ -52,10 +55,10 @@ const Home = (props) => {
   return (
     <>
       <Head>
-        <title>supplierBuyer - View Users</title>
+        <title>supplier/Buyer - View Users</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="p-4 ">
+      <div className="p-4">
         <div className="w-full pb-4">
           <Breadcrumb separator=">">
             <Breadcrumb.Item href="/home">Home</Breadcrumb.Item>

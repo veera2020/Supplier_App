@@ -8,27 +8,16 @@ import Head from "next/head";
 import Link from "next/link";
 import axios from "../../axios";
 import { FaUsers } from "react-icons/fa";
-import { GrWorkshop, GrMapLocation } from "react-icons/gr";
-import { SiGooglestreetview, SiMarketo } from "react-icons/si";
-import { MdOutlineApartment } from "react-icons/md";
 
 const Home = () => {
   // useState
   const [userCount, setuserCount] = useState("");
-  const [streetCount, setstreetCount] = useState("");
-  const [apartmentCount, setapartmentCount] = useState("");
-  const [shopCount, setshopCount] = useState("");
-  const [marketCount, setmarketCount] = useState("");
   // Count
   useEffect(() => {
     axios
-      .get("/v1/apartmentandShop/allDataCount/all")
+      .get("/v1/supplierBuyer/allData")
       .then((res) => {
-        setuserCount(res.data.userCount);
-        setstreetCount(res.data.streetCount);
-        setapartmentCount(res.data.apartmentCount);
-        setshopCount(res.data.shopCount);
-        setmarketCount(res.data.marketCount);
+        setuserCount(res.data.length);
       })
       .catch((err) => {
         console.error(err);

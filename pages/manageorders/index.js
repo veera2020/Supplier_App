@@ -19,6 +19,13 @@ import {
   Th,
   Td,
   Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
   ButtonGroup,
   AlertDialog,
   AlertDialogBody,
@@ -50,29 +57,39 @@ const useTable = () => {
   };
 };
 const postorder = () => {
-  //useState
-  const [reload, setreload] = useState("");
   //router
   const router = useRouter();
+  //usestate
+  const [reload, setreload] = useState(false);
+
   //table
   const EmployeeTable = useTable();
   //get employees
   const [id, setId] = useState("");
   const fetchdata = async (page = 1) => {
     EmployeeTable.setLoading(true);
-    const response = await axios.get("/v1/supplierBuyer/allData");
+    const response = await axios.get("/v1/postorder");
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
-      setreload(!reload);
     } else {
       EmployeeTable.setRowData([]);
     }
   };
   //useEffect
   useEffect(() => {
-    //fetchdata(EmployeeTable.currentPage, EmployeeTable.showLimit);
+    fetchdata(EmployeeTable.currentPage, EmployeeTable.showLimit);
   }, [reload, EmployeeTable.currentPage, EmployeeTable.showLimit]);
-
+  //modal for order details
+  //usestate
+  const [isshopopen, setIsshopopen] = useState(false);
+  const [shop, setshop] = useState("");
+  const isshopclose = () => {
+    setIsshopopen(false);
+  };
+  const isopenshop = (props) => {
+    setIsshopopen(true);
+    axios.get(`/v1/postorder/${props}`).then((res) => setshop(res.data));
+  };
   return (
     <>
       <Head>
@@ -110,10 +127,10 @@ const postorder = () => {
             <Thead className="bg-headergreen">
               <Tr>
                 <Th>S.No</Th>
+                <Th>Date</Th>
                 <Th>Type</Th>
                 <Th>Name</Th>
                 <Th>Product Name</Th>
-                <Th>Date</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -126,11 +143,146 @@ const postorder = () => {
                 EmployeeTable.rowData.map((item, index) => (
                   <Tr key={index}>
                     <Td>{index + 1}</Td>
+                    <Td>{item.date}</Td>
+                    <Td>{item.type}</Td>
+                    <Td>
+                      <Button
+                        size="sm"
+                        colorScheme="blue"
+                        variant="link"
+                        onClick={() => isopenshop(item.id)}
+                      >
+                        {item.name}
+                      </Button>
+                    </Td>
+                    <Td>{item.buyerpname}</Td>
                   </Tr>
                 ))}
             </Tbody>
           </Table>
         </div>
+        <Modal isOpen={isshopopen} onClose={isshopclose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Orders Details</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              {shop.type === "Buyer" ? (
+                <div className="border border-graycolor cursor-pointer">
+                  <div className="grid grid-cols-5 px-4">
+                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                      Product Name
+                    </div>
+                    <div className="col-span-4 p-1">{shop.buyerpname}</div>
+                  </div>
+                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                      Quantity Range
+                    </div>
+                    <div className="col-span-4 p-1">
+                      {shop.minrange} to {shop.maxrange}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                      Landing Price
+                    </div>
+                    <div className="col-span-4 p-1">
+                      {shop.minprice} to {shop.maxprice}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                      Stock (Product Delivery)
+                    </div>
+                    <div className="col-span-4 p-1">{shop.pdelivery}</div>
+                  </div>
+                  {shop.pdelivery === "Delivery to Location" ? (
+                    <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                      <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                        Delivery Location
+                      </div>
+                      <div className="col-span-4 p-1">
+                        {shop.deliverylocation}
+                      </div>
+                    </div>
+                  ) : null}
+                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                      Estimated Delivery Date
+                    </div>
+                    <div className="col-span-4 p-1">
+                      {shop.buyerdeliverydate}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="border border-graycolor cursor-pointer">
+                  <div className="grid grid-cols-5 px-4">
+                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                      Product Name
+                    </div>
+                    <div className="col-span-4 p-1">{shop.buyerpname}</div>
+                  </div>
+                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                      Stock Location
+                    </div>
+                    <div className="col-span-4 p-1">{shop.stocklocation}</div>
+                  </div>
+                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                      Stock Position
+                    </div>
+                    <div className="col-span-4 p-1">{shop.stockposition}</div>
+                  </div>
+                  {shop.stockposition === "Ready" ? (
+                    <>
+                      <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                        <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                          Packed Type
+                        </div>
+                        <div className="col-span-4 p-1">{shop.packtype}</div>
+                      </div>
+                      <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                        <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                          Excepted Quantity
+                        </div>
+                        <div className="col-span-4 p-1">{shop.expquantity}</div>
+                      </div>
+                      <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                        <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                          Excepted Price
+                        </div>
+                        <div className="col-span-4 p-1">{shop.expprice}</div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                      <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                        Stock Availability
+                      </div>
+                      <div className="col-span-4 p-1">
+                        {shop.stockavailabilitydate}
+                      </div>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                      Payment Mode
+                    </div>
+                    <div className="col-span-4 p-1">{shop.paymentmode}</div>
+                  </div>
+                </div>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={isshopclose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </div>
     </>
   );

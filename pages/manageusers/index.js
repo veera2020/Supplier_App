@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { Breadcrumb } from "antd";
+import Cookies from "js-cookie";
 import {
   RadioGroup,
   Stack,
@@ -178,7 +179,7 @@ const Users = () => {
       active: true,
       archive: false,
     };
-    const isDeleted = await axios.put(`/v1/supplierBuyer/${id}`,data);
+    const isDeleted = await axios.put(`/v1/supplierBuyer/${id}`, data);
     if (isDeleted) {
       EmployeeTable.setCurrentPage(1);
       setreload(!reload);
@@ -264,6 +265,7 @@ const Users = () => {
                                 },
                                 "manageusers/view"
                               );
+                              Cookies.set("viewid", item._id);
                             }}
                           >
                             View
@@ -286,7 +288,11 @@ const Users = () => {
                       ) : (
                         <ButtonGroup
                           spacing="1"
-                          onClick={() => setId(item._id)}
+                          onClick={() => {
+                            setId(item._id);
+                            localStorage.setItem("viewid", item._id);
+                            console.log(item._id);
+                          }}
                         >
                           <Button
                             size="xs"
@@ -299,6 +305,7 @@ const Users = () => {
                                 },
                                 "manageusers/view"
                               );
+                              Cookies.set("viewid", item._id);
                             }}
                           >
                             View

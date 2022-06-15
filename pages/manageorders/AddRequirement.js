@@ -33,7 +33,9 @@ import axios from "../../axios";
 const AddRequirement = ({ setreload, reload }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [errorMessage, seterrorMessage] = useState("");
-
+  const [username, setusername] = useState("");
+  const [sid, setsid] = useState("");
+  const [bid, setbid] = useState("");
   //Formik regex
   const Namepattern = /^[a-zA-Z\s.]*$/;
   const addressregex = /^[a-zA-Z0-9\s\,\''\-]*$/;
@@ -57,81 +59,92 @@ const AddRequirement = ({ setreload, reload }) => {
     expquantity: "",
     expprice: "",
     paymentmode: "",
-    // supplierid:"",
-    // buyerid:""
   };
   //formik validation
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initialvalue,
     validationSchema: Yup.object().shape({
-      type: Yup.string(),
-      name: Yup.string().matches(Namepattern, "Alphabets only allowed"),
-      buyerpname: Yup.string().matches(Namepattern, "Alphabets only allowed"),
-      minrange: Yup.number(),
-      maxrange: Yup.number(),
-      minprice: Yup.number(),
-      maxprice: Yup.number(),
-      pdelivery: Yup.string(),
-      deliverylocation: Yup.string().matches(
-        addressregex,
-        "Enter Vaild Location"
-      ),
-      buyerdeliverydate: Yup.string().required(),
-      supplierpname: Yup.string().matches(
-        Namepattern,
-        "Alphabets only allowed"
-      ),
-      stocklocation: Yup.string().matches(addressregex, "Enter Vaild Location"),
-      stockposition: Yup.string(),
-      stockavailabilitydate: Yup.string().required(),
-      packtype: Yup.string().matches(Namepattern, "Alphabets only allowed"),
-      expprice: Yup.number(),
-      expquantity: Yup.number(),
-      paymentmode: Yup.string(),
+      // type: Yup.string(),
+      // name: Yup.string(),
+      // buyerpname: Yup.string().matches(Namepattern, "Alphabets only allowed"),
+      // minrange: Yup.number(),
+      // maxrange: Yup.number(),
+      // minprice: Yup.number(),
+      // maxprice: Yup.number(),
+      // pdelivery: Yup.string(),
+      // deliverylocation: Yup.string().matches(
+      //   addressregex,
+      //   "Enter Vaild Location"
+      // ),
+      // buyerdeliverydate: Yup.string().required(),
+      // supplierpname: Yup.string().matches(
+      //   Namepattern,
+      //   "Alphabets only allowed"
+      // ),
+      // stocklocation: Yup.string().matches(addressregex, "Enter Vaild Location"),
+      // stockposition: Yup.string(),
+      // stockavailabilitydate: Yup.string().required(),
+      // packtype: Yup.string().matches(Namepattern, "Alphabets only allowed"),
+      // expprice: Yup.number(),
+      // expquantity: Yup.number(),
+      // paymentmode: Yup.string(),
     }),
     onSubmit: (values) => {
       console.log(values, "hema");
-      // const data = {
-      //   type: values.type,
-      //   tradeName: values.name,
-      //   companytype: values.buyerpname,
-      //   primaryContactNumber: values.minrange,
-      //   primaryContactName: values.maxrange,
-      //   secondaryContactName: values.minprice,
-      //   secondaryContactNumber: values.maxprice,
-      //   RegisteredAddress: values.pdelivery,
-      //   countries: values.deliverylocation,
-      //   state: values.buyerdeliverydate,
-      //   district: values.supplierpname,
-      //   gpsLocat: values.stocklocation,
-      //   gstNo: values.stockposition,
-      //   email: values.stockavailabilitydate,
-      //   pinCode: values.packtype,
-      //   productDealingWith: values.expprice,
-      //   pinCode: values.expquantity,
-      //   productDealingWith: values.paymentmode,
-      // };
-      // axios
-      //   .post("/v1/supplierBuyer",data)
-      //   .then((res) => {
-      //     setreload(!reload);
-      //     onClose();
-      //     formik.resetForm();
-      //   })
-      //   .catch((error) => {
-      //     if (error.response) {
-      //       console.log(error.response);
-      //       seterrorMessage(error.response.data.message);
-      //     }
-      //   });
+      var today = new Date();
+      var dd = String(today.getDate()).padStart(2, "0");
+      var mm = String(today.getMonth() + 1).padStart(2, "0");
+      var yyyy = today.getFullYear();
+      today = dd + "-" + mm + "-" + yyyy;
+      const data = {
+        type: values.type,
+        name: values.name,
+        buyerpname: values.buyerpname,
+        minrange: values.minrange,
+        maxrange: values.maxrange,
+        minprice: values.minprice,
+        maxprice: values.maxprice,
+        pdelivery: values.pdelivery,
+        deliverylocation: values.deliverylocation,
+        buyerdeliverydate: values.buyerdeliverydate,
+        supplierpname: values.supplierpname,
+        stocklocation: values.stocklocation,
+        stockposition: values.stockposition,
+        stockavailabilitydate: values.stockavailabilitydate,
+        packtype: values.packtype,
+        expprice: values.expprice,
+        expquantity: values.expquantity,
+        paymentmode: values.paymentmode,
+        date: today,
+      };
+      console.log(data);
+      axios
+        .post("/v1/postorder", data)
+        .then((res) => {
+          console.log(res.data);
+          setreload(!reload);
+          onClose();
+          formik.resetForm();
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.log(error.response);
+            seterrorMessage(error.response.data.message);
+          }
+        });
     },
   });
   const cancelbutton = () => {
     onClose();
     formik.resetForm();
   };
-
+  //getusername
+  const getusername = (e) => {
+    axios
+      .get(`/v1/supplierBuyer/type/getName/${e.target.value}`)
+      .then((res) => setusername(res.data));
+  };
   return (
     <>
       <Button onClick={onOpen} colorScheme="blue">
@@ -162,6 +175,7 @@ const AddRequirement = ({ setreload, reload }) => {
                   value={formik.values.type}
                   onChange={(e) => {
                     formik.setFieldValue("type", e.target.value);
+                    getusername(e);
                     e.target.classList.add("change_color");
                   }}
                   onBlur={formik.handleBlur}
@@ -202,43 +216,43 @@ const AddRequirement = ({ setreload, reload }) => {
                   }
                 >
                   <option>Select</option>
-                  {/* {companytype &&
-                    companytype.map((item, index) => (
-                      <option key={index} value={item.value}>
-                        {item.label}
+                  {username &&
+                    username.map((item, index) => (
+                      <option key={index} value={item._id}>
+                        {item.primaryContactName}
                       </option>
-                    ))} */}
+                    ))}
                 </select>
               </div>
               {formik.touched.name && formik.errors.name ? (
                 <FormikErrorMessage>{formik.errors.name}</FormikErrorMessage>
               ) : null}
+              <div className="flex flex-col gap-2">
+                <label className="font-semibold">
+                  Product Name
+                  <span className="text-secondary pb-2">*</span>
+                </label>
+                <InputFields
+                  type="string"
+                  name="buyerpname"
+                  placeholder="Enter Product Name"
+                  value={formik.values.buyerpname || ""}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={
+                    formik.touched.buyerpname && formik.errors.buyerpname
+                      ? "input-primary ring-2 ring-secondary border-none"
+                      : "input-primary"
+                  }
+                />
+              </div>
+              {formik.touched.buyerpname && formik.errors.buyerpname ? (
+                <FormikErrorMessage>
+                  {formik.errors.buyerpname}
+                </FormikErrorMessage>
+              ) : null}
               {formik.values.type === "Buyer" ? (
                 <>
-                  <div className="flex flex-col gap-2">
-                    <label className="font-semibold">
-                      Product Name
-                      <span className="text-secondary pb-2">*</span>
-                    </label>
-                    <InputFields
-                      type="string"
-                      name="buyerpname"
-                      placeholder="Enter Product Name"
-                      value={formik.values.buyerpname || ""}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      className={
-                        formik.touched.buyerpname && formik.errors.buyerpname
-                          ? "input-primary ring-2 ring-secondary border-none"
-                          : "input-primary"
-                      }
-                    />
-                  </div>
-                  {formik.touched.buyerpname && formik.errors.buyerpname ? (
-                    <FormikErrorMessage>
-                      {formik.errors.buyerpname}
-                    </FormikErrorMessage>
-                  ) : null}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold">
                       Quantity Range
@@ -417,7 +431,7 @@ const AddRequirement = ({ setreload, reload }) => {
                 </>
               ) : (
                 <>
-                  <div className="flex flex-col gap-2">
+                  {/* <div className="flex flex-col gap-2">
                     <label className="font-semibold">
                       Product Name
                       <span className="text-secondary pb-2">*</span>
@@ -442,7 +456,7 @@ const AddRequirement = ({ setreload, reload }) => {
                     <FormikErrorMessage>
                       {formik.errors.supplierpname}
                     </FormikErrorMessage>
-                  ) : null}
+                  ) : null} */}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold">
                       Stock Location
@@ -618,41 +632,39 @@ const AddRequirement = ({ setreload, reload }) => {
                           {formik.errors.expprice}
                         </FormikErrorMessage>
                       ) : null}
-                      <div className="flex flex-col gap-2">
-                        <label className="font-semibold">
-                          Payment Mode
-                          <span className="text-secondary pb-2">*</span>
-                        </label>
-                        <select
-                          name="paymentmode"
-                          value={formik.values.paymentmode}
-                          onChange={(e) => {
-                            formik.setFieldValue("paymentmode", e.target.value);
-                            e.target.classList.add("change_color");
-                          }}
-                          onBlur={formik.handleBlur}
-                          style={{ outline: 0 }}
-                          className={
-                            formik.touched.paymentmode &&
-                            formik.errors.paymentmode
-                              ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
-                              : "input-primary bg-whitecolor focus-outline-none experience"
-                          }
-                        >
-                          <option>Select</option>
-                          <option value="Credit">Credit</option>
-                          <option value="Advance">Advance</option>
-                          <option value="COD">COD</option>
-                        </select>
-                      </div>
-                      {formik.touched.paymentmode &&
-                      formik.errors.paymentmode ? (
-                        <FormikErrorMessage>
-                          {formik.errors.paymentmode}
-                        </FormikErrorMessage>
-                      ) : null}
                     </>
                   )}
+                  <div className="flex flex-col gap-2">
+                    <label className="font-semibold">
+                      Payment Mode
+                      <span className="text-secondary pb-2">*</span>
+                    </label>
+                    <select
+                      name="paymentmode"
+                      value={formik.values.paymentmode}
+                      onChange={(e) => {
+                        formik.setFieldValue("paymentmode", e.target.value);
+                        e.target.classList.add("change_color");
+                      }}
+                      onBlur={formik.handleBlur}
+                      style={{ outline: 0 }}
+                      className={
+                        formik.touched.paymentmode && formik.errors.paymentmode
+                          ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                          : "input-primary bg-whitecolor focus-outline-none experience"
+                      }
+                    >
+                      <option>Select</option>
+                      <option value="Credit">Credit</option>
+                      <option value="Advance">Advance</option>
+                      <option value="COD">COD</option>
+                    </select>
+                  </div>
+                  {formik.touched.paymentmode && formik.errors.paymentmode ? (
+                    <FormikErrorMessage>
+                      {formik.errors.paymentmode}
+                    </FormikErrorMessage>
+                  ) : null}
                 </>
               )}
             </Forms>

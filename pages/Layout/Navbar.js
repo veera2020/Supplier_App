@@ -105,7 +105,7 @@ export default function Navbar({ defaultOpenKeys }) {
         </Menu.Item>
         <Menu.Item key="6">
           <Link href="/managebuyer">
-            <a>Moderate Buyer</a>
+            <a>Manage Buyer</a>
           </Link>
         </Menu.Item>
       </Menu>
