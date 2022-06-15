@@ -93,7 +93,7 @@ export default function Navbar({ defaultOpenKeys }) {
             <a>Manage Orders</a>
           </Link>
         </Menu.Item>
-        <Menu.Item key="4">
+        {/* <Menu.Item key="4">
           <Link href="/moderatesupplier">
             <a>Moderate Supplier</a>
           </Link>
@@ -106,6 +106,11 @@ export default function Navbar({ defaultOpenKeys }) {
         <Menu.Item key="6">
           <Link href="/managebuyer">
             <a>Manage Buyer</a>
+          </Link>
+        </Menu.Item> */}
+        <Menu.Item key="7">
+          <Link href="/managesupplierbuyer">
+            <a>Manage Supplier/Buyer</a>
           </Link>
         </Menu.Item>
       </Menu>
