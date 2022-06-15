@@ -56,7 +56,7 @@ const useTable = () => {
     setRowData,
   };
 };
-const postorder = () => {
+const Postorder = () => {
   //router
   const router = useRouter();
   //usestate
@@ -287,4 +287,4 @@ const postorder = () => {
     </>
   );
 };
-export default postorder;
+export default Postorder;
