@@ -1,7 +1,7 @@
 /*
  *  Document    : Supplier.js
  *  Author      : uyarchi
- *  Description : Manage Supplier
+ *  Description : Manage Supplier and Buyer
  */
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
@@ -15,6 +15,7 @@ import {
   Th,
   Td,
   Button,
+  ButtonGroup,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -45,12 +46,20 @@ const useTable = () => {
     setRowData,
   };
 };
+// Status
+const Status = [
+  { value: "pending", label: "Pending" },
+  { value: "moderated", label: "Moderated" },
+  { value: "rejected", label: "Rejected" },
+];
 
 //function init
 const Supplier = () => {
   //router
   const router = useRouter();
   //usestate
+  const [name, setName] = useState("");
+  const [status, setStatus] = useState(false);
   const [reload, setreload] = useState(false);
 
   //table
@@ -59,12 +68,16 @@ const Supplier = () => {
   const [id, setId] = useState("");
   const fetchdata = async (page = 1) => {
     EmployeeTable.setLoading(true);
-    const response = await axios.get("/v1/supplierBuyer/allData");
+    const response = await axios.get("/v1/postorder");
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
     } else {
       EmployeeTable.setRowData([]);
     }
+  };
+  // Search Method
+  const handlesearch = () => {
+    fetchdata();
   };
   //useEffect
   useEffect(() => {
@@ -73,14 +86,24 @@ const Supplier = () => {
 
   //modal for order details
   //usestate
-  const [isshopopen, setIsshopopen] = useState(false);
-  const [shop, setshop] = useState("");
-  const isshopclose = () => {
-    setIsshopopen(false);
+  const [ismoderated, setIsModerated] = useState(false);
+  //const [shop, setshop] = useState("");
+  const isModeratedClose = () => {
+    setIsModerated(false);
   };
-  const isopenshop = (props) => {
-    setIsshopopen(true);
-    axios.get(`/v1/supplierBuyer/${props}`).then((res) => setshop(res.data));
+  const statusModerate = () => {
+    setIsModerated(true);
+    //axios.get(`/v1/supplierBuyer/${props}`).then((res) => setshop(res.data));
+  };
+  //usestate
+  const [isrejected, setIsRejected] = useState(false);
+  //const [shop, setshop] = useState("");
+  const isRejectedClose = () => {
+    setIsRejected(false);
+  };
+  const statusRejected = () => {
+    setIsRejected(true);
+    //axios.get(`/v1/supplierBuyer/${props}`).then((res) => setshop(res.data));
   };
   return (
     <>
@@ -92,13 +115,15 @@ const Supplier = () => {
         <div className="w-full pb-4">
           <Breadcrumb separator=">">
             <Breadcrumb.Item href="/home">Home</Breadcrumb.Item>
-            <Breadcrumb.Item>Manage Supplier</Breadcrumb.Item>
+            <Breadcrumb.Item>
+              Moderate Customers (Supplier and Buyer)
+            </Breadcrumb.Item>
           </Breadcrumb>
         </div>
         <hr className="p-1"></hr>
         <div className="flex items-center pb-4">
           <span className="flex-auto text-sky-500 text-xl">
-            Manage Supplier
+            Moderate Customers (Supplier and Buyer)
           </span>
           <div className="flex items-center gap-3">
             <Button colorScheme="blue" onClick={() => router.back()}>
@@ -106,6 +131,53 @@ const Supplier = () => {
             </Button>
             <Button colorScheme="blue" onClick={() => router.reload()}>
               Refresh
+            </Button>
+          </div>
+        </div>
+        <hr className="p-1"></hr>
+        <div className="flex items-center gap-3 pb-4">
+          <div className="flex-auto font-semibold text-primary"></div>
+          <div className="flex items-center gap-2">
+            <label className="font-semibold">Search By :</label>
+            <select
+              placeholder="Select"
+              style={{ outline: 0 }}
+              className="border border-graycolor w-36 focus-outline-none bg-whitecolor experience"
+              // onChange={(e) => {
+              //   setUserId(e.target.value);
+              //   e.target.classList.add("change_color");
+              //   getpzone(e.target.value);
+              // }}
+            >
+              <option value="null">Select Date</option>
+              {Status &&
+                Status.map((item, index) => (
+                  <option key={index} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+            </select>
+            <select
+              onChange={(e) => {
+                setStatus(e.target.value);
+                e.target.classList.add("change_color");
+              }}
+              style={{ outline: 0 }}
+              className="border border-graycolor w-36 focus-outline-none bg-whitecolor experience"
+              required
+            >
+              <option value="null">Select Status</option>
+              {Status &&
+                Status.map((item, index) => (
+                  <option key={index} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="flex text-center pr-2 gap-2">
+            <Button colorScheme="blue" onClick={handlesearch}>
+              Go
             </Button>
           </div>
         </div>
@@ -121,12 +193,48 @@ const Supplier = () => {
               <Tr>
                 <Th>S.No</Th>
                 <Th>Date</Th>
-                <Th>Product Name</Th>
-                <Th>Name</Th>
-                <Th>Mobile Number</Th>
+                <Th>Type</Th>
+                <Th>name</Th>
+                <Th>Product</Th>
+                <Th>Old Price</Th>
+                <Th>Moderated Price</Th>
+                <Th>Status</Th>
+                <Th>Action</Th>
               </Tr>
             </Thead>
             <Tbody>
+              {/* <Tr>
+                <Td>01</Td>
+                <Td>14-06-2022</Td>
+                <Td>Supplier</Td>
+                <Td>Crazy</Td>
+                <Td>Tomato</Td>
+                <Td>100</Td>
+                <Td>Nill</Td>
+                <Td>Pending</Td>
+                <Td>
+                  <ButtonGroup spacing="1">
+                    <Button
+                      size="xs"
+                      colorScheme="blue"
+                      onClick={() => {statusModerate();setName("sup");}}
+                    >
+                      Moderated
+                    </Button>
+                    <Button
+                      size="xs"
+                      colorScheme="red"
+                      onClick={() => statusRejected()}
+                      // onClick={() => {
+                      //   setIsRejectOpen(true);
+                      //   setRejectedId(item._id);
+                      // }}
+                    >
+                      Rejected
+                    </Button>
+                  </ButtonGroup>
+                </Td>
+              </Tr> */}
               {EmployeeTable.rowData != "" ? null : (
                 <Tr className="flex justify-center text-center px-2 ">
                   No Data Found
@@ -137,7 +245,10 @@ const Supplier = () => {
                   <Tr key={index}>
                     <Td>{index + 1}</Td>
                     <Td>{item.date}</Td>
+                    <Td>{item.type}</Td>
+                    <Td>{item.name}</Td>
                     <Td>{item.buyerpname}</Td>
+                    <Td>{item.expprice}</Td>
                     <Td>
                       <Button
                         size="sm"
@@ -154,127 +265,38 @@ const Supplier = () => {
             </Tbody>
           </Table>
         </div>
-        <Modal
-          //isOpen={isshopopen}
-          onClose={isshopclose}
-        >
+        <Modal isOpen={ismoderated} onClose={isModeratedClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Shop Details</ModalHeader>
+            <ModalHeader>Alert</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              {shop.type === "Buyer" ? (
-                <div className="border border-graycolor cursor-pointer">
-                  <div className="grid grid-cols-5 px-4">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Product Name
-                    </div>
-                    <div className="col-span-4 p-1">{shop.buyerpname}</div>
-                  </div>
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Quantity Range
-                    </div>
-                    <div className="col-span-4 p-1">
-                      {shop.minrange} to {shop.maxrange}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Landing Price
-                    </div>
-                    <div className="col-span-4 p-1">
-                      {shop.minprice} to {shop.maxprice}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Stock (Product Delivery)
-                    </div>
-                    <div className="col-span-4 p-1">{shop.pdelivery}</div>
-                  </div>
-                  {shop.pdelivery === "Delivery to Location" ? (
-                    <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                      <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                        Delivery Location
-                      </div>
-                      <div className="col-span-4 p-1">
-                        {shop.deliverylocation}
-                      </div>
-                    </div>
-                  ) : null}
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Estimated Delivery Date
-                    </div>
-                    <div className="col-span-4 p-1">
-                      {shop.buyerdeliverydate}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="border border-graycolor cursor-pointer">
-                  <div className="grid grid-cols-5 px-4">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Product Name
-                    </div>
-                    <div className="col-span-4 p-1">{shop.buyerpname}</div>
-                  </div>
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Stock Location
-                    </div>
-                    <div className="col-span-4 p-1">{shop.stocklocation}</div>
-                  </div>
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Stock Position
-                    </div>
-                    <div className="col-span-4 p-1">{shop.stockposition}</div>
-                  </div>
-                  {shop.stockposition === "Ready" ? (
-                    <>
-                      <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                        <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                          Packed Type
-                        </div>
-                        <div className="col-span-4 p-1">{shop.packtype}</div>
-                      </div>
-                      <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                        <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                          Excepted Quantity
-                        </div>
-                        <div className="col-span-4 p-1">{shop.expquantity}</div>
-                      </div>
-                      <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                        <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                          Excepted Price
-                        </div>
-                        <div className="col-span-4 p-1">{shop.expprice}</div>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                      <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                        Stock Availability
-                      </div>
-                      <div className="col-span-4 p-1">
-                        {shop.stockavailabilitydate}
-                      </div>
-                    </div>
-                  )}
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Payment Mode
-                    </div>
-                    <div className="col-span-4 p-1">{shop.paymentmode}</div>
-                  </div>
-                </div>
-              )}
+              <div>Are you sure, Do you want to MODERATE Craze ?</div>
             </ModalBody>
             <ModalFooter>
-              <Button onClick={isshopclose} colorScheme="blue" mr={3}>
-                Close
+              <Button onClick={isModeratedClose} colorScheme="blue" mr={3}>
+                Yes
+              </Button>
+              <Button onClick={isModeratedClose} colorScheme="red" mr={3}>
+                No
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal isOpen={isrejected} onClose={isRejectedClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Alert</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div>Are you sure, Do you want to REJECT Craze ?</div>
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={isRejectedClose} colorScheme="blue" mr={3}>
+                Yes
+              </Button>
+              <Button onClick={isRejectedClose} colorScheme="red" mr={3}>
+                No
               </Button>
             </ModalFooter>
           </ModalContent>

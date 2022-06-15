@@ -109,7 +109,7 @@ export default function Navbar({ defaultOpenKeys }) {
           </Link>
         </Menu.Item> */}
         <Menu.Item key="7">
-          <Link href="/managesupplierbuyer">
+          <Link href="/managesupplierBuyer">
             <a>Manage Supplier/Buyer</a>
           </Link>
         </Menu.Item>

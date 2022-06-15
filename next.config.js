@@ -1,15 +1,26 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  images: {
-    loader: "imgix",
-    path: "/",
-  },
-  eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true,
+module.exports = {
+  async redirects() {
+    return [
+      {
+        source: "/home",
+        destination: "/",
+        permanent: false,
+      },
+      {
+        source: "/manageusers",
+        destination: "/",
+        permanent: false,
+      },
+      {
+        source: "/manageorders",
+        destination: "/",
+        permanent: false,
+      },
+      {
+        source: "/managesupplierbuyer",
+        destination: "/",
+        permanent: false,
+      },
+    ];
   },
 };
-
-module.exports = nextConfig;
