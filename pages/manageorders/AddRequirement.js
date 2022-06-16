@@ -23,6 +23,7 @@ import {
   RadioGroup,
   Stack,
 } from "@chakra-ui/react";
+import Geocode, { setLanguage } from "react-geocode";
 //components
 import Forms from "../controls/Forms";
 import FormikErrorMessage from "../controls/FormikErrorMessage";
@@ -34,11 +35,34 @@ const AddRequirement = ({ setreload, reload }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [errorMessage, seterrorMessage] = useState("");
   const [username, setusername] = useState("");
-  const [sid, setsid] = useState("");
-  const [bid, setbid] = useState("");
+  const [lat, setlat] = useState("");
+  const [lng, setlng] = useState("");
+  const [errorshow, seterrorshow] = useState("");
+
+  seterrorshow;
   //Formik regex
   const Namepattern = /^[a-zA-Z\s.]*$/;
   const addressregex = /^[a-zA-Z0-9\s\,\''\-]*$/;
+  //geocode for mapview
+  Geocode.setApiKey("AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI");
+  Geocode.setLanguage("en");
+  Geocode.setRegion("es");
+  Geocode.setLocationType("ROOFTOP");
+  Geocode.enableDebug();
+  const getlatlng = (e) => {
+    // Get latitude & longitude from address.
+    Geocode.fromAddress(e.target.value).then(
+      (response) => {
+        const { lat, lng } = response.results[0].geometry.location;
+        setlat(lat);
+        setlng(lng);
+      },
+      (error) => {
+        console.error(error);
+        seterrorshow("Enter Vaild Address");
+      }
+    );
+  };
   //Formik InitialValue
   const initialvalue = {
     type: "",
@@ -91,7 +115,7 @@ const AddRequirement = ({ setreload, reload }) => {
       // paymentmode: Yup.string(),
     }),
     onSubmit: (values) => {
-      console.log(values, "hema");
+      //date
       var today = new Date();
       var dd = String(today.getDate()).padStart(2, "0");
       var mm = String(today.getMonth() + 1).padStart(2, "0");
@@ -116,9 +140,11 @@ const AddRequirement = ({ setreload, reload }) => {
         expprice: values.expprice,
         expquantity: values.expquantity,
         paymentmode: values.paymentmode,
+        advance: values.advance,
         date: today,
+        latitude: lat,
+        longitude: lng,
       };
-      console.log(data);
       axios
         .post("/v1/postorder", data)
         .then((res) => {
@@ -164,6 +190,14 @@ const AddRequirement = ({ setreload, reload }) => {
                 </Alert>
               </div>
             )}
+            {errorshow && (
+              <div className="pb-5">
+                <Alert status="error">
+                  <AlertIcon />
+                  <AlertDescription>{errorshow}</AlertDescription>
+                </Alert>
+              </div>
+            )}
             <Forms className="space-y-2">
               <div className="flex flex-col gap-2">
                 <label className="font-semibold">
@@ -189,6 +223,7 @@ const AddRequirement = ({ setreload, reload }) => {
                   <option>Select</option>
                   <option value="Supplier">Supplier</option>
                   <option value="Buyer">Buyer</option>
+                  <option value="Both">Both</option>
                 </select>
               </div>
               {formik.touched.type && formik.errors.type ? (
@@ -227,32 +262,82 @@ const AddRequirement = ({ setreload, reload }) => {
               {formik.touched.name && formik.errors.name ? (
                 <FormikErrorMessage>{formik.errors.name}</FormikErrorMessage>
               ) : null}
-              <div className="flex flex-col gap-2">
-                <label className="font-semibold">
-                  Product Name
-                  <span className="text-secondary pb-2">*</span>
-                </label>
-                <InputFields
-                  type="string"
-                  name="buyerpname"
-                  placeholder="Enter Product Name"
-                  value={formik.values.buyerpname || ""}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  className={
-                    formik.touched.buyerpname && formik.errors.buyerpname
-                      ? "input-primary ring-2 ring-secondary border-none"
-                      : "input-primary"
-                  }
-                />
-              </div>
-              {formik.touched.buyerpname && formik.errors.buyerpname ? (
-                <FormikErrorMessage>
-                  {formik.errors.buyerpname}
-                </FormikErrorMessage>
-              ) : null}
-              {formik.values.type === "Buyer" ? (
+              {formik.values.type === "Both" ? (
                 <>
+                  <div className="flex flex-col gap-2">
+                    <label className="font-semibold">
+                      Stock (Product Delivery)
+                      <span className="text-secondary pb-2">*</span>
+                    </label>
+                    <RadioGroup>
+                      <Stack
+                        direction="row"
+                        name="selectboth"
+                        value={formik.values.selectboth || ""}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      >
+                        <Radio
+                          name="selectboth"
+                          value="Supplier"
+                          className={
+                            formik.touched.selectboth &&
+                            formik.errors.selectboth
+                              ? "ring-2 ring-secondary border-none"
+                              : ""
+                          }
+                        >
+                          Post your stock
+                        </Radio>
+                        <Radio
+                          name="selectboth"
+                          className={
+                            formik.touched.selectboth &&
+                            formik.errors.selectboth
+                              ? "ring-2 ring-secondary border-none"
+                              : ""
+                          }
+                          value="Buyer"
+                        >
+                          Post your need
+                        </Radio>
+                      </Stack>
+                    </RadioGroup>
+                  </div>
+                  {formik.touched.selectboth && formik.errors.selectboth ? (
+                    <FormikErrorMessage>
+                      {formik.errors.selectboth}
+                    </FormikErrorMessage>
+                  ) : null}
+                </>
+              ) : null}
+              {formik.values.type === "Buyer" ||
+              formik.values.selectboth === "Buyer" ? (
+                <>
+                  <div className="flex flex-col gap-2">
+                    <label className="font-semibold">
+                      Product Name
+                      <span className="text-secondary pb-2">*</span>
+                    </label>
+                    <InputFields
+                      type="string"
+                      name="buyerpname"
+                      placeholder="Enter Product Name"
+                      value={formik.values.buyerpname || ""}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      className={
+                        formik.touched.buyerpname && formik.errors.buyerpname
+                          ? "input-primary ring-2 ring-secondary border-none"
+                          : "input-primary"
+                      }
+                    />
+                  </div>
+                  {formik.touched.buyerpname && formik.errors.buyerpname ? (
+                    <FormikErrorMessage>
+                      {formik.errors.buyerpname}
+                    </FormikErrorMessage>
+                  ) : null}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold">
                       Quantity Range
@@ -386,7 +471,10 @@ const AddRequirement = ({ setreload, reload }) => {
                           name="deliverylocation"
                           placeholder="Enter Delivery Location"
                           value={formik.values.deliverylocation || ""}
-                          onChange={formik.handleChange}
+                          onChange={(e) => {
+                            getlatlng(e);
+                            formik.handleChange(e);
+                          }}
                           onBlur={formik.handleBlur}
                           className={
                             formik.touched.deliverylocation &&
@@ -402,36 +490,76 @@ const AddRequirement = ({ setreload, reload }) => {
                           {formik.errors.deliverylocation}
                         </FormikErrorMessage>
                       ) : null}
+                      <div className="flex flex-col gap-2">
+                        <label className="font-semibold">
+                          Estimate Delivery Date
+                          <span className="text-secondary pb-2">*</span>
+                        </label>
+                        <input
+                          type="date"
+                          name="buyerdeliverydate"
+                          onChange={(e) => {
+                            e.target.classList.add("change_color");
+                            formik.setFieldValue(
+                              "buyerdeliverydate",
+                              e.target.value
+                            );
+                          }}
+                          onBlur={formik.handleBlur}
+                          className={
+                            formik.touched.buyerdeliverydate &&
+                            formik.errors.buyerdeliverydate
+                              ? "input-primary ring-2 ring-secondary border-none experience"
+                              : "input-primary experience"
+                          }
+                        />
+                        {formik.touched.buyerdeliverydate &&
+                        formik.errors.buyerdeliverydate ? (
+                          <FormikErrorMessage>
+                            {formik.errors.buyerdeliverydate}
+                          </FormikErrorMessage>
+                        ) : null}
+                      </div>
                     </>
                   ) : null}
-                  <div className="flex flex-col gap-2">
-                    <label className="font-semibold">
-                      Estimate Delivery Date
-                      <span className="text-secondary pb-2">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      name="buyerdeliverydate"
-                      onChange={(e) => {
-                        e.target.classList.add("change_color");
-                        formik.setFieldValue(
-                          "buyerdeliverydate",
-                          e.target.value
-                        );
-                      }}
-                      onBlur={formik.handleBlur}
-                      className={
-                        formik.touched.buyerdeliverydate &&
-                        formik.errors.buyerdeliverydate
-                          ? "input-primary ring-2 ring-secondary border-none experience"
-                          : "input-primary experience"
-                      }
-                    />
-                  </div>
+                  {formik.values.pdelivery === "Pickup Directly" ? (
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold">
+                        Estimate Delivery Date
+                        <span className="text-secondary pb-2">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        name="buyerdeliverydate"
+                        onChange={(e) => {
+                          e.target.classList.add("change_color");
+                          formik.setFieldValue(
+                            "buyerdeliverydate",
+                            e.target.value
+                          );
+                        }}
+                        onBlur={formik.handleBlur}
+                        className={
+                          formik.touched.buyerdeliverydate &&
+                          formik.errors.buyerdeliverydate
+                            ? "input-primary ring-2 ring-secondary border-none experience"
+                            : "input-primary experience"
+                        }
+                      />
+                      {formik.touched.buyerdeliverydate &&
+                      formik.errors.buyerdeliverydate ? (
+                        <FormikErrorMessage>
+                          {formik.errors.buyerdeliverydate}
+                        </FormikErrorMessage>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </>
-              ) : (
+              ) : null}
+              {formik.values.type === "Supplier" ||
+              formik.values.selectboth === "Supplier" ? (
                 <>
-                  {/* <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2">
                     <label className="font-semibold">
                       Product Name
                       <span className="text-secondary pb-2">*</span>
@@ -456,7 +584,7 @@ const AddRequirement = ({ setreload, reload }) => {
                     <FormikErrorMessage>
                       {formik.errors.supplierpname}
                     </FormikErrorMessage>
-                  ) : null} */}
+                  ) : null}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold">
                       Stock Location
@@ -555,8 +683,76 @@ const AddRequirement = ({ setreload, reload }) => {
                           }
                         />
                       </div>
+                      {formik.touched.stockavailabilitydate &&
+                      formik.errors.stockavailabilitydate ? (
+                        <FormikErrorMessage>
+                          {formik.errors.stockavailabilitydate}
+                        </FormikErrorMessage>
+                      ) : null}
+                      <div className="flex flex-col gap-2">
+                        <label className="font-semibold">
+                          Payment Mode
+                          <span className="text-secondary pb-2">*</span>
+                        </label>
+                        <select
+                          name="paymentmode"
+                          value={formik.values.paymentmode}
+                          onChange={(e) => {
+                            formik.setFieldValue("paymentmode", e.target.value);
+                            e.target.classList.add("change_color");
+                          }}
+                          onBlur={formik.handleBlur}
+                          style={{ outline: 0 }}
+                          className={
+                            formik.touched.paymentmode &&
+                            formik.errors.paymentmode
+                              ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                              : "input-primary bg-whitecolor focus-outline-none experience"
+                          }
+                        >
+                          <option>Select</option>
+                          <option value="Credit">Credit</option>
+                          <option value="Advance">Advance</option>
+                          <option value="COD">COD</option>
+                        </select>
+                      </div>
+                      {formik.touched.paymentmode &&
+                      formik.errors.paymentmode ? (
+                        <FormikErrorMessage>
+                          {formik.errors.paymentmode}
+                        </FormikErrorMessage>
+                      ) : null}
+                      {formik.values.paymentmode === "Advance" ? (
+                        <>
+                          <div className="flex flex-col gap-2">
+                            <label className="font-semibold">
+                              Advance
+                              <span className="text-secondary pb-2">*</span>
+                            </label>
+                            <InputFields
+                              type="number"
+                              name="advance"
+                              placeholder="Enter Advance"
+                              value={formik.values.advance || ""}
+                              onChange={formik.handleChange}
+                              onBlur={formik.handleBlur}
+                              className={
+                                formik.touched.advance && formik.errors.advance
+                                  ? "input-primary ring-2 ring-secondary border-none"
+                                  : "input-primary"
+                              }
+                            />
+                          </div>
+                          {formik.touched.advance && formik.errors.advance ? (
+                            <FormikErrorMessage>
+                              {formik.errors.advance}
+                            </FormikErrorMessage>
+                          ) : null}
+                        </>
+                      ) : null}
                     </>
-                  ) : (
+                  ) : null}
+                  {formik.values.stockposition === "Ready" ? (
                     <>
                       <div className="flex flex-col gap-2">
                         <label className="font-semibold">
@@ -632,41 +828,71 @@ const AddRequirement = ({ setreload, reload }) => {
                           {formik.errors.expprice}
                         </FormikErrorMessage>
                       ) : null}
+                      <div className="flex flex-col gap-2">
+                        <label className="font-semibold">
+                          Payment Mode
+                          <span className="text-secondary pb-2">*</span>
+                        </label>
+                        <select
+                          name="paymentmode"
+                          value={formik.values.paymentmode}
+                          onChange={(e) => {
+                            formik.setFieldValue("paymentmode", e.target.value);
+                            e.target.classList.add("change_color");
+                          }}
+                          onBlur={formik.handleBlur}
+                          style={{ outline: 0 }}
+                          className={
+                            formik.touched.paymentmode &&
+                            formik.errors.paymentmode
+                              ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                              : "input-primary bg-whitecolor focus-outline-none experience"
+                          }
+                        >
+                          <option>Select</option>
+                          <option value="Credit">Credit</option>
+                          <option value="Advance">Advance</option>
+                          <option value="COD">COD</option>
+                        </select>
+                      </div>
+                      {formik.touched.paymentmode &&
+                      formik.errors.paymentmode ? (
+                        <FormikErrorMessage>
+                          {formik.errors.paymentmode}
+                        </FormikErrorMessage>
+                      ) : null}
+                      {formik.values.paymentmode === "Advance" ? (
+                        <>
+                          <div className="flex flex-col gap-2">
+                            <label className="font-semibold">
+                              Advance
+                              <span className="text-secondary pb-2">*</span>
+                            </label>
+                            <InputFields
+                              type="number"
+                              name="advance"
+                              placeholder="Enter Advance"
+                              value={formik.values.advance || ""}
+                              onChange={formik.handleChange}
+                              onBlur={formik.handleBlur}
+                              className={
+                                formik.touched.advance && formik.errors.advance
+                                  ? "input-primary ring-2 ring-secondary border-none"
+                                  : "input-primary"
+                              }
+                            />
+                          </div>
+                          {formik.touched.advance && formik.errors.advance ? (
+                            <FormikErrorMessage>
+                              {formik.errors.advance}
+                            </FormikErrorMessage>
+                          ) : null}
+                        </>
+                      ) : null}
                     </>
-                  )}
-                  <div className="flex flex-col gap-2">
-                    <label className="font-semibold">
-                      Payment Mode
-                      <span className="text-secondary pb-2">*</span>
-                    </label>
-                    <select
-                      name="paymentmode"
-                      value={formik.values.paymentmode}
-                      onChange={(e) => {
-                        formik.setFieldValue("paymentmode", e.target.value);
-                        e.target.classList.add("change_color");
-                      }}
-                      onBlur={formik.handleBlur}
-                      style={{ outline: 0 }}
-                      className={
-                        formik.touched.paymentmode && formik.errors.paymentmode
-                          ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
-                          : "input-primary bg-whitecolor focus-outline-none experience"
-                      }
-                    >
-                      <option>Select</option>
-                      <option value="Credit">Credit</option>
-                      <option value="Advance">Advance</option>
-                      <option value="COD">COD</option>
-                    </select>
-                  </div>
-                  {formik.touched.paymentmode && formik.errors.paymentmode ? (
-                    <FormikErrorMessage>
-                      {formik.errors.paymentmode}
-                    </FormikErrorMessage>
                   ) : null}
                 </>
-              )}
+              ) : null}
             </Forms>
           </ModalBody>
           <ModalFooter>
