@@ -9,9 +9,6 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { Breadcrumb } from "antd";
 import {
-  RadioGroup,
-  Stack,
-  Radio,
   Table,
   Thead,
   Tbody,
@@ -155,7 +152,11 @@ const Postorder = () => {
                         {item.name}
                       </Button>
                     </Td>
-                    <Td>{item.buyerpname}</Td>
+                    {item.buyerpname === "" ? (
+                      <Td>{item.supplierpname}</Td>
+                    ) : (
+                      <Td>{item.buyerpname}</Td>
+                    )}
                   </Tr>
                 ))}
             </Tbody>
