@@ -27,7 +27,9 @@ import {
   Radio,
   Input,
   Textarea,
+  useDisclosure,
 } from "@chakra-ui/react";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 //components
 import axios from "../../axios";
 //useTable
@@ -71,6 +73,8 @@ const Supplier = () => {
   const [statusfb, setStatusFB] = useState("null");
   const [callbackreason, setCallBackReason] = useState("null");
   const [reload, setreload] = useState(false);
+  const [lat, setlat] = useState("");
+  const [lng, setlng] = useState("");
 
   //table
   const EmployeeTable = useTable();
@@ -85,12 +89,24 @@ const Supplier = () => {
       EmployeeTable.setRowData([]);
     }
   };
-
   //useEffect
   useEffect(() => {
     fetchdata(EmployeeTable.currentPage, EmployeeTable.showLimit);
   }, [reload, EmployeeTable.currentPage, EmployeeTable.showLimit]);
-
+  //modal for map
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  //mapview
+  const isOpenmap = (props) => {
+    onOpen();
+    // setlat(props.mlatitude);
+    // setlng(props.mlongitude);
+    setlat(13.033643);
+    setlng(80.250518);
+  };
+  const mapStyles = {
+    height: "100%",
+    width: "100%",
+  };
   //modal for order details
   //usestate
   const [isStatusCall, setIsStatusCall] = useState(false);
@@ -101,6 +117,16 @@ const Supplier = () => {
   const statusCall = () => {
     setIsStatusCall(true);
     //axios.get(`/v1/supplierBuyer/${props}`).then((res) => setshop(res.data));
+  };
+  //usestate
+  const [isUserDetails, setIsUserDetails] = useState(false);
+  const [details, setDetails] = useState("");
+  const isUserDetailsClose = () => {
+    setIsUserDetails(false);
+  };
+  const userDetail = (props) => {
+    setIsUserDetails(true);
+    axios.get(`/v1/postorder/${props}`).then((res) => setDetails(res.data));
   };
 
   return (
@@ -247,7 +273,7 @@ const Supplier = () => {
                         colorScheme="blue"
                         variant="link"
                         onClick={() => {
-                          statusCall();
+                          userDetail(item.id);
                           //setName("sup");
                         }}
                       >
@@ -255,7 +281,16 @@ const Supplier = () => {
                       </Button>
                     </Td>
                     <Td>{item.supplierpname || item.buyerpname}</Td>
-                    <Td>View</Td>
+                    <Td>
+                      <Button
+                        size="sm"
+                        colorScheme="blue"
+                        variant="link"
+                        onClick={() => isOpenmap(item)}
+                      >
+                        MapView
+                      </Button>
+                    </Td>
                     <Td>
                       {item.status ? (
                         <>
@@ -369,7 +404,7 @@ const Supplier = () => {
                               Engaged
                             </Radio>
                             <Radio name="callbackReson" value="Not reachable">
-                              Not reachable
+                              Not reachable   
                             </Radio>
                             <Radio
                               name="callbackReson"
@@ -443,6 +478,15 @@ const Supplier = () => {
                   {statusfb == "Requirement dead" ? (
                     <>
                       <label className="font-semibold ">(Reject)</label>
+                      <Textarea
+                        type="datetime-local"
+                        name="feedback"
+                        placeholder="Feedback :"
+                        // value={formik.values.callbacktime || ""}
+                        // onChange={formik.handleChange}
+                        // onBlur={formik.handleBlur}
+                        className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                      />
                     </>
                   ) : (
                     ""
@@ -458,24 +502,299 @@ const Supplier = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        {/* <Modal isOpen={isrejected} onClose={isRejectedClose}>
+        <Modal isOpen={isUserDetails} onClose={isUserDetailsClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Alert</ModalHeader>
+            <ModalHeader>User Details</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <div>Are you sure, Do you want to REJECT Craze ?</div>
+              <div className="p-4 ">
+                {details.type == "Supplier" ? (
+                  <>
+                    <div className="border border-graycolor cursor-pointer">
+                      <div className="grid grid-cols-6 px-4 p-1">
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Type
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.type}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Name
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.name}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Product Name
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.supplierpname}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Stock Location
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.stocklocation}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Stock position
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.stockposition}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Pack Type
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.packtype}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Excepted Quantity
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.expquantity}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Excepted Price
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.expprice}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Stock Availability
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.stockavailabilitydate}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
+                          Payment Mode
+                        </div>
+                        <div className="col-span-4 p-1">
+                          {details.paymentmode}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  ""
+                )}
+                {details.type == "Buyer" ? (
+                  <>
+                    <div className="border border-graycolor cursor-pointer">
+                      <div className="grid grid-cols-6 px-4 p-1">
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Type
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.type}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Name
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.name}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Product Name
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.buyerpname}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Quality Range
+                        </div>
+                        <div className="col-span-2 border-b border-r p-1">
+                          {details.minrange}
+                        </div>
+                        <div className="col-span-2 border-b p-1">
+                          {details.maxrange}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Landing Price
+                        </div>
+                        <div className="col-span-2 border-b border-r p-1">
+                          {details.minprice}
+                        </div>
+                        <div className="col-span-2 border-b p-1">
+                          {details.maxprice}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Stock (Product Delivery)
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.pdelivery}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Delivery Location
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.deliverylocation}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
+                          Estimate Delivery Date
+                        </div>
+                        <div className="col-span-4 p-1">{details.date}</div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  ""
+                )}
+                {details.type == "Both" ? (
+                  <>
+                    <div className="border border-graycolor cursor-pointer">
+                      <div className="grid grid-cols-6 px-4 p-1">
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Type
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.type}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Name
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.name}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Stock (Product Delivery)
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.name}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Product Name
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.supplierpname}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Stock Location
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.stocklocation}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Stock position
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.stockposition}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Pack Type
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.packtype}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Excepted Quantity
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.expquantity}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Excepted Price
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.expprice}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Stock Availability
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.stockavailabilitydate}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
+                          Payment Mode
+                        </div>
+                        <div className="col-span-4 p-1">
+                          {details.paymentmode}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Quality Range
+                        </div>
+                        <div className="col-span-2 border-b border-r p-1">
+                          {details.minrange}
+                        </div>
+                        <div className="col-span-2 border-b p-1">
+                          {details.maxrange}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Landing Price
+                        </div>
+                        <div className="col-span-2 border-b border-r p-1">
+                          {details.minprice}
+                        </div>
+                        <div className="col-span-2 border-b p-1">
+                          {details.maxprice}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Stock (Product Delivery)
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.pdelivery}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Delivery Location
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {details.deliverylocation}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
+                          Estimate Delivery Date
+                        </div>
+                        <div className="col-span-4 p-1">{details.date}</div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  ""
+                )}
+              </div>
             </ModalBody>
             <ModalFooter>
-              <Button onClick={isRejectedClose} colorScheme="blue" mr={3}>
-                Yes
-              </Button>
-              <Button onClick={isRejectedClose} colorScheme="red" mr={3}>
-                No
+              <Button onClick={isUserDetailsClose} colorScheme="red" mr={3}>
+                Close
               </Button>
             </ModalFooter>
           </ModalContent>
-        </Modal> */}
+        </Modal>
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Map View</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="flex justify-center text-center">
+                <div className="object-cover h-48 w-96">
+                  <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
+                    <GoogleMap
+                      mapContainerStyle={mapStyles}
+                      zoom={13}
+                      center={{
+                        lat: parseFloat(lat),
+                        lng: parseFloat(lng),
+                      }}
+                    >
+                      <Marker
+                        position={{
+                          lat: parseFloat(lat),
+                          lng: parseFloat(lng),
+                        }}
+                      />
+                    </GoogleMap>
+                  </LoadScript>
+                </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={onClose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </div>
     </>
   );
