@@ -34,6 +34,7 @@ import {
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 //components
 import InputFields from "../controls/InputFields";
+import Forms from "../controls/Forms";
 import FormikErrorMessage from "../controls/FormikErrorMessage";
 import axios from "../../axios";
 //useTable
@@ -62,10 +63,6 @@ const Status = [
   { value: "moderated", label: "Moderated" },
   { value: "rejected", label: "Rejected" },
 ];
-const CallStatus = [
-  { value: "Accepted", label: "Accepted" },
-  { value: "CallBack", label: "CallBack" },
-];
 
 //function init
 const Supplier = () => {
@@ -81,9 +78,6 @@ const Supplier = () => {
   const [lng, setlng] = useState("");
   const [itemValue, setItemValue] = useState("");
 
-  //Formik regex
-  const Namepattern = /^[a-zA-Z\s.]*$/;
-  const addressregex = /^[a-zA-Z0-9\s\,\''\-]*$/;
   //Formik InitialValue
   const initialvalue = {
     status: "",
@@ -126,11 +120,11 @@ const Supplier = () => {
       buyerdeliverydate: Yup.string(),
       stockavailabilitydate: Yup.string(),
       paymentmode: Yup.string(),
-      advance: Yup.string(),
+      advance: Yup.string().required("Enter Advance"),
       statustypeFB: Yup.string(),
     }),
     onSubmit: (values) => {
-      console.log(values);
+      console.log("values");
       //date
       var today = new Date();
       var dd = String(today.getDate()).padStart(2, "0");
@@ -138,28 +132,24 @@ const Supplier = () => {
       var yyyy = today.getFullYear();
       today = dd + "-" + mm + "-" + yyyy;
       const data = {
-        // type: values.type,
-        // name: values.name,
-        // buyerpname: values.buyerpname,
-        // minrange: values.minrange,
-        // maxrange: values.maxrange,
-        // minprice: values.minprice,
-        // maxprice: values.maxprice,
-        // pdelivery: values.pdelivery,
-        // deliverylocation: values.deliverylocation,
-        // buyerdeliverydate: values.buyerdeliverydate,
-        // supplierpname: values.supplierpname,
-        // stocklocation: values.stocklocation,
-        // stockposition: values.stockposition,
-        // stockavailabilitydate: values.stockavailabilitydate,
-        // packtype: values.packtype,
-        // expprice: values.expprice,
-        // expquantity: values.expquantity,
-        // paymentmode: values.paymentmode,
-        // advance: values.advance,
-        // date: today,
-        // latitude: lat,
-        // longitude: lng,
+        status: values.status,
+        statustype: values.statustype,
+        statustypecalldate: values.statustypecalldate,
+        stockposition: values.stockposition,
+        packtype: values.packtype,
+        expquantity: values.expquantity,
+        expprice: values.expprice,
+        minrange: values.minrange,
+        maxrange: values.maxrange,
+        minprice: values.minprice,
+        maxprice: values.maxprice,
+        pdelivery: values.pdelivery,
+        deliverylocation: values.deliverylocation,
+        buyerdeliverydate: values.buyerdeliverydate,
+        stockavailabilitydate: values.stockavailabilitydate,
+        paymentmode: values.paymentmode,
+        advance: values.advance,
+        statustypeFB: values.statustypeFB,
       };
       // axios
       //   .post("/v1/postorder", data)
@@ -177,6 +167,7 @@ const Supplier = () => {
       //   });
     },
   });
+  console.log(formik.values);
 
   //table
   const EmployeeTable = useTable();
@@ -343,553 +334,572 @@ const Supplier = () => {
             </Tbody>
           </Table>
         </div>
-        <Modal isOpen={isStatusCall} onClose={isStatusCallClose}>
+        <Modal
+          // onSubmit={formik.handleSubmit}
+          isOpen={isStatusCall}
+          onClose={isStatusCallClose}
+          size="xl"
+        >
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>By Telecaller</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <div className="grid items-center gap-2">
-                {/* <div className="flex gap-2"> */}
-                <div className="grid pb-2 gap-2">
-                  <label className="font-semibold">Status :</label>
-                  <select
-                    name="status"
-                    value={formik.values.status}
-                    onChange={(e) => {
-                      formik.setFieldValue("status", e.target.value);
-                      setStatus(e.target.value);
-                      e.target.classList.add("change_color");
-                    }}
-                    onBlur={formik.handleBlur}
-                    style={{ outline: 0 }}
-                    className="input-primary"
-                  >
-                    <option value="null">Select Status</option>
-                    {CallStatus &&
-                      CallStatus.map((item, index) => (
-                        <option
-                          key={index}
-                          value={item.value}
-                          selected={item.value === itemValue.status}
-                        >
-                          {item.label}
-                        </option>
-                      ))}
-                  </select>
+              <Forms>
+                <div className="grid items-center gap-2">
+                  {/* <div className="flex gap-2"> */}
+                  <div className="grid pb-2 gap-2">
+                    <label className="font-semibold">Status :</label>
+                    <select
+                      name="status"
+                      value={formik.values.status}
+                      onChange={(e) => {
+                        formik.setFieldValue("status", e.target.value);
+                        //setStatus(e.target.value);
+                        e.target.classList.add("change_color");
+                      }}
+                      onBlur={formik.handleBlur}
+                      style={{ outline: 0 }}
+                      className="input-primary"
+                    >
+                      <option value="null">Select Status</option>
+                      <option value="Accepted">Accepted</option>
+                      <option value="CallBack">CallBack</option>
+                    </select>
+                  </div>
+                  {/* </div> */}
                 </div>
-                {/* </div> */}
-              </div>
-              <div className="grid items-center gap-3 pb-4">
-                <div className="flex-auto font-semibold text-primary"></div>
-                <div className="flex items-center gap-2">
-                  {formik.values.status == "Accepted" ? (
-                    <>
-                      <RadioGroup defaultValue="null">
-                        <HStack
-                          spacing="24px"
-                          name="statustype"
-                          //value={formik.values.statustype || ""}
-                          onChange={(e) => {
-                            formik.setFieldValue("statustype", e.target.value);
-                            setStatus(e.target.value);
-                            e.target.classList.add("change_color");
-                          }}
-                          onBlur={formik.handleBlur}
-                        >
-                          <div className="grid flex-auto md:w-1/2">
-                            <Radio name="statustype" value="Requirement Alive">
-                              Requirement Alive.
-                            </Radio>
-                            <Radio name="statustype" value="Requirement dead">
-                              Requirement dead.
-                            </Radio>
-                            <Radio
-                              name="statustype"
-                              value="Requirement Alive with modification"
-                            >
-                              Requirement Alive with modification.
-                            </Radio>
-                          </div>
-                        </HStack>
-                      </RadioGroup>
-                    </>
-                  ) : (
-                    ""
-                  )}
-                  {formik.values.status == "CallBack" ? (
-                    <>
-                      <RadioGroup defaultValue="null">
-                        <HStack
-                          name="statustype"
-                          onChange={(e) => {
-                            formik.setFieldValue("statustype", e.target.value);
-                            setCallBackReason(e.target.value);
-                            e.target.classList.add("change_color");
-                          }}
-                          spacing="24px"
-                          //value={formik.values.statustype || ""}
-                          onBlur={formik.handleBlur}
-                        >
-                          <div className="grid flex-auto md:w-1/2">
-                            <Radio name="statustype" value="Second call">
-                              Second call
-                            </Radio>
-                            <Radio name="statustype" value="Engaged">
-                              Engaged
-                            </Radio>
-                            <Radio name="statustype" value="Not reachable">
-                              Not reachable
-                            </Radio>
-                            <Radio name="statustype" value="Cutting the call">
-                              Cutting the call
-                            </Radio>
-                            <Radio name="statustype" value="Ringing">
-                              Ringing
-                            </Radio>
-                            <Radio
-                              name="statustype"
-                              value="Answer to call later"
-                            >
-                              Answer to call later
-                            </Radio>
-                          </div>
-                        </HStack>
-                      </RadioGroup>
-                    </>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </div>
-              <div className="grid items-center gap-3 pb-2">
-                {/* <div className="flex-auto font-semibold text-primary"></div> */}
-                <div className="flex items-center gap-2">
-                  {formik.values.statustype === "Answer to call later" ? (
-                    <>
-                      <Input
-                        type="datetime-local"
-                        name="statustypecalldate"
-                        placeholder="Enter Price"
-                        value={formik.values.statustypecalldate || ""}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        className={
-                          formik.touched.statustypecalldate &&
-                          formik.errors.statustypecalldate
-                            ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
-                            : "input-primary bg-whitecolor focus-outline-none experience"
-                        }
-                      />
-                    </>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </div>
-              <div className="grid items-center gap-3 pb-2">
-                {/* <div className="flex-auto font-semibold text-primary"></div> */}
-                <div className="items-center gap-2">
-                  {statusfb == "Requirement Alive" ? <></> : ""}
-                  {formik.values.statustype == "Requirement Alive" ? (
-                    <>
-                      <label className="font-semibold">(No Change Done)</label>
-                      <Textarea
-                        type="string"
-                        name="statustypeFB"
-                        placeholder="Feedback :"
-                        value={formik.values.statustypeFB || ""}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        className={
-                          formik.touched.statustypeFB &&
-                          formik.errors.statustypeFB
-                            ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
-                            : "input-primary bg-whitecolor focus-outline-none experience"
-                        }
-                      />
-                    </>
-                  ) : (
-                    ""
-                  )}
-                  {formik.values.statustype == "Requirement dead" ? (
-                    <>
-                      <label className="font-semibold ">(Reject)</label>
-                      <Textarea
-                        type="string"
-                        name="statustypeFB"
-                        placeholder="Feedback :"
-                        value={formik.values.statustypeFB || ""}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        className={
-                          formik.touched.statustypeFB &&
-                          formik.errors.statustypeFB
-                            ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
-                            : "input-primary bg-whitecolor focus-outline-none experience"
-                        }
-                      />
-                    </>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </div>
-              <div className="grid items-center gap-3 pb-2">
-                <div className="items-center gap-2">
-                  {formik.values.statustype ==
-                  "Requirement Alive with modification" ? (
-                    <div>
-                      {itemValue.type == "" ? <></> : ""}
-                      {itemValue.type == "Supplier" ? (
-                        <>
-                          <div className="grid pb-2 gap-2">
-                            <label className="font-semibold">
-                              Stock Position :
-                            </label>
-                            <select
-                              name="stockposition"
-                              value={formik.values.stockposition}
-                              onChange={(e) => {
-                                formik.setFieldValue(
-                                  "stockposition",
-                                  e.target.value
-                                );
-                                //setStatus(e.target.value);
-                                e.target.classList.add("change_color");
-                              }}
-                              style={{ outline: 0 }}
-                              className="input-primary"
-                            >
-                              <option
-                                name="stockposition"
-                                value={itemValue.stockposition}
+                <div className="grid items-center gap-3 pb-4">
+                  <div className="flex-auto font-semibold text-primary"></div>
+                  <div className="flex items-center gap-2">
+                    {formik.values.status == "Accepted" ? (
+                      <>
+                        <RadioGroup defaultValue="null">
+                          <HStack
+                            spacing="24px"
+                            name="statustype"
+                            //value={formik.values.statustype || ""}
+                            onChange={(e) => {
+                              formik.setFieldValue(
+                                "statustype",
+                                e.target.value
+                              );
+                              setStatus(e.target.value);
+                              e.target.classList.add("change_color");
+                            }}
+                            onBlur={formik.handleBlur}
+                          >
+                            <div className="grid flex-auto md:w-1/2">
+                              <Radio
+                                name="statustype"
+                                value="Requirement Alive"
                               >
-                                {itemValue.stockposition}
-                              </option>
-                              <option name="stockposition" value="Ready">
-                                Ready
-                              </option>
-                              <option
-                                name="stockposition"
-                                value="To be Ploughed"
+                                Requirement Alive.
+                              </Radio>
+                              <Radio name="statustype" value="Requirement dead">
+                                Requirement dead.
+                              </Radio>
+                              <Radio
+                                name="statustype"
+                                value="Requirement Alive with modification"
                               >
-                                To be Ploughed
-                              </option>
-                            </select>
-                          </div>
-                          {formik.values.stockposition == "Ready" ? (
-                            <>
-                              <div className="grid pb-2 gap-2">
-                                <label className="font-semibold ">
-                                  Pack Type
-                                </label>
-                                <InputFields
-                                  type="string"
-                                  name="packtype"
-                                  value={formik.values.packtype || ""}
-                                  onChange={formik.handleChange}
-                                  onBlur={formik.handleBlur}
-                                  className="input-primary"
-                                />
-                              </div>
-                              <div className="grid pb-2 gap-2">
-                                <label className="font-semibold ">
-                                  Excepted Quantity
-                                </label>
-                                <InputFields
-                                  type="string"
-                                  name="expquantity"
-                                  value={formik.values.expquantity || ""}
-                                  onChange={formik.handleChange}
-                                  onBlur={formik.handleBlur}
-                                  className="input-primary"
-                                />
-                              </div>
-                              <div className="grid pb-2 gap-2">
-                                <label className="font-semibold ">
-                                  Excepted Price
-                                </label>
-                                <InputFields
-                                  type="string"
-                                  name="expprice"
-                                  value={formik.values.expprice || ""}
-                                  onChange={formik.handleChange}
-                                  onBlur={formik.handleBlur}
-                                  className="input-primary"
-                                />
-                              </div>
-                            </>
-                          ) : (
-                            ""
-                          )}
-                          {formik.values.stockposition == "To be Ploughed" ? (
-                            <>
-                              <div className="grid pb-2 gap-2">
-                                <label className="font-semibold ">
-                                  Excepted Price
-                                </label>
-                                <InputFields
-                                  type="date"
-                                  name="expprice"
-                                  value={formik.values.expprice || ""}
-                                  onChange={formik.handleChange}
-                                  onBlur={formik.handleBlur}
-                                  className="input-primary"
-                                />
-                              </div>
-                            </>
-                          ) : (
-                            ""
-                          )}
-                          <div className="grid pb-2 gap-2">
-                            <label className="font-semibold">
-                              Payment Mode :
-                            </label>
-                            <select
-                              name="paymentmode"
-                              value={formik.values.paymentmode}
-                              onChange={(e) => {
-                                formik.setFieldValue(
-                                  "paymentmode",
-                                  e.target.value
-                                );
-                                // setStatus(e.target.value);
-                                e.target.classList.add("change_color");
-                              }}
-                              style={{ outline: 0 }}
-                              className="input-primary"
-                            >
-                              <option
-                                name="paymentmode"
-                                value={itemValue.paymentmode}
-                                selected={
-                                  itemValue.paymentmode ===
-                                  itemValue.paymentmode
-                                }
-                              >
-                                {itemValue.paymentmode}
-                              </option>
-                              <option name="paymentmode" value="Credit">
-                                Credit
-                              </option>
-                              <option name="paymentmode" value="Advance">
-                                Advance
-                              </option>
-                              <option name="paymentmode" value="COD">
-                                COD
-                              </option>
-                            </select>
-                          </div>
-                          {formik.values.paymentmode == "Advance" ? (
-                            <>
-                              <div className="grid pb-2 gap-2">
-                                <label className="font-semibold ">
-                                  Advance
-                                </label>
-                                <InputFields
-                                  type="string"
-                                  name="advance"
-                                  value={formik.values.advance || ""}
-                                  onChange={formik.handleChange}
-                                  onBlur={formik.handleBlur}
-                                  className={
-                                    formik.touched.advance &&
-                                    formik.errors.advance
-                                      ? "input-primary ring-2 ring-secondary border-none"
-                                      : "input-primary"
-                                  }
-                                />
-                              </div>
-                            </>
-                          ) : (
-                            ""
-                          )}
-                          <div className="grid pb-2 gap-2">
-                            <label className="font-semibold ">(Feedback)</label>
-                            <Textarea
-                              type="string"
-                              name="statustypeFB"
-                              placeholder="Feedback :"
-                              value={formik.values.statustypeFB || ""}
-                              onChange={formik.handleChange}
-                              onBlur={formik.handleBlur}
-                              className={
-                                formik.touched.statustypeFB &&
-                                formik.errors.statustypeFB
-                                  ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
-                                  : "input-primary bg-whitecolor focus-outline-none experience"
-                              }
-                            />
-                          </div>
-                        </>
-                      ) : (
-                        ""
-                      )}
-                      {itemValue.type == "Buyer" ? (
-                        <>
-                          <div className="flex flex-col gap-2">
-                            <label className="font-semibold">
-                              Quantity Range
-                            </label>
-                            <div className="flex gap-5">
-                              <InputFields
-                                type="number"
-                                name="minrange"
-                                className="input-primary"
-                                value={formik.values.minrange || ""}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                              />
-                              <InputFields
-                                type="number"
-                                name="maxrange"
-                                className="input-primary"
-                                value={formik.values.maxrange || ""}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                              />
+                                Requirement Alive with modification.
+                              </Radio>
                             </div>
-                          </div>
-                          <div className="flex flex-col gap-2">
-                            <label className="font-semibold">
-                              Landing Price
-                            </label>
-                            <div className="flex gap-5">
-                              <InputFields
-                                type="number"
-                                name="minprice"
-                                className="input-primary"
-                                value={formik.values.minprice || ""}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                              />
-                              <InputFields
-                                type="number"
-                                name="maxprice"
-                                className="input-primary"
-                                value={formik.values.maxprice || ""}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                              />
+                          </HStack>
+                        </RadioGroup>
+                      </>
+                    ) : (
+                      ""
+                    )}
+                    {formik.values.status == "CallBack" ? (
+                      <>
+                        <RadioGroup defaultValue="null">
+                          <HStack
+                            name="statustype"
+                            onChange={(e) => {
+                              formik.setFieldValue(
+                                "statustype",
+                                e.target.value
+                              );
+                              setCallBackReason(e.target.value);
+                              e.target.classList.add("change_color");
+                            }}
+                            spacing="24px"
+                            //value={formik.values.statustype || ""}
+                            onBlur={formik.handleBlur}
+                          >
+                            <div className="grid flex-auto md:w-1/2">
+                              <Radio name="statustype" value="Second call">
+                                Second call
+                              </Radio>
+                              <Radio name="statustype" value="Engaged">
+                                Engaged
+                              </Radio>
+                              <Radio name="statustype" value="Not reachable">
+                                Not reachable
+                              </Radio>
+                              <Radio name="statustype" value="Cutting the call">
+                                Cutting the call
+                              </Radio>
+                              <Radio name="statustype" value="Ringing">
+                                Ringing
+                              </Radio>
+                              <Radio
+                                name="statustype"
+                                value="Answer to call later"
+                              >
+                                Answer to call later
+                              </Radio>
                             </div>
-                          </div>
-                          <div className="grid pb-2 gap-2">
-                            <label className="font-semibold">
-                              Stock (Product Delivery)
-                            </label>
-                            <RadioGroup>
-                              <HStack
-                                direction="row"
-                                name="pdelivery"
-                                value={formik.values.pdelivery || ""}
+                          </HStack>
+                        </RadioGroup>
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
+                <div className="grid items-center gap-3 pb-2">
+                  {/* <div className="flex-auto font-semibold text-primary"></div> */}
+                  <div className="flex items-center gap-2">
+                    {formik.values.statustype === "Answer to call later" ? (
+                      <>
+                        <Input
+                          type="datetime-local"
+                          name="statustypecalldate"
+                          placeholder="Enter Price"
+                          value={formik.values.statustypecalldate || ""}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          className={
+                            formik.touched.statustypecalldate &&
+                            formik.errors.statustypecalldate
+                              ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                              : "input-primary bg-whitecolor focus-outline-none experience"
+                          }
+                        />
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
+                <div className="grid items-center gap-3 pb-2">
+                  {/* <div className="flex-auto font-semibold text-primary"></div> */}
+                  <div className="items-center gap-2">
+                    {statusfb == "Requirement Alive" ? <></> : ""}
+                    {formik.values.statustype == "Requirement Alive" ? (
+                      <>
+                        <label className="font-semibold">
+                          (No Change Done)
+                        </label>
+                        <Textarea
+                          type="string"
+                          name="statustypeFB"
+                          placeholder="Feedback :"
+                          value={formik.values.statustypeFB || ""}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          className={
+                            formik.touched.statustypeFB &&
+                            formik.errors.statustypeFB
+                              ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                              : "input-primary bg-whitecolor focus-outline-none experience"
+                          }
+                        />
+                      </>
+                    ) : (
+                      ""
+                    )}
+                    {formik.values.statustype == "Requirement dead" ? (
+                      <>
+                        <label className="font-semibold ">(Reject)</label>
+                        <Textarea
+                          type="string"
+                          name="statustypeFB"
+                          placeholder="Feedback :"
+                          value={formik.values.statustypeFB || ""}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          className={
+                            formik.touched.statustypeFB &&
+                            formik.errors.statustypeFB
+                              ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                              : "input-primary bg-whitecolor focus-outline-none experience"
+                          }
+                        />
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
+                <div className="grid items-center gap-3 pb-2">
+                  <div className="items-center gap-2">
+                    {formik.values.statustype ==
+                    "Requirement Alive with modification" ? (
+                      <div>
+                        {itemValue.type == "" ? <></> : ""}
+                        {itemValue.type == "Supplier" ? (
+                          <>
+                            <div className="grid pb-2 gap-2">
+                              <label className="font-semibold">
+                                Stock Position :
+                              </label>
+                              <select
+                                name="stockposition"
+                                value={formik.values.stockposition}
                                 onChange={(e) => {
                                   formik.setFieldValue(
-                                    "pdelivery",
+                                    "stockposition",
                                     e.target.value
                                   );
+                                  //setStatus(e.target.value);
+                                  e.target.classList.add("change_color");
                                 }}
-                                onBlur={formik.handleBlur}
+                                style={{ outline: 0 }}
+                                className="input-primary"
                               >
-                                <Radio
-                                  name="pdelivery"
-                                  value="Pickup Directly"
-                                  checked={
-                                    formik.values.pdelivery == "Pickup Directly"
-                                      ? true
-                                      : false
+                                <option
+                                  name="stockposition"
+                                  value={itemValue.stockposition}
+                                >
+                                  {itemValue.stockposition}
+                                </option>
+                                <option name="stockposition" value="Ready">
+                                  Ready
+                                </option>
+                                <option
+                                  name="stockposition"
+                                  value="To be Ploughed"
+                                >
+                                  To be Ploughed
+                                </option>
+                              </select>
+                            </div>
+                            {formik.values.stockposition == "Ready" ? (
+                              <>
+                                <div className="grid pb-2 gap-2">
+                                  <label className="font-semibold ">
+                                    Pack Type
+                                  </label>
+                                  <InputFields
+                                    type="string"
+                                    name="packtype"
+                                    value={formik.values.packtype || ""}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    className="input-primary"
+                                  />
+                                </div>
+                                <div className="grid pb-2 gap-2">
+                                  <label className="font-semibold ">
+                                    Excepted Quantity
+                                  </label>
+                                  <InputFields
+                                    type="string"
+                                    name="expquantity"
+                                    value={formik.values.expquantity || ""}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    className="input-primary"
+                                  />
+                                </div>
+                                <div className="grid pb-2 gap-2">
+                                  <label className="font-semibold ">
+                                    Excepted Price
+                                  </label>
+                                  <InputFields
+                                    type="string"
+                                    name="expprice"
+                                    value={formik.values.expprice || ""}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    className="input-primary"
+                                  />
+                                </div>
+                              </>
+                            ) : (
+                              ""
+                            )}
+                            {formik.values.stockposition == "To be Ploughed" ? (
+                              <>
+                                <div className="grid pb-2 gap-2">
+                                  <label className="font-semibold ">
+                                    Excepted Price
+                                  </label>
+                                  <InputFields
+                                    type="date"
+                                    name="expprice"
+                                    value={formik.values.expprice || ""}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    className="input-primary"
+                                  />
+                                </div>
+                              </>
+                            ) : (
+                              ""
+                            )}
+                            <div className="grid pb-2 gap-2">
+                              <label className="font-semibold">
+                                Payment Mode :
+                              </label>
+                              <select
+                                name="paymentmode"
+                                value={formik.values.paymentmode}
+                                onChange={(e) => {
+                                  formik.setFieldValue(
+                                    "paymentmode",
+                                    e.target.value
+                                  );
+                                  // setStatus(e.target.value);
+                                  e.target.classList.add("change_color");
+                                }}
+                                style={{ outline: 0 }}
+                                className="input-primary"
+                              >
+                                <option
+                                  name="paymentmode"
+                                  value={itemValue.paymentmode}
+                                  selected={
+                                    itemValue.paymentmode ===
+                                    itemValue.paymentmode
                                   }
                                 >
-                                  Pickup Directly
-                                </Radio>
-                                <Radio
-                                  name="pdelivery"
-                                  value="Delivery to Location"
-                                  checked={
-                                    formik.values.pdelivery ==
-                                    "Delivery to Location"
-                                      ? true
-                                      : false
-                                  }
-                                >
-                                  Delivery to Location
-                                </Radio>
-                              </HStack>
-                            </RadioGroup>
-                          </div>
-                          {formik.values.pdelivery ===
-                          "Delivery to Location" ? (
-                            <>
-                              <div className="flex flex-col gap-2">
-                                <label className="font-semibold">
-                                  Delivery Location
-                                  {/* <span className="text-secondary pb-2">*</span> */}
-                                </label>
+                                  {itemValue.paymentmode}
+                                </option>
+                                <option name="paymentmode" value="Credit">
+                                  Credit
+                                </option>
+                                <option name="paymentmode" value="Advance">
+                                  Advance
+                                </option>
+                                <option name="paymentmode" value="COD">
+                                  COD
+                                </option>
+                              </select>
+                            </div>
+                            {formik.values.paymentmode == "Advance" ? (
+                              <>
+                                <div className="grid pb-2 gap-2">
+                                  <label className="font-semibold ">
+                                    Advance
+                                  </label>
+                                  <InputFields
+                                    type="string"
+                                    name="advance"
+                                    value={formik.values.advance || ""}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    className={
+                                      formik.touched.advance &&
+                                      formik.errors.advance
+                                        ? "input-primary ring-2 ring-secondary border-none"
+                                        : "input-primary"
+                                    }
+                                  />
+                                  {formik.touched.advance &&
+                                  formik.errors.advance ? (
+                                    <FormikErrorMessage>
+                                      {formik.errors.advance}
+                                    </FormikErrorMessage>
+                                  ) : null}
+                                </div>
+                              </>
+                            ) : (
+                              ""
+                            )}
+                            <div className="grid pb-2 gap-2">
+                              <label className="font-semibold ">
+                                (Feedback)
+                              </label>
+                              <Textarea
+                                type="string"
+                                name="statustypeFB"
+                                placeholder="Feedback :"
+                                value={formik.values.statustypeFB || ""}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                className={
+                                  formik.touched.statustypeFB &&
+                                  formik.errors.statustypeFB
+                                    ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                                    : "input-primary bg-whitecolor focus-outline-none experience"
+                                }
+                              />
+                            </div>
+                          </>
+                        ) : (
+                          ""
+                        )}
+                        {itemValue.type == "Buyer" ? (
+                          <>
+                            <div className="flex flex-col gap-2">
+                              <label className="font-semibold">
+                                Quantity Range
+                              </label>
+                              <div className="flex gap-5">
                                 <InputFields
-                                  type="string"
-                                  name="deliverylocation"
-                                  value={formik.values.deliverylocation || ""}
-                                  onChange={(e) => {
-                                    getlatlng(e);
-                                    formik.handleChange(e);
-                                  }}
+                                  type="number"
+                                  name="minrange"
+                                  className="input-primary"
+                                  value={formik.values.minrange || ""}
+                                  onChange={formik.handleChange}
                                   onBlur={formik.handleBlur}
-                                  className={
-                                    formik.touched.deliverylocation &&
-                                    formik.errors.deliverylocation
-                                      ? "input-primary ring-2 ring-secondary border-none"
-                                      : "input-primary"
-                                  }
+                                />
+                                <InputFields
+                                  type="number"
+                                  name="maxrange"
+                                  className="input-primary"
+                                  value={formik.values.maxrange || ""}
+                                  onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
                                 />
                               </div>
-                            </>
-                          ) : (
-                            ""
-                          )}
-                          <div className="flex flex-col gap-2">
-                            <label className="font-semibold">
-                              Estimate Delivery Date
-                              <span className="text-secondary pb-2">*</span>
-                            </label>
-                            <input
-                              type="date"
-                              name="buyerdeliverydate"
-                              value={formik.values.buyerdeliverydate}
-                              onChange={formik.handleChange}
-                              onBlur={formik.handleBlur}
-                              className={
-                                formik.touched.buyerdeliverydate &&
-                                formik.errors.buyerdeliverydate
-                                  ? "input-primary ring-2 ring-secondary border-none"
-                                  : "input-primary"
-                              }
-                            />
-                            {/* {formik.touched.buyerdeliverydate &&
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              <label className="font-semibold">
+                                Landing Price
+                              </label>
+                              <div className="flex gap-5">
+                                <InputFields
+                                  type="number"
+                                  name="minprice"
+                                  className="input-primary"
+                                  value={formik.values.minprice || ""}
+                                  onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
+                                />
+                                <InputFields
+                                  type="number"
+                                  name="maxprice"
+                                  className="input-primary"
+                                  value={formik.values.maxprice || ""}
+                                  onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
+                                />
+                              </div>
+                            </div>
+                            <div className="grid pb-2 gap-2">
+                              <label className="font-semibold">
+                                Stock (Product Delivery)
+                              </label>
+                              <RadioGroup>
+                                <HStack
+                                  direction="row"
+                                  name="pdelivery"
+                                  value={formik.values.pdelivery || ""}
+                                  onChange={(e) => {
+                                    formik.setFieldValue(
+                                      "pdelivery",
+                                      e.target.value
+                                    );
+                                  }}
+                                  onBlur={formik.handleBlur}
+                                >
+                                  <Radio
+                                    name="pdelivery"
+                                    value="Pickup Directly"
+                                    checked={
+                                      formik.values.pdelivery ==
+                                      "Pickup Directly"
+                                        ? true
+                                        : false
+                                    }
+                                  >
+                                    Pickup Directly
+                                  </Radio>
+                                  <Radio
+                                    name="pdelivery"
+                                    value="Delivery to Location"
+                                    checked={
+                                      formik.values.pdelivery ==
+                                      "Delivery to Location"
+                                        ? true
+                                        : false
+                                    }
+                                  >
+                                    Delivery to Location
+                                  </Radio>
+                                </HStack>
+                              </RadioGroup>
+                            </div>
+                            {formik.values.pdelivery ===
+                            "Delivery to Location" ? (
+                              <>
+                                <div className="flex flex-col gap-2">
+                                  <label className="font-semibold">
+                                    Delivery Location
+                                    {/* <span className="text-secondary pb-2">*</span> */}
+                                  </label>
+                                  <InputFields
+                                    type="string"
+                                    name="deliverylocation"
+                                    value={formik.values.deliverylocation || ""}
+                                    onChange={(e) => {
+                                      getlatlng(e);
+                                      formik.handleChange(e);
+                                    }}
+                                    onBlur={formik.handleBlur}
+                                    className={
+                                      formik.touched.deliverylocation &&
+                                      formik.errors.deliverylocation
+                                        ? "input-primary ring-2 ring-secondary border-none"
+                                        : "input-primary"
+                                    }
+                                  />
+                                </div>
+                              </>
+                            ) : (
+                              ""
+                            )}
+                            <div className="flex flex-col gap-2">
+                              <label className="font-semibold">
+                                Estimate Delivery Date
+                                <span className="text-secondary pb-2">*</span>
+                              </label>
+                              <input
+                                type="date"
+                                name="buyerdeliverydate"
+                                value={formik.values.buyerdeliverydate}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                className={
+                                  formik.touched.buyerdeliverydate &&
+                                  formik.errors.buyerdeliverydate
+                                    ? "input-primary ring-2 ring-secondary border-none"
+                                    : "input-primary"
+                                }
+                              />
+                              {/* {formik.touched.buyerdeliverydate &&
                             formik.errors.buyerdeliverydate ? (
                               <FormikErrorMessage>
                                 {formik.errors.buyerdeliverydate}
                               </FormikErrorMessage>
                             ) : null} */}
-                          </div>
-                        </>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                  ) : (
-                    ""
-                  )}
+                            </div>
+                          </>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
                 </div>
-              </div>
+              </Forms>
             </ModalBody>
             <ModalFooter>
-              <Button onClick={formik.handleSubmit} colorScheme="blue">
+              <Button onClick={console.log("hjghk")} colorScheme="blue">
                 Save
               </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <Modal isOpen={isUserDetails} onClose={isUserDetailsClose}>
+        <Modal isOpen={isUserDetails} onClose={isUserDetailsClose} size="xl">
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>User Details</ModalHeader>
@@ -899,7 +909,7 @@ const Supplier = () => {
                 {details.type == "Supplier" ? (
                   <>
                     <div className="border border-graycolor cursor-pointer">
-                      <div className="grid grid-cols-6 px-4 p-1">
+                      <div className="grid grid-cols-6 px-4 px-1">
                         <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
                           Type
                         </div>
@@ -1092,10 +1102,10 @@ const Supplier = () => {
                         <div className="col-span-4 border-b p-1">
                           {details.stockavailabilitydate}
                         </div>
-                        <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
+                        <div className="col-span-2 text-blue-500 text-semibold border-r  border-b border-graycolor p-1">
                           Payment Mode
                         </div>
-                        <div className="col-span-4 p-1">
+                        <div className="col-span-4 border-b p-1">
                           {details.paymentmode}
                         </div>
                         <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
