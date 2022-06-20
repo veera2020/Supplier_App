@@ -123,52 +123,7 @@ const Supplier = () => {
       advance: Yup.string().required("Enter Advance"),
       statustypeFB: Yup.string(),
     }),
-    onSubmit: (values) => {
-      console.log("values");
-      //date
-      var today = new Date();
-      var dd = String(today.getDate()).padStart(2, "0");
-      var mm = String(today.getMonth() + 1).padStart(2, "0");
-      var yyyy = today.getFullYear();
-      today = dd + "-" + mm + "-" + yyyy;
-      const data = {
-        status: values.status,
-        statustype: values.statustype,
-        statustypecalldate: values.statustypecalldate,
-        stockposition: values.stockposition,
-        packtype: values.packtype,
-        expquantity: values.expquantity,
-        expprice: values.expprice,
-        minrange: values.minrange,
-        maxrange: values.maxrange,
-        minprice: values.minprice,
-        maxprice: values.maxprice,
-        pdelivery: values.pdelivery,
-        deliverylocation: values.deliverylocation,
-        buyerdeliverydate: values.buyerdeliverydate,
-        stockavailabilitydate: values.stockavailabilitydate,
-        paymentmode: values.paymentmode,
-        advance: values.advance,
-        statustypeFB: values.statustypeFB,
-      };
-      // axios
-      //   .post("/v1/postorder", data)
-      //   .then((res) => {
-      //     console.log(res.data);
-      //     setreload(!reload);
-      //     onClose();
-      //     formik.resetForm();
-      //   })
-      //   .catch((error) => {
-      //     if (error.response) {
-      //       console.log(error.response);
-      //       seterrorMessage(error.response.data.message);
-      //     }
-      //   });
-    },
   });
-  console.log(formik.values);
-
   //table
   const EmployeeTable = useTable();
   //get employees
@@ -210,6 +165,50 @@ const Supplier = () => {
   const statusCall = () => {
     setIsStatusCall(true);
     //axios.get(`/v1/supplierBuyer/${props}`).then((res) => setshop(res.data));
+  };
+  const saveStatus = () => {
+    let values = formik.values;
+    //date
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, "0");
+    var mm = String(today.getMonth() + 1).padStart(2, "0");
+    var yyyy = today.getFullYear();
+    today = dd + "-" + mm + "-" + yyyy;
+    const data = {
+      status: values.status,
+      statustype: values.statustype,
+      statustypecalldate: values.statustypecalldate,
+      stockposition: values.stockposition,
+      packtype: values.packtype,
+      expquantity: values.expquantity,
+      expprice: values.expprice,
+      minrange: values.minrange,
+      maxrange: values.maxrange,
+      minprice: values.minprice,
+      maxprice: values.maxprice,
+      pdelivery: values.pdelivery,
+      deliverylocation: values.deliverylocation,
+      buyerdeliverydate: values.buyerdeliverydate,
+      stockavailabilitydate: values.stockavailabilitydate,
+      paymentmode: values.paymentmode,
+      advance: values.advance,
+      statustypeFB: values.statustypeFB,
+    };
+    // axios
+    //   .post("/v1/postorder", data)
+    //   .then((res) => {
+    //     console.log(res.data);
+    //     setreload(!reload);
+    //     onClose();
+    //     formik.resetForm();
+    //   })
+    //   .catch((error) => {
+    //     if (error.response) {
+    //       console.log(error.response);
+    //       seterrorMessage(error.response.data.message);
+    //     }
+    //   });
+    console.log(data);
   };
   //usestate
   const [isUserDetails, setIsUserDetails] = useState(false);
@@ -342,7 +341,7 @@ const Supplier = () => {
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>By Telecaller</ModalHeader>
+            <ModalHeader></ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Forms>
@@ -355,7 +354,7 @@ const Supplier = () => {
                       value={formik.values.status}
                       onChange={(e) => {
                         formik.setFieldValue("status", e.target.value);
-                        //setStatus(e.target.value);
+                        formik.setFieldValue("statustype", null);
                         e.target.classList.add("change_color");
                       }}
                       onBlur={formik.handleBlur}
@@ -369,11 +368,12 @@ const Supplier = () => {
                   </div>
                   {/* </div> */}
                 </div>
-                <div className="grid items-center gap-3 pb-4">
-                  <div className="flex-auto font-semibold text-primary"></div>
-                  <div className="flex items-center gap-2">
-                    {formik.values.status == "Accepted" ? (
-                      <>
+
+                {formik.values.status == "Accepted" ? (
+                  <>
+                    <div className="grid items-center gap-3 pb-4">
+                      <div className="flex-auto font-semibold text-primary"></div>
+                      <div className="flex items-center gap-2">
                         <RadioGroup defaultValue="null">
                           <HStack
                             spacing="24px"
@@ -384,6 +384,7 @@ const Supplier = () => {
                                 "statustype",
                                 e.target.value
                               );
+
                               setStatus(e.target.value);
                               e.target.classList.add("change_color");
                             }}
@@ -408,12 +409,15 @@ const Supplier = () => {
                             </div>
                           </HStack>
                         </RadioGroup>
-                      </>
-                    ) : (
-                      ""
-                    )}
-                    {formik.values.status == "CallBack" ? (
-                      <>
+                      </div>
+                    </div>
+                  </>
+                ) : null}
+                {formik.values.status == "CallBack" ? (
+                  <>
+                    <div className="grid items-center gap-3 pb-4">
+                      <div className="flex-auto font-semibold text-primary"></div>
+                      <div className="flex items-center gap-2">
                         <RadioGroup defaultValue="null">
                           <HStack
                             name="statustype"
@@ -454,37 +458,45 @@ const Supplier = () => {
                             </div>
                           </HStack>
                         </RadioGroup>
-                      </>
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                </div>
-                <div className="grid items-center gap-3 pb-2">
-                  {/* <div className="flex-auto font-semibold text-primary"></div> */}
-                  <div className="flex items-center gap-2">
-                    {formik.values.statustype === "Answer to call later" ? (
-                      <>
-                        <Input
-                          type="datetime-local"
-                          name="statustypecalldate"
-                          placeholder="Enter Price"
-                          value={formik.values.statustypecalldate || ""}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className={
-                            formik.touched.statustypecalldate &&
-                            formik.errors.statustypecalldate
-                              ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
-                              : "input-primary bg-whitecolor focus-outline-none experience"
-                          }
-                        />
-                      </>
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {formik.values.statustype === "Answer to call later" ? (
+                          <>
+                            <Input
+                              type="datetime-local"
+                              name="statustypecalldate"
+                              placeholder="Enter Price"
+                              value={formik.values.statustypecalldate || ""}
+                              onChange={formik.handleChange}
+                              onBlur={formik.handleBlur}
+                              className={
+                                formik.touched.statustypecalldate &&
+                                formik.errors.statustypecalldate
+                                  ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                                  : "input-primary bg-whitecolor focus-outline-none experience"
+                              }
+                            />
+                          </>
+                        ) : null}
+                      </div>
+                      <label className="font-semibold">(FeedBack)</label>
+                      <Textarea
+                        type="string"
+                        name="statustypeFB"
+                        placeholder="Feedback :"
+                        value={formik.values.statustypeFB || ""}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        className={
+                          formik.touched.statustypeFB &&
+                          formik.errors.statustypeFB
+                            ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                            : "input-primary bg-whitecolor focus-outline-none experience"
+                        }
+                      />
+                    </div>
+                  </>
+                ) : null}
                 <div className="grid items-center gap-3 pb-2">
                   {/* <div className="flex-auto font-semibold text-primary"></div> */}
                   <div className="items-center gap-2">
@@ -509,9 +521,7 @@ const Supplier = () => {
                           }
                         />
                       </>
-                    ) : (
-                      ""
-                    )}
+                    ) : null}
                     {formik.values.statustype == "Requirement dead" ? (
                       <>
                         <label className="font-semibold ">(Reject)</label>
@@ -530,9 +540,7 @@ const Supplier = () => {
                           }
                         />
                       </>
-                    ) : (
-                      ""
-                    )}
+                    ) : null}
                   </div>
                 </div>
                 <div className="grid items-center gap-3 pb-2">
@@ -620,14 +628,12 @@ const Supplier = () => {
                                   />
                                 </div>
                               </>
-                            ) : (
-                              ""
-                            )}
+                            ) : null}
                             {formik.values.stockposition == "To be Ploughed" ? (
                               <>
                                 <div className="grid pb-2 gap-2">
                                   <label className="font-semibold ">
-                                    Excepted Price
+                                    Stock Availability
                                   </label>
                                   <InputFields
                                     type="date"
@@ -639,9 +645,7 @@ const Supplier = () => {
                                   />
                                 </div>
                               </>
-                            ) : (
-                              ""
-                            )}
+                            ) : null}
                             <div className="grid pb-2 gap-2">
                               <label className="font-semibold">
                                 Payment Mode :
@@ -708,32 +712,9 @@ const Supplier = () => {
                                   ) : null}
                                 </div>
                               </>
-                            ) : (
-                              ""
-                            )}
-                            <div className="grid pb-2 gap-2">
-                              <label className="font-semibold ">
-                                (Feedback)
-                              </label>
-                              <Textarea
-                                type="string"
-                                name="statustypeFB"
-                                placeholder="Feedback :"
-                                value={formik.values.statustypeFB || ""}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                className={
-                                  formik.touched.statustypeFB &&
-                                  formik.errors.statustypeFB
-                                    ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
-                                    : "input-primary bg-whitecolor focus-outline-none experience"
-                                }
-                              />
-                            </div>
+                            ) : null}
                           </>
-                        ) : (
-                          ""
-                        )}
+                        ) : null}
                         {itemValue.type == "Buyer" ? (
                           <>
                             <div className="flex flex-col gap-2">
@@ -852,9 +833,7 @@ const Supplier = () => {
                                   />
                                 </div>
                               </>
-                            ) : (
-                              ""
-                            )}
+                            ) : null}
                             <div className="flex flex-col gap-2">
                               <label className="font-semibold">
                                 Estimate Delivery Date
@@ -881,19 +860,32 @@ const Supplier = () => {
                             ) : null} */}
                             </div>
                           </>
-                        ) : (
-                          ""
-                        )}
+                        ) : null}
+                        <div className="grid pb-2 gap-2">
+                          <label className="font-semibold ">(Feedback)</label>
+                          <Textarea
+                            type="string"
+                            name="statustypeFB"
+                            placeholder="Feedback :"
+                            value={formik.values.statustypeFB || ""}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className={
+                              formik.touched.statustypeFB &&
+                              formik.errors.statustypeFB
+                                ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                                : "input-primary bg-whitecolor focus-outline-none experience"
+                            }
+                          />
+                        </div>
                       </div>
-                    ) : (
-                      ""
-                    )}
+                    ) : null}
                   </div>
                 </div>
               </Forms>
             </ModalBody>
             <ModalFooter>
-              <Button onClick={console.log("hjghk")} colorScheme="blue">
+              <Button onClick={saveStatus} colorScheme="blue">
                 Save
               </Button>
             </ModalFooter>

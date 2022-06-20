@@ -179,7 +179,7 @@ const AddRequirement = ({ setreload, reload }) => {
       <Modal isOpen={isOpen} size="xl" onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Post Order</ModalHeader>
+          <ModalHeader>Post Requirements</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {errorMessage && (
