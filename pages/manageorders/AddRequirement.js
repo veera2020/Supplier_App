@@ -83,6 +83,7 @@ const AddRequirement = ({ setreload, reload }) => {
     expquantity: "",
     expprice: "",
     paymentmode: "",
+    selectboth: "",
   };
   //formik validation
   const formik = useFormik({
@@ -145,6 +146,7 @@ const AddRequirement = ({ setreload, reload }) => {
         Date: today,
         latitude: lat,
         longitude: lng,
+        selectboth: values.selectboth,
         status: "",
         statusAccept: "",
         aliveFeedback: "",

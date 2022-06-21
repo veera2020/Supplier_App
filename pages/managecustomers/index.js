@@ -316,7 +316,7 @@ const Supplier = () => {
                         </Button>
                       ) : null}
                       {item.type == "Both" ? (
-                        item.buyerpname != "" ? (
+                        item.selectboth == "Buyer" ? (
                           <Button
                             size="sm"
                             colorScheme="blue"
@@ -918,7 +918,7 @@ const Supplier = () => {
                           </>
                         ) : null}
                         {itemValue.type == "Both"
-                          ? (itemValue.supplierpname != "" ? (
+                          ? (itemValue.selectboth == "Supplier" ? (
                               <>
                                 <div className="grid pb-2 gap-2">
                                   <label className="font-semibold">
@@ -1085,7 +1085,7 @@ const Supplier = () => {
                                 ) : null}
                               </>
                             ) : null)(
-                              itemValue.buyerpname != "" ? (
+                              itemValue.selectboth == "Buyer" ? (
                                 <>
                                   <div className="flex flex-col gap-2">
                                     <label className="font-semibold">
@@ -1529,7 +1529,7 @@ const Supplier = () => {
                 )}
                 {details.type == "Both" ? (
                   <>
-                    {details.supplierpname != "" ? (
+                    {details.selectboth == "Supplier" ? (
                       <>
                         <div className="border border-graycolor cursor-pointer">
                           <div className="grid grid-cols-6 px-4 px-1">
@@ -1665,7 +1665,7 @@ const Supplier = () => {
                     ) : (
                       ""
                     )}
-                    {details.buyerpname != "" ? (
+                    {details.selectboth == "Buyer" ? (
                       <>
                         <div className="border border-graycolor cursor-pointer">
                           <div className="grid grid-cols-6 px-4 px-1">

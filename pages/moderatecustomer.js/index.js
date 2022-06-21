@@ -415,7 +415,7 @@ const Moderatecustomer = () => {
                         </Button>
                       ) : null}
                       {item.type == "Both" ? (
-                        item.buyerpname != "" ? (
+                        item.selectboth == "Buyer" ? (
                           <Button
                             size="sm"
                             colorScheme="blue"
