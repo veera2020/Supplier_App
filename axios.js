@@ -1,6 +1,6 @@
 import Axios from "axios";
 
-const site = "https://kapture.click";
+const site = "http://3.110.142.224:3001";
 
 const instance = Axios.create({
   baseURL: site,
