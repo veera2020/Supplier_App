@@ -26,7 +26,7 @@ import Cookies from "js-cookie";
 import Buttons from "../controls/Buttons";
 import Forms from "../controls/Forms";
 import FormikErrorMessage from "../controls/FormikErrorMessage";
-import axios from "../../axios";
+import axios from "axios";
 const Loginvalidation = () => {
   //usestate
   const [loading, setLoading] = useState(false);
@@ -54,7 +54,7 @@ const Loginvalidation = () => {
         password: values.password,
       }
       axios
-        .post("/v1/adminRegistration/login", data)
+        .post("https://kapture.click/v1/adminRegistration/login", data)
         .then((res) => {
           setLoading(false);
           Cookies.set("UserData", res.data.adminRegistartion.name);

@@ -15,8 +15,9 @@ const Home = () => {
   // Count
   useEffect(() => {
     axios
-      .get("/v1/supplierBuyer/allData")
+      .get("/v1/supplier/type/getName/Buyer")
       .then((res) => {
+        console.log(res.data);
         setuserCount(res.data.length);
       })
       .catch((err) => {

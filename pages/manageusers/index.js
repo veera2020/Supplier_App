@@ -140,7 +140,7 @@ const Users = () => {
   const [id, setId] = useState("");
   const fetchdata = async (page = 1) => {
     EmployeeTable.setLoading(true);
-    const response = await axios.get("/v1/supplierBuyer/allData");
+    const response = await axios.get("/v1/supplier/allData");
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
       settotalEmp(response.data.count);
@@ -179,7 +179,7 @@ const Users = () => {
       active: true,
       archive: false,
     };
-    const isDeleted = await axios.put(`/v1/supplierBuyer/${id}`, data);
+    const isDeleted = await axios.put(`/v1/supplier/${id}`, data);
     if (isDeleted) {
       EmployeeTable.setCurrentPage(1);
       setreload(!reload);

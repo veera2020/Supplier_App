@@ -48,7 +48,7 @@ const EditUser = ({ iseditopen, iseditclose, empID, setreload, reload }) => {
   const [Dname, setDname] = useState("");
   useEffect(() => {
     axios
-      .get(`/v1/supplierBuyer/${empID}`)
+      .get(`/v1/supplier/${empID}`)
       .then((res) => {
         setEmpdetails(res.data);
         setCname(res.data.countries);
@@ -62,7 +62,7 @@ const EditUser = ({ iseditopen, iseditclose, empID, setreload, reload }) => {
 
   useEffect(() => {
     axios
-      .get("/v1/category/product/category")
+      .get("/v1/requirementCollection/thirdPartyApi/category")
       .then((res) => setproductslist(res.data));
   }, []);
   //getcountries
@@ -152,7 +152,7 @@ const EditUser = ({ iseditopen, iseditclose, empID, setreload, reload }) => {
       };
       console.log(data);
       axios
-        .put(`/v1/supplierBuyer/${empID}`, data)
+        .put(`/v1/supplier/${empID}`, data)
         .then((res) => {
           iseditclose();
           setreload(!reload);
@@ -353,7 +353,8 @@ const EditUser = ({ iseditopen, iseditclose, empID, setreload, reload }) => {
                     formik.touched.contactno2 && formik.errors.contactno2
                       ? "input-primary ring-2 ring-secondary border-none"
                       : "input-primary"
-                  }                />
+                  }
+                />
               </div>
               {formik.touched.contactno2 && formik.errors.contactno2 ? (
                 <FormikErrorMessage>
@@ -588,8 +589,9 @@ const EditUser = ({ iseditopen, iseditclose, empID, setreload, reload }) => {
                 </label>
                 <select
                   name="products"
+                  value={formik.values.products}
                   onChange={(e) => {
-                    formik.setFieldValue("products",e.target.value);
+                    formik.setFieldValue("products", e.target.value);
                   }}
                   onBlur={formik.handleBlur}
                   style={{ outline: 0 }}

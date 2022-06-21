@@ -45,7 +45,7 @@ const AddUser = ({ setreload, reload }) => {
   const [productslist, setproductslist] = useState([]);
   useEffect(() => {
     axios
-      .get("/v1/category/product/category")
+      .get("/v1/requirementCollection/thirdPartyApi/category")
       .then((res) => setproductslist(res.data));
   }, []);
   //getcountries
@@ -134,7 +134,7 @@ const AddUser = ({ setreload, reload }) => {
         productDealingWith: values.products,
       };
       axios
-        .post("/v1/supplierBuyer", data)
+        .post("/v1/supplier", data)
         .then((res) => {
           setreload(!reload);
           onClose();

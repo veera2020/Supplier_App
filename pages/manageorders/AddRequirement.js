@@ -115,6 +115,7 @@ const AddRequirement = ({ setreload, reload }) => {
       // paymentmode: Yup.string(),
     }),
     onSubmit: (values) => {
+      console.log(values);
       //date
       var today = new Date();
       var dd = String(today.getDate()).padStart(2, "0");
@@ -141,12 +142,23 @@ const AddRequirement = ({ setreload, reload }) => {
         expquantity: values.expquantity,
         paymentmode: values.paymentmode,
         advance: values.advance,
-        date: today,
+        Date: today,
         latitude: lat,
         longitude: lng,
+        status: "",
+        statusAccept: "",
+        aliveFeedback: "",
+        deadFeedback: "",
+        ModificationFeedback: "",
+        feedbackCallback: "",
+        dateCallback: "",
+        reasonCallback: "",
+        moderateStatus: "",
+        editedPrice: "",
+        moderateRejectReason: "",
       };
       axios
-        .post("/v1/postorder", data)
+        .post("/v1/requirementCollection", data)
         .then((res) => {
           console.log(res.data);
           setreload(!reload);
@@ -167,8 +179,9 @@ const AddRequirement = ({ setreload, reload }) => {
   };
   //getusername
   const getusername = (e) => {
+    console.log(e.target.value);
     axios
-      .get(`/v1/supplierBuyer/type/getName/${e.target.value}`)
+      .get(`/v1/supplier/type/getName/${e.target.value}`)
       .then((res) => setusername(res.data));
   };
   return (
@@ -179,7 +192,7 @@ const AddRequirement = ({ setreload, reload }) => {
       <Modal isOpen={isOpen} size="xl" onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Post Order</ModalHeader>
+          <ModalHeader>Post Requirement</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {errorMessage && (
@@ -229,7 +242,6 @@ const AddRequirement = ({ setreload, reload }) => {
               {formik.touched.type && formik.errors.type ? (
                 <FormikErrorMessage>{formik.errors.type}</FormikErrorMessage>
               ) : null}
-
               <div className="flex flex-col gap-2">
                 <label className="font-semibold">
                   Name

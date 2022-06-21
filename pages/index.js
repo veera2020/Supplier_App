@@ -1,6 +1,8 @@
 import Head from "next/head";
+
 //components
 import Loginvalidation from "./login/LoginValidation";
+
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-2">

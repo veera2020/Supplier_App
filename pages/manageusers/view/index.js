@@ -24,7 +24,7 @@ const Home = (props) => {
   //useEffect
   useEffect(() => {
     axios
-      .get(`/v1/supplierBuyer/${id}`)
+      .get(`/v1/supplier/${id}`)
       .then((res) => {    
         setuser(res.data);
       })
@@ -40,9 +40,10 @@ const Home = (props) => {
     setIseditopen(false);
     setreload(!reload);
     axios
-      .get(`/v1/supplierBuyer/${id}`)
+      .get(`/v1/supplier/${id}`)
       .then((res) => {
         setuser(res.data);
+        setreload(!reload)
       })
       .catch((err) => {
         console.error(err);
