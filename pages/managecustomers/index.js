@@ -1390,7 +1390,7 @@ const Supplier = () => {
                                       Back to Call
                                     </div>
                                     <div className="col-span-4 border-b p-1">
-                                      {details.dateCallback}
+                                      {details.dateCallback.split("T")[0]}
                                     </div>
                                   </>
                                 ) : null}
@@ -1507,7 +1507,7 @@ const Supplier = () => {
                                       Back to Call
                                     </div>
                                     <div className="col-span-4 border-b p-1">
-                                      {details.dateCallback}
+                                      {details.dateCallback.split("T")[0]}
                                     </div>
                                   </>
                                 ) : null}
@@ -1645,7 +1645,7 @@ const Supplier = () => {
                                           Back to Call
                                         </div>
                                         <div className="col-span-4 border-b p-1">
-                                          {details.dateCallback}
+                                          {details.dateCallback.split("T")[0]}
                                         </div>
                                       </>
                                     ) : null}
@@ -1762,7 +1762,7 @@ const Supplier = () => {
                                           Back to Call
                                         </div>
                                         <div className="col-span-4 border-b p-1">
-                                          {details.dateCallback}
+                                          {details.dateCallback.split("T")[0]}
                                         </div>
                                       </>
                                     ) : null}
