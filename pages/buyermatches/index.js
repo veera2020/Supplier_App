@@ -80,6 +80,7 @@ const BuyerMatches = () => {
   const [ToPrice, setToPrice] = useState("null");
   // const [error, setPError] = useState("");
   const [buyer, setBuyer] = useState("");
+  const [Destination, setDestination] = useState("");
 
   console.log(ToPrice);
 
@@ -227,34 +228,20 @@ const BuyerMatches = () => {
               style={{ outline: 0 }}
               className="border border-graycolor w-36 focus-outline-none bg-whitecolor experience p-1"
               onChange={(e) => {
+                //EmployeeTable.setCurrentPage(1);
                 formik.setFieldValue("product", e.target.value);
                 e.target.classList.add("change_color");
                 setProduct(e.target.value);
               }}
             >
               <option value="null">Product</option>
-              <option value="Buyer">Buyer</option>
-              <option value="Supplier">Supplier</option>
-              <option value="Both">Both</option>
-            </select>
-            {/* <select
-              placeholder="Select"
-              onChange={(e) => {
-                EmployeeTable.setCurrentPage(1);
-                getzone(e);
-                e.target.classList.add("change_color");
-              }}
-              style={{ outline: 0 }}
-              className="border border-graycolor w-36 focus-outline-none bg-whitecolor experience"
-            >
-              <option value="null">Select District</option>
-              {district &&
-                district.map((item, index) => (
-                  <option key={index} value={item.id}>
-                    {item.district}
+              {buyer &&
+                buyer.map((item, index) => (
+                  <option key={index} value={item}>
+                    {item.buyerpname}
                   </option>
                 ))}
-            </select> */}
+            </select>
             <span className="text-secondary pb-2">*</span>
           </div>
           <div className="flex">
@@ -322,12 +309,19 @@ const BuyerMatches = () => {
               onChange={(e) => {
                 formik.setFieldValue("destination", e.target.value);
                 e.target.classList.add("change_color");
+                setDestination(e.target.value);
               }}
               style={{ outline: 0 }}
               className="border border-graycolor w-36 focus-outline-none bg-whitecolor experience p-1"
               required
             >
               <option value="null">Destination</option>
+              {buyer &&
+                buyer.map((item, index) => (
+                  <option key={index} value={item}>
+                    {item.deliverylocation}
+                  </option>
+                ))}
             </select>
           </div>
           {Product != "null" ? (
