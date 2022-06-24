@@ -59,7 +59,7 @@ const PaginationDom = ({ values }) => {
           <Button size="xs" title="Page Number" className="bg-gray-50 text-xs">
             {/* <span>{currentPage}</span> */}
             <span>
-              Page {currentPage} of {(Math.ceil(totalRecord/10))}
+              Page {currentPage} of {Math.ceil(totalRecord / 10)}
             </span>
           </Button>
           <Button

@@ -47,6 +47,7 @@ import { DatePicker } from "antd";
 import Forms from "../controls/Forms";
 import FormikErrorMessage from "../controls/FormikErrorMessage";
 import InputFields from "../controls/InputFields";
+import Pagination from "../controls/Pagination";
 import axios from "../../axios";
 //useTable
 const useTable = () => {
@@ -78,9 +79,12 @@ const BuyerMatches = () => {
   const [Product, setProduct] = useState("null");
   const [FromPrice, setFromPrice] = useState("null");
   const [ToPrice, setToPrice] = useState("null");
+  const [FromQty, setFromQty] = useState("null");
+  const [ToQty, setToQty] = useState("null");
   // const [error, setPError] = useState("");
   const [buyer, setBuyer] = useState("");
-  const [Destination, setDestination] = useState("");
+  const [Destination, setDestination] = useState("null");
+  const [total, setTotal] = useState("");
 
   console.log(ToPrice);
 
@@ -104,7 +108,9 @@ const BuyerMatches = () => {
   const fetchdata = async (page = 1) => {
     EmployeeTable.setLoading(true);
     const response = await axios.get(
-      "/v1/requirementCollection/supplier/productName"
+      `/v1/requirementCollection/supplier/productName/${Product}/${FromPrice}/${ToPrice}/${FromQty}/${ToQty}/${Destination}/${
+        page - 1
+      }`
     );
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
@@ -113,10 +119,16 @@ const BuyerMatches = () => {
     }
   };
 
-  //useEffect
-  useEffect(() => {
+  // Search Method
+  const handlesearch = () => {
+    EmployeeTable.setCurrentPage(1);
     fetchdata(EmployeeTable.currentPage, EmployeeTable.showLimit);
-  }, [reload, EmployeeTable.currentPage, EmployeeTable.showLimit]);
+  };
+
+  // //useEffect
+  // useEffect(() => {
+  //   fetchdata(EmployeeTable.currentPage, EmployeeTable.showLimit);
+  // }, [reload, EmployeeTable.currentPage, EmployeeTable.showLimit]);
 
   // Formik initilization
   const initialvalue = {
@@ -151,9 +163,9 @@ const BuyerMatches = () => {
   });
   // To Price
   let EndingPrice = [];
-  for (let x = 100; x <= 5000; x++) {
+  for (let x = FromPrice; x <= FromPrice + 500; x++) {
     EndingPrice.push(x);
-    x += 99;
+    x++;
   }
   const EndingPriceLeval = EndingPrice.map((x) => {
     return <option key={x}>{x}</option>;
@@ -169,13 +181,63 @@ const BuyerMatches = () => {
   });
   // To Qty
   let EndingQty = [];
-  for (let x = 100; x <= 5000; x++) {
+  for (let x = FromQty; x <= FromQty + 500; x++) {
     EndingQty.push(x);
-    x += 99;
+    x++;
   }
   const EndingQtyLeval = EndingQty.map((x) => {
     return <option key={x}>{x}</option>;
   });
+  // Total Price
+  const TotalPrice = (props) => {
+    console.log(props);
+    let src = props.data;
+    let tp = 0;
+    if (src.length != 0) {
+      tp = src.editedPrice * src.expquantity * 5;
+      if (tp != 0) {
+        return (
+          <>
+            <Button
+              size="sm"
+              colorScheme="gray"
+              variant="link"
+              // onClick={() => isSRIOpen(SRphotos)}
+            >
+              {"Total Price"}-{tp}
+            </Button>
+          </>
+        );
+      } else {
+        return "";
+      }
+    }
+  };
+  // Landing Price
+  const LandingPrice = (props) => {
+    console.log(props);
+    let src = props.data;
+    let lp = 0;
+    if (src.length != 0) {
+      lp = 5 * src.expquantity;
+      if (lp != 0) {
+        return (
+          <>
+            <Button
+              size="sm"
+              colorScheme="red"
+              variant="link"
+              // onClick={() => isSRIOpen(SRphotos)}
+            >
+              {"Loading Price"}-{lp}
+            </Button>
+          </>
+        );
+      } else {
+        return "";
+      }
+    }
+  };
   //usestate
   const [isinterested, setIsInterested] = useState(false);
   const [details, setDetails] = useState("");
@@ -284,6 +346,7 @@ const BuyerMatches = () => {
               onChange={(e) => {
                 formik.setFieldValue("fromQty", e.target.value);
                 e.target.classList.add("change_color");
+                setFromQty(e.target.value);
               }}
             >
               <option value="null">From Quentity </option>
@@ -295,6 +358,7 @@ const BuyerMatches = () => {
               onChange={(e) => {
                 formik.setFieldValue("toQty", e.target.value);
                 e.target.classList.add("change_color");
+                setToQty(e.target.value);
               }}
               style={{ outline: 0 }}
               className="border border-graycolor w-36 focus-outline-none bg-whitecolor experience p-1"
@@ -328,10 +392,7 @@ const BuyerMatches = () => {
             FromPrice != "null" ? (
               ToPrice != "null" ? (
                 <div className="flex text-center pr-2 gap-2">
-                  <Button
-                    colorScheme="blue"
-                    // onClick={handlesearch}
-                  >
+                  <Button colorScheme="blue" onClick={handlesearch}>
                     Go
                   </Button>
                 </div>
@@ -389,7 +450,11 @@ const BuyerMatches = () => {
               {EmployeeTable.rowData &&
                 EmployeeTable.rowData.map((item, index) => (
                   <Tr key={index}>
-                    <Td textAlign="center">{index + 1}</Td>
+                    <Td textAlign="center">
+                      {index +
+                        10 * (parseInt(EmployeeTable.currentPage) - 1) +
+                        1}
+                    </Td>
                     <Td textAlign="center">{item.secretName}</Td>
                     {/* <Td className="flex">
                   <Td textAlign="center">F-10</Td>
@@ -398,7 +463,11 @@ const BuyerMatches = () => {
                     <Td textAlign="center">{item.expquantity}</Td>
                     <Td textAlign="center">{item.editedPrice}</Td>
                     <Td textAlign="center">{item.stocklocation}</Td>
-                    <Td textAlign="center">L10</Td>
+                    <Td textAlign="center">
+                      <TotalPrice data={item} />
+                      <br></br>
+                      <LandingPrice data={item} />
+                    </Td>
                     <Td textAlign="center">Status</Td>
                     <Td textAlign="center">
                       <Button
@@ -414,6 +483,11 @@ const BuyerMatches = () => {
             </Tbody>
           </Table>
         </div>
+        <Pagination
+          totalRecord={total ? total : 0}
+          rowLength={EmployeeTable.rowData ? total : 0}
+          {...EmployeeTable}
+        />
         <Modal isOpen={isinterested} onClose={isInterestedClose}>
           <ModalOverlay />
           <ModalContent>
