@@ -71,8 +71,10 @@ const Supplier = () => {
   const [errorMessage, seterrorMessage] = useState("");
   const [callbackreason, setCallBackReason] = useState("null");
   const [reload, setreload] = useState(false);
-  const [lat, setlat] = useState("");
-  const [lng, setlng] = useState("");
+  const [slat, setslat] = useState("");
+  const [slng, setslng] = useState("");
+  const [blat, setblat] = useState("");
+  const [blng, setblng] = useState("");
   const [itemValue, setItemValue] = useState("");
   const [id, setId] = useState("");
 
@@ -151,8 +153,21 @@ const Supplier = () => {
   //mapview
   const isOpenmap = (props) => {
     onOpen();
-    setlat(props.latitude);
-    setlng(props.longitude);
+    setslat(props.Slatitude);
+    setslng(props.Slongitude);
+  };
+  //usestate
+  const [isbopen, setisbopen] = useState(false);
+  const onbclose = () => {
+    setisbopen(false);
+  };
+  const isbopenmap = (props) => {
+    setisbopen(true);
+    setblat(props.Blatitude);
+    setblng(props.Blongitude);
+    // axios
+    //   .get(`/v1/requirementCollection/${props}`)
+    //   .then((res) => setDetails(res.data));
   };
   const mapStyles = {
     height: "100%",
@@ -241,7 +256,7 @@ const Supplier = () => {
         <div className="w-full pb-4">
           <Breadcrumb separator=">">
             <Breadcrumb.Item href="/home">Home</Breadcrumb.Item>
-            <Breadcrumb.Item>Manege Customers</Breadcrumb.Item>
+            <Breadcrumb.Item>Manage Customers</Breadcrumb.Item>
           </Breadcrumb>
         </div>
         <hr className="p-1"></hr>
@@ -271,6 +286,7 @@ const Supplier = () => {
                 <Th>S.No</Th>
                 <Th>Date</Th>
                 <Th>Type</Th>
+                <Th>Id</Th>
                 <Th>name</Th>
                 <Th>Product</Th>
                 <Th>map View</Th>
@@ -290,6 +306,7 @@ const Supplier = () => {
                     <Td>{index + 1}</Td>
                     <Td>{item.Date}</Td>
                     <Td>{item.type}</Td>
+                    <Td>{item.secretName}</Td>
                     <Td>
                       <Button
                         size="md"
@@ -297,7 +314,6 @@ const Supplier = () => {
                         variant="link"
                         onClick={() => {
                           userDetail(item._id);
-                          //setName("sup");
                         }}
                       >
                         {item.name}
@@ -305,7 +321,8 @@ const Supplier = () => {
                     </Td>
                     <Td>{item.supplierpname || item.buyerpname}</Td>
                     <Td>
-                      {item.type == "Buyer" ? (
+                      {item.type === "Supplier" ||
+                      item.selectboth === "Supplier" ? (
                         <Button
                           size="sm"
                           colorScheme="blue"
@@ -315,21 +332,24 @@ const Supplier = () => {
                           MapView
                         </Button>
                       ) : null}
-                      {item.type == "Both" ? (
-                        item.selectboth == "Buyer" ? (
-                          <Button
-                            size="sm"
-                            colorScheme="blue"
-                            variant="link"
-                            onClick={() => isOpenmap(item)}
-                          >
-                            MapView
-                          </Button>
-                        ) : null
+                      {item.type === "Buyer" || item.selectboth === "Buyer" ? (
+                        <Button
+                          size="sm"
+                          colorScheme="blue"
+                          variant="link"
+                          onClick={() => isbopenmap(item)}
+                        >
+                          MapView
+                        </Button>
                       ) : null}
                     </Td>
                     <Td>
-                      {item.status}
+                      {item.status === "" ? (
+                        <div>Pending</div>
+                      ) : (
+                        <div>{item.status}</div>
+                      )}
+
                       {/* {item.status != "" ? (
                         <>
                           <Td>{item.status}</Td>
@@ -1369,9 +1389,22 @@ const Supplier = () => {
                                   FeedBack
                                 </div>
                                 <div className="col-span-4 border-b p-1">
-                                  {details.aliveFeedback ||
-                                    details.deadFeedback ||
-                                    details.modificationFeedback}
+                                  {details.statusAccept == "Requirement Alive"
+                                    ? details.aliveFeedback == ""
+                                      ? "null"
+                                      : details.aliveFeedback
+                                    : null}
+                                  {details.statusAccept == "Requirement dead"
+                                    ? details.aliveFeedback == ""
+                                      ? "null"
+                                      : details.deadFeedback
+                                    : null}
+                                  {details.statusAccept ==
+                                  "Requirement Alive with modification"
+                                    ? details.aliveFeedback == ""
+                                      ? "null"
+                                      : details.modificationFeedback
+                                    : null}
                                 </div>
                               </>
                             ) : null}
@@ -1398,7 +1431,9 @@ const Supplier = () => {
                                   FeedBack
                                 </div>
                                 <div className="col-span-4 border-b p-1">
-                                  {details.feedbackCallback}
+                                  {details.feedbackCallback == ""
+                                    ? "null"
+                                    : details.feedbackCallback}
                                 </div>
                               </>
                             ) : null}
@@ -1486,9 +1521,22 @@ const Supplier = () => {
                                   FeedBack
                                 </div>
                                 <div className="col-span-4 border-b p-1">
-                                  {details.aliveFeedback ||
-                                    details.deadFeedback ||
-                                    details.modificationFeedback}
+                                  {details.statusAccept == "Requirement Alive"
+                                    ? details.aliveFeedback == ""
+                                      ? "null"
+                                      : details.aliveFeedback
+                                    : null}
+                                  {details.statusAccept == "Requirement dead"
+                                    ? details.aliveFeedback == ""
+                                      ? "null"
+                                      : details.deadFeedback
+                                    : null}
+                                  {details.statusAccept ==
+                                  "Requirement Alive with modification"
+                                    ? details.aliveFeedback == ""
+                                      ? "null"
+                                      : details.modificationFeedback
+                                    : null}
                                 </div>
                               </>
                             ) : null}
@@ -1515,7 +1563,9 @@ const Supplier = () => {
                                   FeedBack
                                 </div>
                                 <div className="col-span-4 border-b p-1">
-                                  {details.feedbackCallback}
+                                  {details.feedbackCallback == ""
+                                    ? "null"
+                                    : details.feedbackCallback}
                                 </div>
                               </>
                             ) : null}
@@ -1624,9 +1674,24 @@ const Supplier = () => {
                                       FeedBack
                                     </div>
                                     <div className="col-span-4 border-b p-1">
-                                      {details.aliveFeedback ||
-                                        details.deadFeedback ||
-                                        details.modificationFeedback}
+                                      {details.statusAccept ==
+                                      "Requirement Alive"
+                                        ? details.aliveFeedback == ""
+                                          ? "null"
+                                          : details.aliveFeedback
+                                        : null}
+                                      {details.statusAccept ==
+                                      "Requirement dead"
+                                        ? details.aliveFeedback == ""
+                                          ? "null"
+                                          : details.deadFeedback
+                                        : null}
+                                      {details.statusAccept ==
+                                      "Requirement Alive with modification"
+                                        ? details.aliveFeedback == ""
+                                          ? "null"
+                                          : details.modificationFeedback
+                                        : null}
                                     </div>
                                   </>
                                 ) : null}
@@ -1653,7 +1718,9 @@ const Supplier = () => {
                                       FeedBack
                                     </div>
                                     <div className="col-span-4 border-b p-1">
-                                      {details.feedbackCallback}
+                                      {details.feedbackCallback == ""
+                                        ? "null"
+                                        : details.feedbackCallback}
                                     </div>
                                   </>
                                 ) : null}
@@ -1741,9 +1808,24 @@ const Supplier = () => {
                                       FeedBack
                                     </div>
                                     <div className="col-span-4 border-b p-1">
-                                      {details.aliveFeedback ||
-                                        details.deadFeedback ||
-                                        details.modificationFeedback}
+                                      {details.statusAccept ==
+                                      "Requirement Alive"
+                                        ? details.aliveFeedback == ""
+                                          ? "null"
+                                          : details.aliveFeedback
+                                        : null}
+                                      {details.statusAccept ==
+                                      "Requirement dead"
+                                        ? details.aliveFeedback == ""
+                                          ? "null"
+                                          : details.deadFeedback
+                                        : null}
+                                      {details.statusAccept ==
+                                      "Requirement Alive with modification"
+                                        ? details.aliveFeedback == ""
+                                          ? "null"
+                                          : details.modificationFeedback
+                                        : null}
                                     </div>
                                   </>
                                 ) : null}
@@ -1770,7 +1852,9 @@ const Supplier = () => {
                                       FeedBack
                                     </div>
                                     <div className="col-span-4 border-b p-1">
-                                      {details.feedbackCallback}
+                                      {details.feedbackCallback == ""
+                                        ? "null"
+                                        : details.feedbackCallback}
                                     </div>
                                   </>
                                 ) : null}
@@ -1801,30 +1885,73 @@ const Supplier = () => {
             <ModalHeader>Map View</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <div className="flex justify-center text-center">
-                <div className="object-cover h-48 w-96">
-                  <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
-                    <GoogleMap
-                      mapContainerStyle={mapStyles}
-                      zoom={13}
-                      center={{
-                        lat: parseFloat(lat),
-                        lng: parseFloat(lng),
-                      }}
-                    >
-                      <Marker
-                        position={{
-                          lat: parseFloat(lat),
-                          lng: parseFloat(lng),
+              {slat && slng ? (
+                <div className="flex justify-center text-center">
+                  <div className="object-cover h-48 w-96">
+                    <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
+                      <GoogleMap
+                        mapContainerStyle={mapStyles}
+                        zoom={13}
+                        center={{
+                          lat: parseFloat(slat),
+                          lng: parseFloat(slng),
                         }}
-                      />
-                    </GoogleMap>
-                  </LoadScript>
+                      >
+                        <Marker
+                          position={{
+                            lat: parseFloat(slat),
+                            lng: parseFloat(slng),
+                          }}
+                        />
+                      </GoogleMap>
+                    </LoadScript>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div>No coordinates Passed</div>
+              )}
             </ModalBody>
             <ModalFooter>
               <Button onClick={onClose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal isOpen={isbopen} onClose={onbclose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Map View</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              {blat && blng ? (
+                <div className="flex justify-center text-center">
+                  <div className="object-cover h-48 w-96">
+                    <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
+                      <GoogleMap
+                        mapContainerStyle={mapStyles}
+                        zoom={13}
+                        center={{
+                          lat: parseFloat(blat),
+                          lng: parseFloat(blng),
+                        }}
+                      >
+                        <Marker
+                          position={{
+                            lat: parseFloat(blat),
+                            lng: parseFloat(blng),
+                          }}
+                        />
+                      </GoogleMap>
+                    </LoadScript>
+                  </div>
+                </div>
+              ) : (
+                <div>No coordinates Passed</div>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={onbclose} colorScheme="blue" mr={3}>
                 Close
               </Button>
             </ModalFooter>

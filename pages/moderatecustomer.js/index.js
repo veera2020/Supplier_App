@@ -86,15 +86,17 @@ const Moderatecustomer = () => {
   const [openreason, setopenreason] = useState(false);
   const [empdetails, setempdetails] = useState("");
   const [reload, setreload] = useState(false);
-  const [lat, setlat] = useState("");
-  const [lng, setlng] = useState("");
+  const [slat, setslat] = useState("");
+  const [slng, setslng] = useState("");
+  const [blat, setblat] = useState("");
+  const [blng, setblng] = useState("");
   //table
   const EmployeeTable = useTable();
   //get employees
   const [id, setId] = useState("");
   const fetchdata = async (page = 1) => {
     EmployeeTable.setLoading(true);
-    const response = await axios.get("/v1/requirementCollection");
+    const response = await axios.get("/v1/requirementCollection/status/all");
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
     } else {
@@ -234,8 +236,21 @@ const Moderatecustomer = () => {
   //mapview
   const isOpenmap = (props) => {
     onOpen();
-    setlat(props.latitude);
-    setlng(props.longitude);
+    setslat(props.Slatitude);
+    setslng(props.Slongitude);
+  };
+  //usestate
+  const [isbopen, setisbopen] = useState(false);
+  const onbclose = () => {
+    setisbopen(false);
+  };
+  const isbopenmap = (props) => {
+    setisbopen(true);
+    setblat(props.Blatitude);
+    setblng(props.Blongitude);
+    // axios
+    //   .get(`/v1/requirementCollection/${props}`)
+    //   .then((res) => setDetails(res.data));
   };
   const mapStyles = {
     height: "100%",
@@ -360,6 +375,7 @@ const Moderatecustomer = () => {
                 <Th>S.No</Th>
                 <Th>Date</Th>
                 <Th>Type</Th>
+                <Th>Id</Th>
                 <Th>Name</Th>
                 <Th>Product</Th>
                 <Th>Map View</Th>
@@ -381,6 +397,7 @@ const Moderatecustomer = () => {
                     <Td>{index + 1}</Td>
                     <Td>{item.Date}</Td>
                     <Td>{item.type}</Td>
+                    <Td>{item.secretName}</Td>
                     <Td>
                       <Button
                         size="md"
@@ -404,7 +421,8 @@ const Moderatecustomer = () => {
                       <Td>{item.buyerpname}</Td>
                     )} */}
                     <Td>
-                      {item.type == "Buyer" ? (
+                      {item.type === "Supplier" ||
+                      item.selectboth === "Supplier" ? (
                         <Button
                           size="sm"
                           colorScheme="blue"
@@ -414,17 +432,15 @@ const Moderatecustomer = () => {
                           MapView
                         </Button>
                       ) : null}
-                      {item.type == "Both" ? (
-                        item.selectboth == "Buyer" ? (
-                          <Button
-                            size="sm"
-                            colorScheme="blue"
-                            variant="link"
-                            onClick={() => isOpenmap(item)}
-                          >
-                            MapView
-                          </Button>
-                        ) : null
+                      {item.type === "Buyer" || item.selectboth === "Buyer" ? (
+                        <Button
+                          size="sm"
+                          colorScheme="blue"
+                          variant="link"
+                          onClick={() => isbopenmap(item)}
+                        >
+                          MapView
+                        </Button>
                       ) : null}
                     </Td>
                     <Td>
@@ -440,7 +456,7 @@ const Moderatecustomer = () => {
                       <Td>{item.expprice || item.maxprice}</Td>
                     )} */}
                     <Td>
-                      {item.editedPrice === "" ? (
+                      {item.editedPrice === null ? (
                         <div>Nil</div>
                       ) : (
                         <div>{item.editedPrice}</div>
@@ -453,9 +469,9 @@ const Moderatecustomer = () => {
                     )} */}
                     <Td>
                       {item.moderateStatus === "" ? (
-                        <Td>Pending</Td>
+                        <div>Pending</div>
                       ) : (
-                        <Td>{item.moderateStatus}</Td>
+                        <div>{item.moderateStatus}</div>
                       )}
                     </Td>
                     <Td>
@@ -639,30 +655,73 @@ const Moderatecustomer = () => {
             <ModalHeader>Map View</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <div className="flex justify-center text-center">
-                <div className="object-cover h-48 w-96">
-                  <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
-                    <GoogleMap
-                      mapContainerStyle={mapStyles}
-                      zoom={13}
-                      center={{
-                        lat: parseFloat(lat),
-                        lng: parseFloat(lng),
-                      }}
-                    >
-                      <Marker
-                        position={{
-                          lat: parseFloat(lat),
-                          lng: parseFloat(lng),
+              {slat && slng ? (
+                <div className="flex justify-center text-center">
+                  <div className="object-cover h-48 w-96">
+                    <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
+                      <GoogleMap
+                        mapContainerStyle={mapStyles}
+                        zoom={13}
+                        center={{
+                          lat: parseFloat(slat),
+                          lng: parseFloat(slng),
                         }}
-                      />
-                    </GoogleMap>
-                  </LoadScript>
+                      >
+                        <Marker
+                          position={{
+                            lat: parseFloat(slat),
+                            lng: parseFloat(slng),
+                          }}
+                        />
+                      </GoogleMap>
+                    </LoadScript>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div>No coordinates Passed</div>
+              )}
             </ModalBody>
             <ModalFooter>
               <Button onClick={onClose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal isOpen={isbopen} onClose={onbclose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Map View</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              {blat && blng ? (
+                <div className="flex justify-center text-center">
+                  <div className="object-cover h-48 w-96">
+                    <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
+                      <GoogleMap
+                        mapContainerStyle={mapStyles}
+                        zoom={13}
+                        center={{
+                          lat: parseFloat(blat),
+                          lng: parseFloat(blng),
+                        }}
+                      >
+                        <Marker
+                          position={{
+                            lat: parseFloat(blat),
+                            lng: parseFloat(blng),
+                          }}
+                        />
+                      </GoogleMap>
+                    </LoadScript>
+                  </div>
+                </div>
+              ) : (
+                <div>No coordinates Passed</div>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={onbclose} colorScheme="blue" mr={3}>
                 Close
               </Button>
             </ModalFooter>

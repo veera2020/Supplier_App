@@ -269,7 +269,6 @@ const Moderatecustomer = () => {
                 <Th>Map View</Th>
                 <Th>Old Price</Th>
                 <Th>Moderated Price</Th>
-                <Th>Map View</Th>
                 <Th>Status</Th>
                 <Th>Action</Th>
               </Tr>

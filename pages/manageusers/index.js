@@ -161,7 +161,7 @@ const Users = () => {
   const cancelRef = useRef();
   const DeleteHandler = async () => {
     ondeleteClose();
-    const isDeleted = await axios.delete(`/v1/supplierBuyer/${id}`);
+    const isDeleted = await axios.delete(`/v1/supplier/${id}`);
     if (isDeleted) {
       EmployeeTable.setCurrentPage(1);
       setreload(!reload);
@@ -230,6 +230,7 @@ const Users = () => {
               <Tr>
                 <Th>S.No</Th>
                 <Th>Type</Th>
+                <Th>Id</Th>
                 <Th>Name</Th>
                 <Th>Mobile No</Th>
                 <Th>Actions</Th>
@@ -246,6 +247,7 @@ const Users = () => {
                   <Tr key={index}>
                     <Td>{index + 1}</Td>
                     <Td>{item.type}</Td>
+                    <Td>{item.secretName}</Td>
                     <Td>{item.primaryContactName}</Td>
                     <Td>{item.primaryContactNumber}</Td>
                     <Td>

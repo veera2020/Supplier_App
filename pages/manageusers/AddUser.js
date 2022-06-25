@@ -45,7 +45,7 @@ const AddUser = ({ setreload, reload }) => {
   const [productslist, setproductslist] = useState([]);
   useEffect(() => {
     axios
-      .get("/v1/requirementCollection/thirdPartyApi/category")
+      .get("/v1/requirementCollection/thirdPartyApi/product")
       .then((res) => setproductslist(res.data));
   }, []);
   //getcountries
@@ -583,8 +583,8 @@ const AddUser = ({ setreload, reload }) => {
                   <option>Select Products</option>
                   {productslist &&
                     productslist.map((item, index) => (
-                      <option key={index} value={item.categoryName}>
-                        {item.categoryName}
+                      <option key={index} value={item.productTitle}>
+                        {item.productTitle}
                       </option>
                     ))}
                 </select>

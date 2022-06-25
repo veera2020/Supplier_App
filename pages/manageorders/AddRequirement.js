@@ -35,8 +35,10 @@ const AddRequirement = ({ setreload, reload }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [errorMessage, seterrorMessage] = useState("");
   const [username, setusername] = useState("");
-  const [lat, setlat] = useState("");
-  const [lng, setlng] = useState("");
+  const [blat, setblat] = useState("");
+  const [blng, setblng] = useState("");
+  const [slat, setslat] = useState("");
+  const [slng, setslng] = useState("");
   const [errorshow, seterrorshow] = useState("");
 
   seterrorshow;
@@ -49,13 +51,29 @@ const AddRequirement = ({ setreload, reload }) => {
   Geocode.setRegion("es");
   Geocode.setLocationType("ROOFTOP");
   Geocode.enableDebug();
-  const getlatlng = (e) => {
-    // Get latitude & longitude from address.
+  // Get latitude & longitude from buyer address.
+  const bgetlatlng = (e) => {
     Geocode.fromAddress(e.target.value).then(
       (response) => {
         const { lat, lng } = response.results[0].geometry.location;
-        setlat(lat);
-        setlng(lng);
+        setblat(lat);
+        setblng(lng);
+        console.log(lat, lng);
+      },
+      (error) => {
+        console.error(error);
+        seterrorshow("Enter Vaild Address");
+      }
+    );
+  };
+  // Get latitude & longitude from supplier address.
+  const sgetlatlng = (e) => {
+    Geocode.fromAddress(e.target.value).then(
+      (response) => {
+        const { lat, lng } = response.results[0].geometry.location;
+        setslat(lat);
+        setslng(lng);
+        console.log(lat, lng);
       },
       (error) => {
         console.error(error);
@@ -117,6 +135,9 @@ const AddRequirement = ({ setreload, reload }) => {
     }),
     onSubmit: (values) => {
       console.log(values);
+      // bgetlatlng(values.deliverylocation);
+      // sgetlatlng(values.stocklocation);
+
       //date
       var today = new Date();
       var dd = String(today.getDate()).padStart(2, "0");
@@ -126,7 +147,7 @@ const AddRequirement = ({ setreload, reload }) => {
       const data = {
         type: values.type,
         name: values.name,
-        buyerpname: values.buyerpname,
+        buyerpname: values.buyerpname.toLowerCase(),
         minrange: values.minrange,
         maxrange: values.maxrange,
         minprice: values.minprice,
@@ -134,7 +155,7 @@ const AddRequirement = ({ setreload, reload }) => {
         pdelivery: values.pdelivery,
         deliverylocation: values.deliverylocation,
         buyerdeliverydate: values.buyerdeliverydate,
-        supplierpname: values.supplierpname,
+        supplierpname: values.supplierpname.toLowerCase(),
         stocklocation: values.stocklocation,
         stockposition: values.stockposition,
         stockavailabilitydate: values.stockavailabilitydate,
@@ -144,8 +165,10 @@ const AddRequirement = ({ setreload, reload }) => {
         paymentmode: values.paymentmode,
         advance: values.advance,
         Date: today,
-        latitude: lat,
-        longitude: lng,
+        Blatitude: blat,
+        Blongitude: blng,
+        Slatitude: slat,
+        Slongitude: slng,
         selectboth: values.selectboth,
         status: "",
         statusAccept: "",
@@ -158,7 +181,9 @@ const AddRequirement = ({ setreload, reload }) => {
         moderateStatus: "",
         editedPrice: "",
         moderateRejectReason: "",
+        matchesstatus: "",
       };
+      console.log(data);
       axios
         .post("/v1/requirementCollection", data)
         .then((res) => {
@@ -177,6 +202,7 @@ const AddRequirement = ({ setreload, reload }) => {
   });
   const cancelbutton = () => {
     onClose();
+    seterrorshow("");
     formik.resetForm();
   };
   //getusername
@@ -482,12 +508,14 @@ const AddRequirement = ({ setreload, reload }) => {
                         </label>
                         <InputFields
                           type="string"
+                          autoComplete="off"
                           name="deliverylocation"
                           placeholder="Enter Delivery Location"
                           value={formik.values.deliverylocation || ""}
                           onChange={(e) => {
-                            getlatlng(e);
                             formik.handleChange(e);
+                            seterrorshow("");
+                            bgetlatlng(e);
                           }}
                           onBlur={formik.handleBlur}
                           className={
@@ -606,10 +634,15 @@ const AddRequirement = ({ setreload, reload }) => {
                     </label>
                     <InputFields
                       type="string"
+                      autoComplete="off"
                       name="stocklocation"
                       placeholder="Enter Stock Location"
                       value={formik.values.stocklocation || ""}
-                      onChange={formik.handleChange}
+                      onChange={(e) => {
+                        formik.handleChange(e);
+                        seterrorshow("");
+                        sgetlatlng(e);
+                      }}
                       onBlur={formik.handleBlur}
                       className={
                         formik.touched.stocklocation &&

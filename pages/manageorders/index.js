@@ -23,14 +23,10 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
-  ButtonGroup,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
+  useDisclosure,
 } from "@chakra-ui/react";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+
 import axios from "../../axios";
 import AddRequirement from "./AddRequirement";
 //useTable
@@ -58,7 +54,10 @@ const Postorder = () => {
   const router = useRouter();
   //usestate
   const [reload, setreload] = useState(false);
-
+  const [slat, setslat] = useState("");
+  const [slng, setslng] = useState("");
+  const [blat, setblat] = useState("");
+  const [blng, setblng] = useState("");
   //table
   const EmployeeTable = useTable();
   //get employees
@@ -84,7 +83,34 @@ const Postorder = () => {
   };
   const isopenshop = (props) => {
     setIsshopopen(true);
-    axios.get(`/v1/requirementCollection/${props}`).then((res) => setshop(res.data));
+    axios
+      .get(`/v1/requirementCollection/${props}`)
+      .then((res) => setshop(res.data));
+  };
+  //modal for map
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  //mapview
+  const isOpenmap = (props) => {
+    onOpen();
+    setslat(props.Slatitude);
+    setslng(props.Slongitude);
+  };
+  //usestate
+  const [isbopen, setisbopen] = useState(false);
+  const onbclose = () => {
+    setisbopen(false);
+  };
+  const isbopenmap = (props) => {
+    setisbopen(true);
+    setblat(props.Blatitude);
+    setblng(props.Blongitude);
+    // axios
+    //   .get(`/v1/requirementCollection/${props}`)
+    //   .then((res) => setDetails(res.data));
+  };
+  const mapStyles = {
+    height: "100%",
+    width: "100%",
   };
   return (
     <>
@@ -127,8 +153,10 @@ const Postorder = () => {
                 <Th>S.No</Th>
                 <Th>Date</Th>
                 <Th>Type</Th>
+                <Th>Id</Th>
                 <Th>Name</Th>
                 <Th>Product Name</Th>
+                <Th>Map View</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -143,6 +171,7 @@ const Postorder = () => {
                     <Td>{index + 1}</Td>
                     <Td>{item.Date}</Td>
                     <Td>{item.type}</Td>
+                    <Td>{item.secretName}</Td>
                     <Td>
                       <Button
                         size="sm"
@@ -158,6 +187,29 @@ const Postorder = () => {
                     ) : (
                       <Td>{item.buyerpname}</Td>
                     )}
+                    <Td>
+                      {item.type === "Supplier" ||
+                      item.selectboth === "Supplier" ? (
+                        <Button
+                          size="sm"
+                          colorScheme="blue"
+                          variant="link"
+                          onClick={() => isOpenmap(item)}
+                        >
+                          MapView
+                        </Button>
+                      ) : null}
+                      {item.type === "Buyer" || item.selectboth === "Buyer" ? (
+                        <Button
+                          size="sm"
+                          colorScheme="blue"
+                          variant="link"
+                          onClick={() => isbopenmap(item)}
+                        >
+                          MapView
+                        </Button>
+                      ) : null}
+                    </Td>
                   </Tr>
                 ))}
             </Tbody>
@@ -280,6 +332,84 @@ const Postorder = () => {
             </ModalBody>
             <ModalFooter>
               <Button onClick={isshopclose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Map View</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              {slat && slng ? (
+                <div className="flex justify-center text-center">
+                  <div className="object-cover h-48 w-96">
+                    <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
+                      <GoogleMap
+                        mapContainerStyle={mapStyles}
+                        zoom={13}
+                        center={{
+                          lat: parseFloat(slat),
+                          lng: parseFloat(slng),
+                        }}
+                      >
+                        <Marker
+                          position={{
+                            lat: parseFloat(slat),
+                            lng: parseFloat(slng),
+                          }}
+                        />
+                      </GoogleMap>
+                    </LoadScript>
+                  </div>
+                </div>
+              ) : (
+                <div>No coordinates Passed</div>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={onClose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal isOpen={isbopen} onClose={onbclose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Map View</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              {blat && blng ? (
+                <div className="flex justify-center text-center">
+                  <div className="object-cover h-48 w-96">
+                    <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
+                      <GoogleMap
+                        mapContainerStyle={mapStyles}
+                        zoom={13}
+                        center={{
+                          lat: parseFloat(blat),
+                          lng: parseFloat(blng),
+                        }}
+                      >
+                        <Marker
+                          position={{
+                            lat: parseFloat(blat),
+                            lng: parseFloat(blng),
+                          }}
+                        />
+                      </GoogleMap>
+                    </LoadScript>
+                  </div>
+                </div>
+              ) : (
+                <div>No coordinates Passed</div>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={onbclose} colorScheme="blue" mr={3}>
                 Close
               </Button>
             </ModalFooter>
