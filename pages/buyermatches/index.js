@@ -3,12 +3,10 @@
  *  Author      : uyarchi
  *  Description : Buyer Matches from Search
  */
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { Breadcrumb } from "antd";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import {
   Table,
   Thead,
@@ -24,30 +22,11 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
-  ButtonGroup,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  HStack,
-  RadioGroup,
-  Radio,
-  Input,
-  Textarea,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { DatePicker } from "antd";
 
 //components
-import Forms from "../controls/Forms";
-import FormikErrorMessage from "../controls/FormikErrorMessage";
 import InputFields from "../controls/InputFields";
-import Pagination from "../controls/Pagination";
 import axios from "../../axios";
 //useTable
 const useTable = () => {
@@ -74,32 +53,32 @@ const data = [
   {
     vname: "TATA ACE",
     capacity: "850 kgs",
-    amount: 500,
+    amount: 10,
   },
   {
     vname: "ASHOK LEYLAND DOST",
     capacity: "1 Ton",
-    amount: 1000,
+    amount: 20,
   },
   {
     vname: "MAHINDRA BOLERO",
     capacity: "1.5 Ton",
-    amount: 1500,
+    amount: 30,
   },
   {
     vname: "TATA 407",
     capacity: "2.5 Ton",
-    amount: 2500,
+    amount: 40,
   },
   {
     vname: "EICHER 14 FEET",
     capacity: "4 Ton",
-    amount: 4000,
+    amount: 50,
   },
   {
     vname: "EICHER 17 FEET",
     capacity: "5 Ton",
-    amount: 5000,
+    amount: 60,
   },
 ];
 //function init
@@ -117,6 +96,7 @@ const BuyerMatches = () => {
   const [productslist, setproductslist] = useState([]);
   const [distance, setdistance] = useState("");
   const [distancetonum, setdistancetonum] = useState("");
+  const [totalprice, setTotalprice] = useState("");
   useEffect(() => {
     axios
       .get("/v1/requirementCollection/thirdPartyApi/product")
@@ -152,6 +132,10 @@ const BuyerMatches = () => {
   };
   const vehicleopen = (props) => {
     console.log(props);
+    setTotalprice(
+      props.expquantity * props.editedPrice + props.expquantity * 5
+    );
+    //let a = props.expquantity * props.editedPrice + props.expquantity * 5
     console.log(Destination);
     console.log(props.stocklocation);
     setisvehicle(true);
@@ -322,6 +306,17 @@ const BuyerMatches = () => {
                 </Tr>
               </Thead>
               <Tbody>
+                {EmployeeTable.rowData != "" ? null : (
+                  <Tr>
+                    <Td
+                      style={{ textAlign: "center" }}
+                      className="font-semibold"
+                      colSpan="8"
+                    >
+                      No Data Found
+                    </Td>
+                  </Tr>
+                )}
                 {EmployeeTable.rowData &&
                   EmployeeTable.rowData.map((item, index) => (
                     <Tr key={index}>
@@ -389,7 +384,7 @@ const BuyerMatches = () => {
             </Table>
           </div>
         )}
-        <Modal isOpen={isvehicle} onClose={isvehicleclose} size="xl">
+        <Modal isOpen={isvehicle} onClose={isvehicleclose} size="2xl">
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Vehicle Chosen</ModalHeader>
@@ -416,6 +411,7 @@ const BuyerMatches = () => {
                         <Th>Vehicle Name</Th>
                         <Th>Capacity</Th>
                         <Th>Amount Per km</Th>
+                        <Th>vehicle Amount</Th>
                         <Th>Total Amount</Th>
                       </Tr>
                     </Thead>
@@ -427,7 +423,12 @@ const BuyerMatches = () => {
                             <Td>{item.vname}</Td>
                             <Td>{item.capacity}</Td>
                             <Td>{item.amount}</Td>
-                            <Td>{parseInt(distancetonum * item.amount)}</Td>
+                            <Td>{distancetonum * item.amount}</Td>
+                            <Td>
+                              {parseInt(
+                                totalprice + distancetonum * item.amount
+                              )}
+                            </Td>
                             <Td></Td>
                           </Tr>
                         ))}

@@ -275,8 +275,14 @@ const Moderatecustomer = () => {
             </Thead>
             <Tbody>
               {EmployeeTable.rowData != "" ? null : (
-                <Tr className="flex justify-center text-center px-2 ">
-                  No Data Found
+                <Tr>
+                  <Td
+                    style={{ textAlign: "center" }}
+                    className="font-semibold"
+                    colSpan="10"
+                  >
+                    No Data Found
+                  </Td>
                 </Tr>
               )}
               {EmployeeTable.rowData &&
