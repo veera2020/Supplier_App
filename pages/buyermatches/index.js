@@ -23,7 +23,6 @@ import {
   ModalBody,
   ModalFooter,
 } from "@chakra-ui/react";
-import { DatePicker } from "antd";
 
 //components
 import InputFields from "../controls/InputFields";
@@ -149,7 +148,9 @@ const BuyerMatches = () => {
           console.log(res.data);
           console.log(res.data.rows[0].elements[0].distance.text);
           setdistance(res.data.rows[0].elements[0].distance.text);
+          // if(res.data.rows[0].elements[0].distance.text )
           const myArray = res.data.rows[0].elements[0].distance.text.split(" ");
+          console.log(myArray[0]);
           setdistancetonum(myArray[0]);
         });
     }
