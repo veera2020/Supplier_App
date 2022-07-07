@@ -19,19 +19,21 @@ function getItem(label, key, children, type) {
 const items = [
   getItem("Navigation One", "sub1", [
     getItem("Option 1", "1"),
-    getItem("Option 2", "2"),
-    getItem("Option 3", "3"),
+    getItem("Submenu", "sub2", null, [
+      getItem("Option 2", "2"),
+      getItem("Option 3", "3"),
+    ]),
     getItem("Option 4", "4"),
   ]),
-  getItem("Navigation Two", "sub2", [
+  getItem("Navigation Two", "sub3", [
     getItem("Option 5", "5"),
     getItem("Option 6", "6"),
-    getItem("Submenu", "sub3", null, [
+    getItem("Submenu", "sub4", null, [
       getItem("Option 7", "7"),
       getItem("Option 8", "8"),
     ]),
   ]),
-  getItem("Navigation Three", "sub4", [
+  getItem("Navigation Three", "sub5", [
     getItem("Option 9", "9"),
     getItem("Option 10", "10"),
     getItem("Option 11", "11"),
@@ -88,27 +90,46 @@ export default function Navbar({ defaultOpenKeys }) {
             <a>Manage Users</a>
           </Link>
         </Menu.Item>
-        <Menu.Item key="3">
-          <Link href="/manageorders">
-            <a>Manage Orders</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="4">
+        <SubMenu key="3" title="Manage Orders">
+          <Menu.Item key="4">
+            <Link href="/ManageOrdersSupplier">
+              <a>Supplier</a>
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="5">
+            <Link href="/ManageOrderBuyer">
+              <a>Buyer</a>
+            </Link>
+          </Menu.Item>
+        </SubMenu>
+        <SubMenu key="6" title="Manage Customer">
+          <Menu.Item key="7">
+            <Link href="/ManageCustomerSupplier">
+              <a>Supplier</a>
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="8">
+            <Link href="/ManageCustomerBuyer">
+              <a>Buyer</a>
+            </Link>
+          </Menu.Item>
+        </SubMenu>
+        {/* <Menu.Item key="9">
           <Link href="/managecustomers">
             <a>Manage Customers</a>
           </Link>
-        </Menu.Item>
-        <Menu.Item key="5">
+        </Menu.Item> */}
+        <Menu.Item key="9">
           <Link href="/moderatecustomer">
             <a>Moderate Customers</a>
           </Link>
         </Menu.Item>
-        <Menu.Item key="6">
+        <Menu.Item key="11">
           <Link href="/buyermatches">
             <a>Buyer Matches</a>
           </Link>
         </Menu.Item>
-        <Menu.Item key="9">
+        <Menu.Item key="12">
           <Link href="/videostreaming">
             <a>Video Streaming</a>
           </Link>

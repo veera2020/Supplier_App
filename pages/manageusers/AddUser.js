@@ -132,6 +132,7 @@ const AddUser = ({ setreload, reload }) => {
         email: values.email,
         pinCode: values.pincode,
         productDealingWith: values.products,
+        createdBy: "telecaller",
       };
       axios
         .post("/v1/supplier", data)
@@ -194,9 +195,8 @@ const AddUser = ({ setreload, reload }) => {
                   }
                 >
                   <option>Select</option>
-                  <option value="Supplier">Supplier</option>
-                  <option value="Buyer">Buyer</option>
-                  <option value="Both">Both</option>
+                  <option value="supplier">Supplier</option>
+                  <option value="buyer">Buyer</option>
                 </select>
               </div>
               {formik.touched.type && formik.errors.type ? (

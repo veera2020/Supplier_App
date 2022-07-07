@@ -7,7 +7,7 @@
 import React from "react";
 
 const FormikErrorMessage = (props) => {
-  return <span className="text-secondary">{props.children}</span>;
+  return <span className="text-secondary font-semibold text-center">{props.children}</span>;
 };
 
 export default FormikErrorMessage;

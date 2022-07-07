@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { Breadcrumb } from "antd";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import {
   Table,
   Thead,
@@ -22,11 +23,13 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
+  useDisclosure,
 } from "@chakra-ui/react";
 
 //components
 import InputFields from "../controls/InputFields";
 import axios from "../../axios";
+import Supplier from "./Supplier";
 //useTable
 const useTable = () => {
   const [Loading, setLoading] = useState(false);
@@ -96,6 +99,7 @@ const BuyerMatches = () => {
   const [distance, setdistance] = useState("");
   const [distancetonum, setdistancetonum] = useState("");
   const [totalprice, setTotalprice] = useState("");
+  const [Details, setDetails] = useState("");
   useEffect(() => {
     axios
       .get("/v1/requirementCollection/thirdPartyApi/product")
@@ -108,16 +112,21 @@ const BuyerMatches = () => {
   const fetchdata = async (page = 1) => {
     EmployeeTable.setLoading(true);
     const response = await axios.get(
-      `/v1/requirementCollection/supplier/productName/${Product}/${FromPrice}/${ToPrice}/${FromQty}/${ToQty}/null/${
-        page - 1
-      }`
+      // `/v1/requirementCollection/supplier/productName/${Product}/${FromPrice}/${ToPrice}/${FromQty}/${ToQty}/null/${
+      //   page - 1
+      // }`
+      "/v1/requirementCollectionBS/Buyer/Live/all"
     );
     if (response.status === 200 && response.data) {
-      EmployeeTable.setRowData(response.data.data);
+      EmployeeTable.setRowData(response.data);
+      console.log(response.data);
     } else {
       EmployeeTable.setRowData([]);
     }
   };
+  useEffect(() => {
+    fetchdata(EmployeeTable.currentPage, EmployeeTable.showLimit);
+  }, []);
 
   // Search Method
   const handlesearch = () => {
@@ -155,14 +164,122 @@ const BuyerMatches = () => {
         });
     }
   };
-  const Interested = (props) => {
-    const data = {
-      matchesstatus: "Interested",
-    };
-    axios.put(`/v1/requirementCollection/${props}`, data).then((res) => {
-      console.log(res.data);
-      setreload(!reload);
-    });
+  // const Interested = (props) => {
+  //   const data = {
+  //     matchesstatus: "Interested",
+  //   };
+  //   axios.put(`/v1/requirementCollection/${props}`, data).then((res) => {
+  //     console.log(res.data);
+  //     setreload(!reload);
+  //   });
+  // };
+  //usestate
+  const [isSupplieropen, setIsSupplieropen] = useState(false);
+  const isSupplierclose = () => {
+    setIsSupplieropen(false);
+  };
+  const Matche = (props) => {
+    setIsSupplieropen(true);
+    setDetails(props);
+  };
+  //usestate
+  const [isBuyerDetails, setBuyerDetails] = useState(false);
+  const [BuyerData, setBuyerData] = useState("");
+  const [SupplierData, setSupplierData] = useState("");
+
+  const isBuyerDetailsClose = () => {
+    setBuyerDetails(false);
+  };
+  const Buyer = (props) => {
+    setBuyerDetails(true);
+    axios
+      .get(`/v1/requirementCollectionBS/Buyer/${props}`)
+      .then((res) => setBuyerData(res.data[0]));
+  };
+  //usestate
+  const [islastTimeUpdatedQtyRange, setLastTimeUpdatedQtyRange] =
+    useState(false);
+  const [UpdatedDetails, setUpdatedDetails] = useState([]);
+  let UpdateQty = [];
+  let UpdatePrice = [];
+  let UpdateLocation = [];
+  UpdatedDetails.map((item) =>
+    item.QtyMin && item.QtyMax ? UpdateQty.push(item) : null
+  );
+  UpdatedDetails.map((item) =>
+    item.priceMin && item.priceMax ? UpdatePrice.push(item) : null
+  );
+  UpdatedDetails.map((item) =>
+    item.deliveryLocation ? UpdateLocation.push(item) : null
+  );
+  const isLastTimeUpdatedQtyRangeClose = () => {
+    setLastTimeUpdatedQtyRange(false);
+  };
+  const UpdatedQtyRangeList = (props) => {
+    setLastTimeUpdatedQtyRange(true);
+    axios
+      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
+      .then((res) => setUpdatedDetails(res.data));
+  };
+  //usestate
+  const [islastTimeUpdatedPriceRange, setLastTimeUpdatedPriceRange] =
+    useState(false);
+  //const [UpdatedDetails, setUpdatedDetails] = useState("");
+  const isLastTimeUpdatedPriceRangeClose = () => {
+    setLastTimeUpdatedPriceRange(false);
+  };
+  const UpdatedPriceRangeList = (props) => {
+    setLastTimeUpdatedPriceRange(true);
+    axios
+      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
+      .then((res) => setUpdatedDetails(res.data));
+  };
+  //usestate
+  const [islastTimeUpdatedLocation, setLastTimeUpdatedLocation] =
+    useState(false);
+  //const [UpdatedDetails, setUpdatedDetails] = useState("");
+  const isLastTimeUpdatedLocationClose = () => {
+    setLastTimeUpdatedLocation(false);
+  };
+  const UpdatedLocationList = (props) => {
+    setLastTimeUpdatedLocation(true);
+    axios
+      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
+      .then((res) => setUpdatedDetails(res.data));
+  };
+  //modal for map
+  const [slat, setslat] = useState("");
+  const [slng, setslng] = useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  //mapview
+  const isOpenmap = (props) => {
+    console.log(props);
+    onOpen();
+    setslat(props.lat);
+    setslng(props.lang);
+  };
+  const mapStyles = {
+    height: "100%",
+    width: "100%",
+  };
+
+  //usestate
+  const [matches, setmatches] = useState(false);
+  const [matchesDetails, setmatchesDetails] = useState([]);
+  const matcheslistclose = () => {
+    setmatches(false);
+  };
+  const matcheslist = (props) => {
+    setmatches(true);
+    axios
+      .get(`/v1/requirementCollectionBS/Buyer/SameProduct/all/${props}`)
+      .then((res) => {
+        setmatchesDetails(res.data.data);
+        console.log(res.data.data);
+      });
+    axios
+      .get(`/v1/requirementCollectionBS/Buyer/${props}`)
+      .then((res) => setBuyerData(res.data[0]));
   };
   return (
     <>
@@ -186,7 +303,7 @@ const BuyerMatches = () => {
             </Button>
           </div>
         </div>
-        <hr className="p-1"></hr>
+        {/* <hr className="p-1"></hr>
         <div className="flex items-center gap-3 pb-4">
           <div className="flex-auto font-semibold text-primary"></div>
           <div className="flex">
@@ -268,123 +385,386 @@ const BuyerMatches = () => {
               ) : null
             ) : null
           ) : null}
-        </div>
-        {EmployeeTable.rowData && (
-          <div className="border-gray-500 scroll-smooth border overflow-y-scroll">
-            <Table
-              size="sm"
-              scaleY="44"
-              variant="striped"
-              colorScheme="whatsapp"
-              className="overflow-auto"
-            >
-              <Thead className="bg-headergreen">
+        </div> */}
+
+        <div className="border-gray-500 scroll-smooth border overflow-y-scroll">
+          <Table
+            size="sm"
+            scaleY="44"
+            variant="striped"
+            colorScheme="whatsapp"
+            className="overflow-auto"
+          >
+            <Thead className="bg-headergreen">
+              <Tr>
+                <Th textAlign="center" className="border">
+                  S.No
+                </Th>
+                <Th textAlign="center" className="border">
+                  Requirement raised Date
+                </Th>
+                <Th textAlign="center" className="border">
+                  registered by whom
+                </Th>
+                <Th textAlign="center" className="border">
+                  requirement id
+                </Th>
+                <Th textAlign="center" className="border">
+                  name
+                </Th>
+                <Th textAlign="center" className="border">
+                  product
+                </Th>
+                <Th textAlign="center" className="border">
+                  qty range
+                </Th>
+                <Th textAlign="center" className="border">
+                  price range
+                </Th>
+                <Th textAlign="center" className="border">
+                  Map View
+                </Th>
+                <Th textAlign="center" className="border">
+                  delivered location
+                </Th>
+                <Th textAlign="center" className="border">
+                  delivered date & time
+                </Th>
+                <Th textAlign="center" className="border">
+                  No.of suppliers found matches
+                </Th>
+                <Th textAlign="center" className="border">
+                  Status
+                </Th>
+                <Th textAlign="center" className="border">
+                  Action
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {EmployeeTable.rowData != "" ? null : (
                 <Tr>
-                  <Th textAlign="center" className="border">
-                    S.No
-                  </Th>
-                  <Th textAlign="center" className="border">
-                    Supplier Id
-                  </Th>
-                  <Th textAlign="center" className="border">
-                    Available Quantity
-                  </Th>
-                  <Th textAlign="center" className="border">
-                    Price/Kg
-                  </Th>
-                  <Th textAlign="center" className="border">
-                    Source
-                  </Th>
-                  <Th textAlign="center" className="border">
-                    Landing Price
-                  </Th>
-                  <Th textAlign="center" className="border">
-                    Status
-                  </Th>
-                  <Th textAlign="center" className="border">
-                    Action
-                  </Th>
+                  <Td
+                    style={{ textAlign: "center" }}
+                    className="font-semibold"
+                    colSpan="8"
+                  >
+                    No Data Found
+                  </Td>
                 </Tr>
-              </Thead>
-              <Tbody>
-                {EmployeeTable.rowData != "" ? null : (
-                  <Tr>
-                    <Td
-                      style={{ textAlign: "center" }}
-                      className="font-semibold"
-                      colSpan="8"
-                    >
-                      No Data Found
+              )}
+              {EmployeeTable.rowData &&
+                EmployeeTable.rowData.map((item, index) => (
+                  <Tr key={index}>
+                    <Td textAlign="center">
+                      {index +
+                        10 * (parseInt(EmployeeTable.currentPage) - 1) +
+                        1}
                     </Td>
+                    <Td textAlign="center">{item.date}</Td>
+                    <Td textAlign="center">{item.requirementAddBy}</Td>
+                    <Td textAlign="center">{item.secretName}</Td>
+                    <Td textAlign="center">
+                      <Button
+                        size="md"
+                        colorScheme="blue"
+                        variant="link"
+                        onClick={() => Buyer(item._id)}
+                      >
+                        {item.name}
+                      </Button>
+                    </Td>
+                    <Td textAlign="center">{item.product}</Td>
+                    <Td textAlign="center">
+                      <Button
+                        size="md"
+                        colorScheme="blue"
+                        variant="link"
+                        onClick={() => {
+                          UpdatedQtyRangeList(item._id);
+                        }}
+                      >
+                        {item.minrange}
+                        {"-"}
+                        {item.maxrange}
+                      </Button>
+                    </Td>
+                    <Td textAlign="center">
+                      <Button
+                        size="md"
+                        colorScheme="blue"
+                        variant="link"
+                        onClick={() => {
+                          UpdatedPriceRangeList(item._id);
+                        }}
+                      >
+                        {item.minprice}
+                        {"-"}
+                        {item.maxprice}
+                      </Button>
+                    </Td>
+                    <Td textAlign="center">
+                      <Button
+                        size="sm"
+                        colorScheme="blue"
+                        variant="link"
+                        onClick={() => isOpenmap(item)}
+                      >
+                        MapView
+                      </Button>
+                    </Td>
+                    <Td textAlign="center">
+                      <Button
+                        size="md"
+                        colorScheme="blue"
+                        variant="link"
+                        onClick={() => {
+                          UpdatedLocationList(item._id);
+                          // isOpenmap(item);
+                        }}
+                      >
+                        {item.deliverylocation}
+                      </Button>
+                    </Td>
+                    <Td textAlign="center">
+                      {item.deliveryDate}
+                      {"/ "}
+                      {item.deliveryTime}
+                    </Td>
+                    {item.interestCount === null ? (
+                      <Td>0</Td>
+                    ) : (
+                      <Td>{item.interestCount}</Td>
+                    )}
+                    {/* <Button
+                        variant="link"
+                        size="xs"
+                        colorScheme="blue"
+                        onClick={() => match(item._id)}
+                      >
+                        VIEW
+                      </Button> */}
+                    {item.matchesStatus === "" ? (
+                      <Td>Pending</Td>
+                    ) : (
+                      <Td>{item.matchesStatus}</Td>
+                    )}
+                    {item.matchesStatus === "" ? (
+                      <Td>
+                        <Button
+                          size="xs"
+                          colorScheme="blue"
+                          onClick={() => {
+                            matcheslist(item._id);
+                          }}
+                        >
+                          Match
+                        </Button>
+                      </Td>
+                    ) : (
+                      <Td>
+                        <Button size="xs" colorScheme="blue" disabled>
+                          Match
+                        </Button>
+                      </Td>
+                    )}
+                    {/* <Td textAlign="center">
+                      {Destination != "" ? (
+                        <Button
+                          variant="link"
+                          size="xs"
+                          colorScheme="blue"
+                          onClick={() => vehicleopen(item)}
+                        >
+                          VIEW
+                        </Button>
+                      ) : (
+                        <Button
+                          disabled
+                          variant="link"
+                          size="xs"
+                          colorScheme="blue"
+                          onClick={() => vehicleopen(item)}
+                        >
+                          VIEW
+                        </Button>
+                      )}
+                    </Td>
+                    <Td textAlign="center">
+                      {item.matchesstatus === "" ? (
+                        <div>Pending</div>
+                      ) : (
+                        <div>{item.matchesstatus}</div>
+                      )}
+                    </Td>
+                    <Td textAlign="center">
+                      {item.matchesstatus === "" ? (
+                        <Button
+                          size="xs"
+                          colorScheme="blue"
+                          onClick={() => Matche(item)}
+                        >
+                          Interest
+                        </Button>
+                      ) : (
+                        <Button
+                          disabled
+                          size="xs"
+                          colorScheme="blue"
+                          onClick={() => Matche()}
+                        >
+                          Interest
+                        </Button>
+                      )}
+                    </Td> */}
                   </Tr>
-                )}
-                {EmployeeTable.rowData &&
-                  EmployeeTable.rowData.map((item, index) => (
-                    <Tr key={index}>
-                      <Td textAlign="center">
-                        {index +
-                          10 * (parseInt(EmployeeTable.currentPage) - 1) +
-                          1}
-                      </Td>
-                      <Td textAlign="center">{item.SecretName}</Td>
-                      <Td textAlign="center">{item.expquantity}</Td>
-                      <Td textAlign="center">{item.editedPrice}</Td>
-                      <Td textAlign="center">{item.stocklocation}</Td>
-                      <Td textAlign="center">
-                        {Destination != "" ? (
-                          <Button
-                            variant="link"
-                            size="xs"
-                            colorScheme="blue"
-                            onClick={() => vehicleopen(item)}
-                          >
-                            VIEW
-                          </Button>
-                        ) : (
-                          <Button
-                            disabled
-                            variant="link"
-                            size="xs"
-                            colorScheme="blue"
-                            onClick={() => vehicleopen(item)}
-                          >
-                            VIEW
-                          </Button>
-                        )}
-                      </Td>
-                      <Td textAlign="center">
-                        {item.matchesstatus === "" ? (
-                          <div>Pending</div>
-                        ) : (
-                          <div>{item.matchesstatus}</div>
-                        )}
-                      </Td>
-                      <Td textAlign="center">
-                        {item.matchesstatus === "" ? (
-                          <Button
-                            size="xs"
-                            colorScheme="blue"
-                            onClick={() => Interested(item._id)}
-                          >
-                            Interest
-                          </Button>
-                        ) : (
-                          <Button
-                            disabled
-                            size="xs"
-                            colorScheme="blue"
-                            onClick={() => Interested()}
-                          >
-                            Interest
-                          </Button>
-                        )}
-                      </Td>
-                    </Tr>
-                  ))}
-              </Tbody>
-            </Table>
-          </div>
+                ))}
+            </Tbody>
+          </Table>
+        </div>
+        {isSupplieropen && (
+          <Supplier
+            isSupplieropen={isSupplieropen}
+            isSupplierclose={isSupplierclose}
+            SupplierDetails={Details}
+            setreload={setreload}
+            reload={reload}
+          />
         )}
+        <Modal isOpen={isBuyerDetails} onClose={isBuyerDetailsClose} size="xl">
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Buyer Details</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="p-4 ">
+                <>
+                  <div className="border border-graycolor cursor-pointer">
+                    <div className="grid grid-cols-6 px-4 px-1">
+                      <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                        Product Name
+                      </div>
+                      <div className="col-span-4 border-b p-1">
+                        {BuyerData.product}
+                      </div>
+                      <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                        Quality Range
+                      </div>
+                      <div className="col-span-2 border-b border-r p-1">
+                        {BuyerData.minrange}
+                      </div>
+                      <div className="col-span-2 border-b p-1">
+                        {BuyerData.maxrange}
+                      </div>
+                      <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                        Landing Price
+                      </div>
+                      <div className="col-span-2 border-b border-r p-1">
+                        {BuyerData.minprice}
+                      </div>
+                      <div className="col-span-2 border-b p-1">
+                        {BuyerData.maxprice}
+                      </div>
+                      <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                        Delivery Location
+                      </div>
+                      <div className="col-span-4 border-b p-1">
+                        {BuyerData.deliverylocation}
+                      </div>
+                      <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                        Estimate Delivery Date
+                      </div>
+                      <div className="col-span-4 border-b p-1">
+                        {BuyerData.deliveryDate}
+                      </div>
+                      <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                        Estimate Delivery Time
+                      </div>
+                      <div className="col-span-4 border-b p-1">
+                        {BuyerData.deliveryTime}
+                      </div>
+                      {BuyerData.status ? (
+                        <>
+                          <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                            Status
+                          </div>
+                          <div className="col-span-4 border-b p-1">
+                            {BuyerData.status}
+                          </div>
+                          {BuyerData.status == "Accepted" ? (
+                            <>
+                              <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                                Accepted Reason
+                              </div>
+                              <div className="col-span-4 border-b p-1">
+                                {BuyerData.statusAccept}
+                              </div>
+                              <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                                FeedBack
+                              </div>
+                              <div className="col-span-4 border-b p-1">
+                                {BuyerData.statusAccept == "Requirement Alive"
+                                  ? BuyerData.aliveFeedback == ""
+                                    ? "null"
+                                    : BuyerData.aliveFeedback
+                                  : null}
+                                {BuyerData.statusAccept == "Requirement dead"
+                                  ? BuyerData.aliveFeedback == ""
+                                    ? "null"
+                                    : BuyerData.deadFeedback
+                                  : null}
+                                {BuyerData.statusAccept ==
+                                "Requirement Alive with modification"
+                                  ? BuyerData.aliveFeedback == ""
+                                    ? "null"
+                                    : BuyerData.modificationFeedback
+                                  : null}
+                              </div>
+                            </>
+                          ) : null}
+                          {BuyerData.status == "CallBack" ? (
+                            <>
+                              <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                                Callback Reason
+                              </div>
+                              <div className="col-span-4 border-b p-1">
+                                {BuyerData.reasonCallback}
+                              </div>
+                              {BuyerData.reasonCallback ==
+                              "Answer to call later" ? (
+                                <>
+                                  <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                                    Back to Call
+                                  </div>
+                                  <div className="col-span-4 border-b p-1">
+                                    {BuyerData.dateCallback.split("T")[0]}
+                                  </div>
+                                </>
+                              ) : null}
+                              <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                                FeedBack
+                              </div>
+                              <div className="col-span-4 border-b p-1">
+                                {BuyerData.feedbackCallback == ""
+                                  ? "null"
+                                  : BuyerData.feedbackCallback}
+                              </div>
+                            </>
+                          ) : null}
+                        </>
+                      ) : null}
+                    </div>
+                  </div>
+                </>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={isBuyerDetailsClose} colorScheme="red" mr={3}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
         <Modal isOpen={isvehicle} onClose={isvehicleclose} size="2xl">
           <ModalOverlay />
           <ModalContent>
@@ -441,6 +821,356 @@ const BuyerMatches = () => {
             <ModalFooter>
               <Button onClick={isvehicleclose} colorScheme="blue" mr={3}>
                 Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal
+          isOpen={islastTimeUpdatedQtyRange}
+          onClose={isLastTimeUpdatedQtyRangeClose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Updated Quentity Range List</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="border-gray-500 scroll-smooth border">
+                <Table
+                  size="sm"
+                  scaleY="44"
+                  variant="striped"
+                  colorScheme="whatsapp"
+                  className="overflow-auto"
+                >
+                  <Thead className="bg-headergreen text-center">
+                    <Tr>
+                      <Th>S.No</Th>
+                      <Th>Date</Th>
+                      <Th>Time</Th>
+                      <Th>Changed Qty Range</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {EmployeeTable.rowData != "" ? null : (
+                      <Tr>
+                        <Td
+                          style={{ textAlign: "center" }}
+                          className="font-semibold"
+                          colSpan="11"
+                        >
+                          No Data Found
+                        </Td>
+                      </Tr>
+                    )}
+                    {UpdateQty &&
+                      UpdateQty.map((item, index) => (
+                        <Tr colSpan="2" key={index}>
+                          <Td>{index + 1}</Td>
+                          <Td>{item.date}</Td>
+                          <Td>{item.time}</Td>
+                          <Td>
+                            {item.QtyMin}-{item.QtyMax}
+                          </Td>
+                        </Tr>
+                      ))}
+                  </Tbody>
+                </Table>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                onClick={isLastTimeUpdatedQtyRangeClose}
+                colorScheme="blue"
+                mr={3}
+              >
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal
+          isOpen={islastTimeUpdatedPriceRange}
+          onClose={isLastTimeUpdatedPriceRangeClose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Updated Price Range</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="border-gray-500 scroll-smooth border">
+                <Table
+                  size="sm"
+                  scaleY="44"
+                  variant="striped"
+                  colorScheme="whatsapp"
+                  className="overflow-auto"
+                >
+                  <Thead className="bg-headergreen text-center">
+                    <Tr>
+                      <Th>S.No</Th>
+                      <Th>Date</Th>
+                      <Th>Time</Th>
+                      <Th>Changed Price</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {EmployeeTable.rowData != "" ? null : (
+                      <Tr>
+                        <Td
+                          style={{ textAlign: "center" }}
+                          className="font-semibold"
+                          colSpan="11"
+                        >
+                          No Data Found
+                        </Td>
+                      </Tr>
+                    )}
+                    {UpdatePrice &&
+                      UpdatePrice.map((item, index) => (
+                        <Tr colSpan="2" key={index}>
+                          <Td>{index + 1}</Td>
+                          <Td>{item.date}</Td>
+                          <Td>{item.time}</Td>
+                          <Td>
+                            {item.priceMin}-{item.priceMax}
+                          </Td>
+                        </Tr>
+                      ))}
+                  </Tbody>
+                </Table>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                onClick={isLastTimeUpdatedPriceRangeClose}
+                colorScheme="blue"
+                mr={3}
+              >
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal
+          isOpen={islastTimeUpdatedLocation}
+          onClose={isLastTimeUpdatedLocationClose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Updated Location List</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="border-gray-500 scroll-smooth border">
+                <Table
+                  size="sm"
+                  scaleY="44"
+                  variant="striped"
+                  colorScheme="whatsapp"
+                  className="overflow-auto"
+                >
+                  <Thead className="bg-headergreen text-center">
+                    <Tr>
+                      <Th>S.No</Th>
+                      <Th>Date</Th>
+                      <Th>Time</Th>
+                      <Th>Location</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {EmployeeTable.rowData != "" ? null : (
+                      <Tr>
+                        <Td
+                          style={{ textAlign: "center" }}
+                          className="font-semibold"
+                          colSpan="11"
+                        >
+                          No Data Found
+                        </Td>
+                      </Tr>
+                    )}
+                    {UpdateLocation &&
+                      UpdateLocation.map((item, index) => (
+                        <Tr colSpan="2" key={index}>
+                          <Td>{index + 1}</Td>
+                          <Td>{item.date}</Td>
+                          <Td>{item.time}</Td>
+                          <Td>{item.deliveryLocation}</Td>
+                        </Tr>
+                      ))}
+                  </Tbody>
+                </Table>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                onClick={isLastTimeUpdatedLocationClose}
+                colorScheme="blue"
+                mr={3}
+              >
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Map View</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="flex justify-center text-center">
+                <div className="object-cover h-48 w-96">
+                  <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
+                    <GoogleMap
+                      mapContainerStyle={mapStyles}
+                      zoom={13}
+                      center={{
+                        lat: parseFloat(slat),
+                        lng: parseFloat(slng),
+                      }}
+                    >
+                      <Marker
+                        position={{
+                          lat: parseFloat(slat),
+                          lng: parseFloat(slng),
+                        }}
+                      />
+                    </GoogleMap>
+                  </LoadScript>
+                </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={onClose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal size="3xl" isOpen={matches} onClose={matcheslistclose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Matches Suppliers</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="space-y-3">
+                <div className="flex flex-row gap-2">
+                  <div>{BuyerData.secretName}</div>
+                  <div>
+                    <label className="font-semibold">Name:</label>{" "}
+                    {BuyerData.name}
+                  </div>
+                  <div>
+                    <label className="font-semibold">Mobile No:</label>{" "}
+                    {BuyerData.mobileNumber}
+                  </div>
+                </div>
+                <div className="flex flex-row gap-2">
+                  <div>
+                    <label className="font-semibold">Price:</label>{" "}
+                    {BuyerData.product}
+                  </div>
+                  <div>
+                    <label className="font-semibold">Quantity:</label>{" "}
+                    {BuyerData.minrange}-{BuyerData.maxrange}
+                  </div>
+                  <div>
+                    <label className="font-semibold"> Price: </label>{" "}
+                    {BuyerData.minprice}-{BuyerData.maxprice}
+                  </div>
+                  <div>
+                    <label className="font-semibold"> Location: </label>{" "}
+                    {BuyerData.deliverylocation}
+                  </div>
+                </div>
+              </div>
+              <div className="border-gray-500 scroll-smooth border mt-3">
+                <Table
+                  size="sm"
+                  scaleY="44"
+                  variant="striped"
+                  colorScheme="whatsapp"
+                  className="overflow-auto"
+                >
+                  <Thead className="bg-headergreen text-center">
+                    <Tr>
+                      <Th>S.No</Th>
+                      <Th>Supplier Name</Th>
+                      <Th>Available Quantity</Th>
+                      <Th>Moderate Price</Th>
+                      <Th>Landing Price</Th>
+                      <Th>Stock Position</Th>
+                      <Th>Status</Th>
+                      <Th>Action</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {matchesDetails.rowData != "" ? null : (
+                      <Tr>
+                        <Td
+                          style={{ textAlign: "center" }}
+                          className="font-semibold"
+                          colSpan="11"
+                        >
+                          No Data Found
+                        </Td>
+                      </Tr>
+                    )}
+                    {matchesDetails &&
+                      matchesDetails.map((item, index) => (
+                        <Tr colSpan="2" key={index}>
+                          <Td>{index + 1}</Td>
+                          <Td>{item.secretName}</Td>
+                          <Td>{item.data.expectedQnty}</Td>
+                          <Td>{item.data.moderatedPrice}</Td>
+                          <Td>L</Td>
+                          <Td>{item.data.stockLocation}</Td>
+                          {item.data.InterestStatus === "" ? (
+                            <Td>Pending</Td>
+                          ) : (
+                            <Td>{item.data.InterestStatus}</Td>
+                          )}
+                          {item.data.InterestStatus === "" ? (
+                            <Td>
+                              <Button
+                                size="xs"
+                                colorScheme="blue"
+                                // onClick={() => {
+                                //   UpdatedQtyRangeList(item._id);
+                                // }}
+                              >
+                                Interest
+                              </Button>
+                            </Td>
+                          ) : (
+                            <Td>
+                              <Button
+                                disabled
+                                size="xs"
+                                colorScheme="blue"
+                                // onClick={() => {
+                                //   UpdatedQtyRangeList(item._id);
+                                // }}
+                              >
+                                Interest
+                              </Button>
+                            </Td>
+                          )}
+                        </Tr>
+                      ))}
+                  </Tbody>
+                </Table>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={matcheslistclose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+              <Button
+                //onClick={matcheslistclose}
+                colorScheme="blue"
+              >
+                save
               </Button>
             </ModalFooter>
           </ModalContent>

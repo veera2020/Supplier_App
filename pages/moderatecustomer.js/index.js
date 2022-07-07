@@ -55,7 +55,7 @@ const useTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showLimit, setShowLimit] = useState(10);
   const [gridApi, setGridApi] = useState(null);
-  const [rowData, setRowData] = useState(null);
+  const [rowData, setRowData] = useState([]);
   return {
     currentPage,
     showLimit,
@@ -80,23 +80,27 @@ const Status = [
 const Moderatecustomer = () => {
   //router
   const router = useRouter();
+  //table
+  const EmployeeTable = useTable([]);
   //usestate
   const [name, setName] = useState("null");
   const [status, setStatus] = useState("null");
   const [openreason, setopenreason] = useState(false);
   const [empdetails, setempdetails] = useState("");
   const [reload, setreload] = useState(false);
-  const [slat, setslat] = useState("");
-  const [slng, setslng] = useState("");
-  const [blat, setblat] = useState("");
-  const [blng, setblng] = useState("");
-  //table
-  const EmployeeTable = useTable();
+  let ModurateData = [];
+
+  EmployeeTable.rowData.map((item) =>
+    item.status == "Accepted" && item.stockPosition == "ready"
+      ? ModurateData.push(item)
+      : null
+  );
+
   //get employees
   const [id, setId] = useState("");
   const fetchdata = async (page = 1) => {
     EmployeeTable.setLoading(true);
-    const response = await axios.get("/v1/requirementCollection/status/all");
+    const response = await axios.get("/v1/requirementCollectionBS/Supplier");
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
     } else {
@@ -120,12 +124,13 @@ const Moderatecustomer = () => {
     setIsmoderate(true);
     console.log(props);
     axios
-      .get(`/v1/requirementCollection/${props}`)
-      .then((res) => setempdetails(res.data));
+      .get(`/v1/requirementCollectionBS/Supplier/${props}`)
+      .then((res) => setempdetails(res.data[0]));
   };
   //Formik InitialValue
   const initialvalue = {
-    editedPrice: empdetails.expprice || empdetails.maxprice,
+    editedPrice: empdetails.expectedPrice,
+    //   saveEditPrice: "",
   };
   //formik validation
   const formik = useFormik({
@@ -134,20 +139,22 @@ const Moderatecustomer = () => {
     validationSchema: Yup.object().shape({}),
     onSubmit: (values) => {
       console.log(values.editedPrice);
-      if (empdetails.maxprice) {
-        if (values.editedPrice > empdetails.maxprice) {
+      if (empdetails.expectedPrice) {
+        if (values.editedPrice > empdetails.expectedPrice) {
           console.log("maxprice");
           const data = {
-            editedPrice: values.editedPrice,
+            moderatedPrice: values.editedPrice,
             moderateStatus: "Moderated",
+            //  saveEditPrice: values.saveEditPrice,
           };
           axios
-            .put(`/v1/requirementCollection/${id}`, data)
+            .put(`/v1/requirementCollectionBS/Supplier/${id}`, data)
             .then((res) => {
               console.log(res.data);
               setIsmoderate(false);
               setreload(!reload);
               formik.resetForm();
+              onClose();
             })
             .catch((error) => {
               if (error.response) {
@@ -163,11 +170,11 @@ const Moderatecustomer = () => {
         if (values.editedPrice > empdetails.expprice) {
           console.log("expprice");
           const data = {
-            editedPrice: values.editedPrice,
+            moderatedPrice: values.editedPrice,
             moderateStatus: "Moderated",
           };
           axios
-            .put(`/v1/requirementCollection/${id}`, data)
+            .put(`/v1/requirementCollectionBS/Supplier/${id}`, data)
             .then((res) => {
               console.log(res.data);
               setIsmoderate(false);
@@ -221,41 +228,34 @@ const Moderatecustomer = () => {
   //modal for order details
   //usestate
   const [isshopopen, setIsshopopen] = useState(false);
-  const [shop, setshop] = useState("");
+  const [SupplierData, setSupplierData] = useState("");
   const isshopclose = () => {
     setIsshopopen(false);
   };
-  const isopenshop = (props) => {
+  const isSupplierDetails = (props) => {
     setIsshopopen(true);
     axios
-      .get(`/v1/requirementCollection/${props}`)
-      .then((res) => setshop(res.data));
-  };
-  //modal for map
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  //mapview
-  const isOpenmap = (props) => {
-    onOpen();
-    setslat(props.Slatitude);
-    setslng(props.Slongitude);
+      .get(`/v1/requirementCollectionBS/Supplier/${props}`)
+      .then((res) => setSupplierData(res.data[0]));
   };
   //usestate
-  const [isbopen, setisbopen] = useState(false);
-  const onbclose = () => {
-    setisbopen(false);
+  const [isModurateopen, setIsModurateopen] = useState(false);
+  const [Moduratedata, setModuratedata] = useState([]);
+  const isModurateclose = () => {
+    setIsModurateopen(false);
   };
-  const isbopenmap = (props) => {
-    setisbopen(true);
-    setblat(props.Blatitude);
-    setblng(props.Blongitude);
-    // axios
-    //   .get(`/v1/requirementCollection/${props}`)
-    //   .then((res) => setDetails(res.data));
+  let ModuratePriceList = [];
+  Moduratedata.map((item) =>
+    item.moderatedPrice ? ModuratePriceList.push(item) : null
+  );
+
+  const isModuratePrice = (props) => {
+    setIsModurateopen(true);
+    axios
+      .get(`/v1/requirementCollectionBS/Supplier/${props}`)
+      .then((res) => setModuratedata(res.data));
   };
-  const mapStyles = {
-    height: "100%",
-    width: "100%",
-  };
+  //
   //statusrejectchange
   const [isRejectOpen, setIsRejectOpen] = useState(false);
   const [reason, setReason] = useState("");
@@ -289,7 +289,51 @@ const Moderatecustomer = () => {
         }
       });
   };
-
+  //usestate
+  const [islastTimeUpdatedQty, setLastTimeUpdatedQty] = useState(false);
+  const [UpdatedDetails, setUpdatedDetails] = useState([]);
+  let UpdateQty = [];
+  let UpdatePrice = [];
+  let UpdateLocation = [];
+  UpdatedDetails.map((item) => (item.updatedQty ? UpdateQty.push(item) : null));
+  UpdatedDetails.map((item) => (item.price ? UpdatePrice.push(item) : null));
+  UpdatedDetails.map((item) =>
+    item.stockLocation ? UpdateLocation.push(item) : null
+  );
+  const isLastTimeUpdatedDetailClose = () => {
+    setLastTimeUpdatedQty(false);
+  };
+  const UpdatedQtyList = (props) => {
+    setLastTimeUpdatedQty(true);
+    axios
+      .get(`/v1/requirementCollectionBS/Supplier/UpdataData/${props}`)
+      .then((res) => setUpdatedDetails(res.data));
+  };
+  //usestate
+  const [islastTimeUpdatedPrice, setLastTimeUpdatedPrice] = useState(false);
+  const isLastTimeUpdatedPriceClose = () => {
+    setLastTimeUpdatedPrice(false);
+  };
+  const UpdatedPriceList = (props) => {
+    setLastTimeUpdatedPrice(true);
+    axios
+      .get(`/v1/requirementCollectionBS/Supplier/UpdataData/${props}`)
+      .then((res) => setUpdatedDetails(res.data));
+  };
+  //usestate
+  const [islastTimeUpdatedLocation, setLastTimeUpdatedLocation] =
+    useState(false);
+  const isLastTimeUpdatedLocationClose = () => {
+    setLastTimeUpdatedLocation(false);
+  };
+  const UpdatedLocationList = (props) => {
+    setLastTimeUpdatedLocation(true);
+    axios
+      .get(`/v1/requirementCollectionBS/Supplier/UpdataData/${props}`)
+      .then((res) => setUpdatedDetails(res.data));
+  };
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  //const cancelRef = React.useRef();
   return (
     <>
       <Head>
@@ -321,7 +365,7 @@ const Moderatecustomer = () => {
         <div className="flex items-center gap-3 pb-4">
           <div className="flex-auto font-semibold text-primary"></div>
           <DatePicker onChange={onChange} />
-          <select
+          {/* <select
             placeholder="Select"
             style={{ outline: 0 }}
             className="border border-graycolor w-36 focus-outline-none bg-whitecolor experience p-1"
@@ -335,7 +379,7 @@ const Moderatecustomer = () => {
             <option value="Buyer">Buyer</option>
             <option value="Supplier">Supplier</option>
             <option value="Both">Both</option>
-          </select>
+          </select> */}
           <select
             onChange={(e) => {
               setStatus(e.target.value);
@@ -372,17 +416,17 @@ const Moderatecustomer = () => {
           >
             <Thead className="bg-headergreen">
               <Tr>
-                <Th>S.No</Th>
-                <Th>Date</Th>
-                <Th>Type</Th>
-                <Th>Id</Th>
-                <Th>Name</Th>
-                <Th>Product</Th>
-                <Th>Map View</Th>
-                <Th>Old Price</Th>
-                <Th>Moderated Price</Th>
-                <Th>Status</Th>
-                <Th>Action</Th>
+                <Th textAlign="center">S.No</Th>
+                <Th textAlign="center">Date</Th>
+                <Th textAlign="center">Registered By whom</Th>
+                <Th textAlign="center">Requirement Id</Th>
+                <Th textAlign="center">Name</Th>
+                <Th textAlign="center">Product</Th>
+                <Th textAlign="center">updated qty (live)</Th>
+                <Th textAlign="center">price per kg(live)</Th>
+                <Th textAlign="center">Moderated Price</Th>
+                <Th textAlign="center">Status</Th>
+                <Th textAlign="center">Action</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -397,89 +441,67 @@ const Moderatecustomer = () => {
                   </Td>
                 </Tr>
               )}
-              {EmployeeTable.rowData &&
-                EmployeeTable.rowData.map((item, index) => (
+              {ModurateData &&
+                ModurateData.map((item, index) => (
                   <Tr key={index}>
                     <Td>{index + 1}</Td>
-                    <Td>{item.Date}</Td>
-                    <Td>{item.type}</Td>
+                    <Td>{item.date}</Td>
+                    <Td>{item.requirementAddBy}</Td>
                     <Td>{item.secretName}</Td>
                     <Td>
                       <Button
                         size="md"
                         colorScheme="blue"
                         variant="link"
-                        onClick={() => isopenshop(item._id)}
+                        onClick={() => isSupplierDetails(item._id)}
                       >
                         {item.name}
                       </Button>
                     </Td>
-                    <Td>
-                      {item.buyerpname === "" ? (
-                        <div>{item.supplierpname}</div>
-                      ) : (
-                        <div>{item.buyerpname}</div>
-                      )}
+                    <Td>{item.product}</Td>
+                    <Td textAlign="center">
+                      <Button
+                        size="md"
+                        colorScheme="blue"
+                        variant="link"
+                        onClick={() => {
+                          UpdatedQtyList(item._id);
+                        }}
+                      >
+                        {item.expectedQnty}
+                      </Button>
                     </Td>
-                    {/* {item.buyerpname === "" ? (
-                      <Td>{item.supplierpname}</Td>
-                    ) : (
-                      <Td>{item.buyerpname}</Td>
-                    )} */}
-                    <Td>
-                      {item.type === "Supplier" ||
-                      item.selectboth === "Supplier" ? (
-                        <Button
-                          size="sm"
-                          colorScheme="blue"
-                          variant="link"
-                          onClick={() => isOpenmap(item)}
-                        >
-                          MapView
-                        </Button>
-                      ) : null}
-                      {item.type === "Buyer" || item.selectboth === "Buyer" ? (
-                        <Button
-                          size="sm"
-                          colorScheme="blue"
-                          variant="link"
-                          onClick={() => isbopenmap(item)}
-                        >
-                          MapView
-                        </Button>
-                      ) : null}
+                    <Td textAlign="center">
+                      <Button
+                        size="md"
+                        colorScheme="blue"
+                        variant="link"
+                        onClick={() => {
+                          UpdatedPriceList(item._id);
+                        }}
+                      >
+                        {item.expectedPrice}
+                      </Button>
                     </Td>
                     <Td>
-                      {item.maxprice === null && item.expprice === null ? (
+                      {item.moderatedPrice === null ? (
                         <div>Nil</div>
                       ) : (
-                        <div>{item.expprice || item.maxprice}</div>
+                        <Button
+                          size="md"
+                          colorScheme="blue"
+                          variant="link"
+                          onClick={() => isModuratePrice(item._id)}
+                        >
+                          {item.moderatedPrice}
+                        </Button>
                       )}
                     </Td>
-                    {/* {item.maxprice === null && item.expprice === null ? (
+                    {item.moderateStatus === "" ? (
                       <Td>Nil</Td>
                     ) : (
-                      <Td>{item.expprice || item.maxprice}</Td>
-                    )} */}
-                    <Td>
-                      {item.editedPrice === null ? (
-                        <div>Nil</div>
-                      ) : (
-                        <div>{item.editedPrice}</div>
-                      )}
-                    </Td>
-                    {/* {item.editedPrice === "" ? (
-                      <Td>Nil</Td>
-                    ) : (
-                      <Td>{item.editedPrice}</Td>
-                    )} */}
-                    <Td>
-                      {item.moderateStatus === "" ? (
-                        <div>Pending</div>
-                      ) : (
-                        <div>{item.moderateStatus}</div>
-                      )}
-                    </Td>
+                      <Td>{item.moderateStatus}</Td>
+                    )}
                     <Td>
                       {item.moderateStatus === "" ? (
                         <ButtonGroup
@@ -513,7 +535,8 @@ const Moderatecustomer = () => {
                             disabled
                             size="xs"
                             colorScheme="blue"
-                            onClick={() => moderatefunc(item._id)}
+                            // onClick={() => moderatefunc(item._id)}
+                            //disabled
                           >
                             Moderate
                           </Button>
@@ -521,7 +544,8 @@ const Moderatecustomer = () => {
                             disabled
                             size="xs"
                             colorScheme="red"
-                            onClick={() => setIsRejectOpen(true)}
+                            // onClick={() => setIsRejectOpen(true)}
+                            // disabled
                           >
                             Reject
                           </Button>
@@ -539,195 +563,71 @@ const Moderatecustomer = () => {
             <ModalHeader>Orders Details</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              {shop.type === "Buyer" ? (
-                <div className="border border-graycolor cursor-pointer">
-                  <div className="grid grid-cols-5 px-4">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Product Name
-                    </div>
-                    <div className="col-span-4 p-1">{shop.buyerpname}</div>
+              <div className="border border-graycolor cursor-pointer">
+                <div className="grid grid-cols-5 px-4">
+                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                    Product Name
                   </div>
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Quantity Range
-                    </div>
-                    <div className="col-span-4 p-1">
-                      {shop.minrange} to {shop.maxrange}
-                    </div>
+                  <div className="col-span-4 p-1">{SupplierData.product}</div>
+                </div>
+                <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                    Stock Location
                   </div>
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Landing Price
-                    </div>
-                    <div className="col-span-4 p-1">
-                      {shop.minprice} to {shop.maxprice}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Stock (Product Delivery)
-                    </div>
-                    <div className="col-span-4 p-1">{shop.pdelivery}</div>
-                  </div>
-                  {shop.pdelivery === "Delivery to Location" ? (
-                    <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                      <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                        Delivery Location
-                      </div>
-                      <div className="col-span-4 p-1">
-                        {shop.deliverylocation}
-                      </div>
-                    </div>
-                  ) : null}
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Estimated Delivery Date
-                    </div>
-                    <div className="col-span-4 p-1">
-                      {shop.buyerdeliverydate}
-                    </div>
+                  <div className="col-span-4 p-1">
+                    {SupplierData.stockLocation}
                   </div>
                 </div>
-              ) : (
-                <div className="border border-graycolor cursor-pointer">
-                  <div className="grid grid-cols-5 px-4">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Product Name
-                    </div>
-                    <div className="col-span-4 p-1">{shop.supplierpname}</div>
+                <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                    Stock Position
                   </div>
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Stock Location
-                    </div>
-                    <div className="col-span-4 p-1">{shop.stocklocation}</div>
-                  </div>
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Stock Position
-                    </div>
-                    <div className="col-span-4 p-1">{shop.stockposition}</div>
-                  </div>
-                  {shop.stockposition === "Ready" ? (
-                    <>
-                      <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                        <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                          Packed Type
-                        </div>
-                        <div className="col-span-4 p-1">{shop.packtype}</div>
-                      </div>
-                      <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                        <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                          Excepted Quantity
-                        </div>
-                        <div className="col-span-4 p-1">{shop.expquantity}</div>
-                      </div>
-                      <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                        <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                          Excepted Price
-                        </div>
-                        <div className="col-span-4 p-1">{shop.expprice}</div>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                      <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                        Stock Availability
-                      </div>
-                      <div className="col-span-4 p-1">
-                        {shop.stockavailabilitydate}
-                      </div>
-                    </div>
-                  )}
-                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
-                      Payment Mode
-                    </div>
-                    <div className="col-span-4 p-1">{shop.paymentmode}</div>
+                  <div className="col-span-4 p-1">
+                    {SupplierData.stockPosition}
                   </div>
                 </div>
-              )}
+                <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                    Packed Type
+                  </div>
+                  <div className="col-span-4 p-1">{SupplierData.packType}</div>
+                </div>
+                <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                    Excepted Quantity
+                  </div>
+                  <div className="col-span-4 p-1">
+                    {SupplierData.expectedQnty}
+                  </div>
+                </div>
+                <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                    Excepted Price
+                  </div>
+                  <div className="col-span-4 p-1">
+                    {SupplierData.expectedPrice}
+                  </div>
+                </div>
+                <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                    Payment Mode
+                  </div>
+                  <div className="col-span-4 p-1">
+                    {SupplierData.paymentMode}
+                  </div>
+                </div>
+                {SupplierData.paymentMode == "advance" ? (
+                  <div className="grid grid-cols-5 px-4 border-t border-graycolor">
+                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                      Advance
+                    </div>
+                    <div className="col-span-4 p-1">{SupplierData.advance}</div>
+                  </div>
+                ) : null}
+              </div>
             </ModalBody>
             <ModalFooter>
               <Button onClick={isshopclose} colorScheme="blue" mr={3}>
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Map View</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              {slat && slng ? (
-                <div className="flex justify-center text-center">
-                  <div className="object-cover h-48 w-96">
-                    <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
-                      <GoogleMap
-                        mapContainerStyle={mapStyles}
-                        zoom={13}
-                        center={{
-                          lat: parseFloat(slat),
-                          lng: parseFloat(slng),
-                        }}
-                      >
-                        <Marker
-                          position={{
-                            lat: parseFloat(slat),
-                            lng: parseFloat(slng),
-                          }}
-                        />
-                      </GoogleMap>
-                    </LoadScript>
-                  </div>
-                </div>
-              ) : (
-                <div>No coordinates Passed</div>
-              )}
-            </ModalBody>
-            <ModalFooter>
-              <Button onClick={onClose} colorScheme="blue" mr={3}>
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        <Modal isOpen={isbopen} onClose={onbclose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Map View</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              {blat && blng ? (
-                <div className="flex justify-center text-center">
-                  <div className="object-cover h-48 w-96">
-                    <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
-                      <GoogleMap
-                        mapContainerStyle={mapStyles}
-                        zoom={13}
-                        center={{
-                          lat: parseFloat(blat),
-                          lng: parseFloat(blng),
-                        }}
-                      >
-                        <Marker
-                          position={{
-                            lat: parseFloat(blat),
-                            lng: parseFloat(blng),
-                          }}
-                        />
-                      </GoogleMap>
-                    </LoadScript>
-                  </div>
-                </div>
-              ) : (
-                <div>No coordinates Passed</div>
-              )}
-            </ModalBody>
-            <ModalFooter>
-              <Button onClick={onbclose} colorScheme="blue" mr={3}>
                 Close
               </Button>
             </ModalFooter>
@@ -739,18 +639,14 @@ const Moderatecustomer = () => {
             <ModalHeader>Moderate Price</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <Forms>
-                {errormessageprice && (
-                  <div className="pb-5">
-                    <Alert status="error">
-                      <AlertIcon />
-                      <AlertDescription>{errormessageprice}</AlertDescription>
-                    </Alert>
-                  </div>
-                )}
+              <Forms className="space-y-5">
+                <div className="flex gap-1">
+                  <label className="font-semibold">Price per Kg -</label>
+                  <div>{empdetails.expectedPrice}</div>
+                </div>
                 <div className="flex flex-col gap-2">
                   <label className="font-semibold">
-                    Edited Price
+                    Moderate Price
                     <span className="text-secondary pb-2">*</span>
                   </label>
                   <InputFields
@@ -775,15 +671,386 @@ const Moderatecustomer = () => {
                     {formik.errors.editedPrice}
                   </FormikErrorMessage>
                 ) : null}
+                {/* {formik.touched.editedPrice && formik.errors.editedPrice ? (
+                      <FormikErrorMessage>
+                        {formik.errors.editedPrice}
+                      </FormikErrorMessage>
+                    ) : null}
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold">
+                        Moderate Price
+                        <span className="text-secondary pb-2">*</span>
+                      </label>
+                      <InputFields
+                        type="number"
+                        name="editedPrice"
+                        value={formik.values.editedPrice || ""}
+                        onChange={(e) => {
+                          seterrormessageprice("");
+                          formik.handleChange(e);
+                        }}
+                        // onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        className={
+                          formik.touched.editedPrice &&
+                          formik.errors.editedPrice
+                            ? "input-primary ring-2 ring-secondary border-none"
+                            : "input-primary"
+                        }
+                      />
+                    </div>
+                    {formik.touched.editedPrice && formik.errors.editedPrice ? (
+                      <FormikErrorMessage>
+                        {formik.errors.editedPrice}
+                      </FormikErrorMessage>
+                    ) : null}
+                {/* {formik.values.saveEditPrice != "" ? (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold text-center text-size-lg">
+                        Are you Sure. Do you want to moderate User
+                      </label>
+                    </div>
+                    {/* <div className="flex flex-col gap-2">
+                      <label className="font-semibold">
+                        Edited Price
+                        <span className="text-secondary pb-2">*</span>
+                      </label>
+                      <div>{empdetails.expectedPrice}</div>
+                    </div> */}
+                {/* {formik.touched.editedPrice && formik.errors.editedPrice ? (
+                      <FormikErrorMessage>
+                        {formik.errors.editedPrice}
+                      </FormikErrorMessage>
+                    ) : null}
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold">
+                        Moderate Price
+                        <span className="text-secondary pb-2">*</span>
+                      </label>
+                      <InputFields
+                        type="number"
+                        name="editedPrice"
+                        value={formik.values.editedPrice || ""}
+                        onChange={(e) => {
+                          seterrormessageprice("");
+                          formik.handleChange(e);
+                        }}
+                        // onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        className={
+                          formik.touched.editedPrice &&
+                          formik.errors.editedPrice
+                            ? "input-primary ring-2 ring-secondary border-none"
+                            : "input-primary"
+                        }
+                      />
+                    </div>
+                    {formik.touched.editedPrice && formik.errors.editedPrice ? (
+                      <FormikErrorMessage>
+                        {formik.errors.editedPrice}
+                      </FormikErrorMessage>
+                    ) : null}
+                  </>
+                ) : (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold">
+                        Edited Price
+                        <span className="text-secondary pb-2">*</span>
+                      </label>
+                      <InputFields
+                        type="number"
+                        name="editedPrice"
+                        value={formik.values.editedPrice || ""}
+                        // onChange={(e) => {
+                        //   seterrormessageprice("");
+                        //   formik.handleChange(e);
+                        // }}
+                        // // onChange={formik.handleChange}
+                        // onBlur={formik.handleBlur}
+                        className={
+                          formik.touched.editedPrice &&
+                          formik.errors.editedPrice
+                            ? "input-primary ring-2 ring-secondary border-none"
+                            : "input-primary"
+                        }
+                        disabled
+                      />
+                    </div>
+                    {formik.touched.editedPrice && formik.errors.editedPrice ? (
+                      <FormikErrorMessage>
+                        {formik.errors.editedPrice}
+                      </FormikErrorMessage>
+                    ) : null}
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold">
+                        Modurate Price
+                        <span className="text-secondary pb-2">*</span>
+                      </label>
+                      <InputFields
+                        type="number"
+                        name="editedPrice"
+                        value={formik.values.editedPrice || ""}
+                        onChange={(e) => {
+                          seterrormessageprice("");
+                          formik.handleChange(e);
+                        }}
+                        // onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        className={
+                          formik.touched.editedPrice &&
+                          formik.errors.editedPrice
+                            ? "input-primary ring-2 ring-secondary border-none"
+                            : "input-primary"
+                        }
+                      />
+                    </div>
+                    {formik.touched.editedPrice && formik.errors.editedPrice ? (
+                      <FormikErrorMessage>
+                        {formik.errors.editedPrice}
+                      </FormikErrorMessage>
+                    ) : null}
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold"></label>
+                      <Button
+                        onClick={() =>
+                          formik.setFieldValue("saveEditPrice", "save")
+                        }
+                        colorScheme="blue"
+                      >
+                        save
+                      </Button>
+                    </div>
+                  </>
+                )} */}
               </Forms>
             </ModalBody>
             <ModalFooter>
-              <Button onClick={formik.handleSubmit} colorScheme="blue">
-                Update
+              <Button
+                onClick={onOpen}
+                //  onClick={formik.handleSubmit}
+                colorScheme="green"
+                mr={3}
+              >
+                Yes
+              </Button>
+              <Button type="button" colorScheme="red" mr={3}>
+                No
               </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
+        <Modal isOpen={isModurateopen} onClose={isModurateclose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Moderated Price List</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="border-gray-500 scroll-smooth border">
+                <Table
+                  size="sm"
+                  scaleY="44"
+                  variant="striped"
+                  colorScheme="whatsapp"
+                  className="overflow-auto"
+                >
+                  <Thead className="bg-headergreen text-center">
+                    <Tr>
+                      <Th>S.No</Th>
+                      <Th>Date</Th>
+                      <Th>Time</Th>
+                      <Th>moderate price</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {EmployeeTable.rowData != "" ? null : (
+                      <Tr>
+                        <Td
+                          style={{ textAlign: "center" }}
+                          className="font-semibold"
+                          colSpan="11"
+                        >
+                          No Data Found
+                        </Td>
+                      </Tr>
+                    )}
+                    {ModuratePriceList &&
+                      ModuratePriceList.map((item, index) => (
+                        <Tr colSpan="2" key={index}>
+                          <Td>{index + 1}</Td>
+                          <Td>{item.date}</Td>
+                          <Td>{item.time}</Td>
+                          <Td>{item.stockLocation}</Td>
+                        </Tr>
+                      ))}
+                  </Tbody>
+                </Table>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={isModurateclose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal
+          isOpen={islastTimeUpdatedQty}
+          onClose={isLastTimeUpdatedDetailClose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Updated Quantity List</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="border-gray-500 scroll-smooth border">
+                <Table
+                  size="sm"
+                  scaleY="44"
+                  variant="striped"
+                  colorScheme="whatsapp"
+                  className="overflow-auto"
+                >
+                  <Thead className="bg-headergreen text-center">
+                    <Tr>
+                      <Th>S.No</Th>
+                      <Th>Date</Th>
+                      <Th>Time</Th>
+                      <Th>Changed Qty</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {UpdatedDetails != "" ? null : (
+                      <Tr>
+                        <Td
+                          style={{ textAlign: "center" }}
+                          className="font-semibold"
+                          colSpan="11"
+                        >
+                          No Data Found
+                        </Td>
+                      </Tr>
+                    )}
+                    {UpdateQty &&
+                      UpdateQty.map((item, index) => (
+                        <Tr colSpan="2" key={index}>
+                          <Td>{index + 1}</Td>
+                          <Td>{item.date}</Td>
+                          <Td>{item.time}</Td>
+                          <Td>{item.updatedQty}</Td>
+                        </Tr>
+                      ))}
+                  </Tbody>
+                </Table>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                onClick={isLastTimeUpdatedDetailClose}
+                colorScheme="blue"
+                mr={3}
+              >
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal
+          isOpen={islastTimeUpdatedPrice}
+          onClose={isLastTimeUpdatedPriceClose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Updated Time Price</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="border-gray-500 scroll-smooth border">
+                <Table
+                  size="sm"
+                  scaleY="44"
+                  variant="striped"
+                  colorScheme="whatsapp"
+                  className="overflow-auto"
+                >
+                  <Thead className="bg-headergreen text-center">
+                    <Tr>
+                      <Th>S.No</Th>
+                      <Th>Date</Th>
+                      <Th>Time</Th>
+                      <Th>Changed Price</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {EmployeeTable.rowData != "" ? null : (
+                      <Tr>
+                        <Td
+                          style={{ textAlign: "center" }}
+                          className="font-semibold"
+                          colSpan="11"
+                        >
+                          No Data Found
+                        </Td>
+                      </Tr>
+                    )}
+                    {UpdatePrice &&
+                      UpdatePrice.map((item, index) => (
+                        <Tr colSpan="2" key={index}>
+                          <Td>{index + 1}</Td>
+                          <Td>{item.date}</Td>
+                          <Td>{item.time}</Td>
+                          <Td>{item.price}</Td>
+                        </Tr>
+                      ))}
+                  </Tbody>
+                </Table>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                onClick={isLastTimeUpdatedPriceClose}
+                colorScheme="blue"
+                mr={3}
+              >
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <AlertDialog
+          isOpen={isOpen}
+          leastDestructiveRef={cancelRef}
+          onClose={onClose}
+        >
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                Delete Customer
+              </AlertDialogHeader>
+
+              <AlertDialogBody>
+                {errormessageprice && (
+                  <div className="pb-5">
+                    <Alert status="error">
+                      <AlertIcon />
+                      <AlertDescription>{errormessageprice}</AlertDescription>
+                    </Alert>
+                  </div>
+                )}
+                Are you sure? Do You want to moderate the Price.
+              </AlertDialogBody>
+
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button colorScheme="red" onClick={formik.handleSubmit} ml={3}>
+                  Moderate
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
         {isRejectOpen && (
           <AlertDialog
             isOpen={isRejectOpen}

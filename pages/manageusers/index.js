@@ -228,12 +228,12 @@ const Users = () => {
           >
             <Thead className="bg-headergreen">
               <Tr>
-                <Th>S.No</Th>
-                <Th>Type</Th>
-                <Th>Id</Th>
-                <Th>Name</Th>
-                <Th>Mobile No</Th>
-                <Th>Actions</Th>
+                <Th textAlign="center">S.No</Th>
+                <Th textAlign="center">Type</Th>
+                <Th textAlign="center">Id</Th>
+                <Th textAlign="center">Name</Th>
+                <Th textAlign="center">Mobile No</Th>
+                <Th textAlign="center">Actions</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -251,12 +251,12 @@ const Users = () => {
               {EmployeeTable.rowData &&
                 EmployeeTable.rowData.map((item, index) => (
                   <Tr key={index}>
-                    <Td>{index + 1}</Td>
-                    <Td>{item.type}</Td>
-                    <Td>{item.secretName}</Td>
-                    <Td>{item.primaryContactName}</Td>
-                    <Td>{item.primaryContactNumber}</Td>
-                    <Td>
+                    <Td textAlign="center">{index + 1}</Td>
+                    <Td textAlign="center">{item.type}</Td>
+                    <Td textAlign="center">{item.secretName}</Td>
+                    <Td textAlign="center">{item.primaryContactName}</Td>
+                    <Td textAlign="center">{item.primaryContactNumber}</Td>
+                    <Td textAlign="center">
                       {item.active === true ? (
                         <ButtonGroup
                           spacing="1"
