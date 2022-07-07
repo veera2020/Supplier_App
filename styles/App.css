@@ -1,71 +1,70 @@
-@import '~antd/dist/antd.css';
+@import "~antd/dist/antd.css";
 
-.experience{
-    color:gray
+.experience {
+  color: gray;
 }
-.experience option{
-    color: black!important;
-}
-
-.change_color{
-    color:black
+.experience option {
+  color: black !important;
 }
 
-  #map {
-    height: 100%;
-  }
-  
-  
-  /* Optional: Makes the sample page fill the window. */
-  .main-wrapper {
-    height: 60vh;
-    margin: 10px 50px;
-    filter: drop-shadow(-1px 5px 3px #ccc);
-  }
-  .info-wrapper {
-    margin-top: 15px;
-  }
-  .map-details {
-    text-align: center;
-    font-size: 1.2em;
-  }
-  .map-details span {
-    font-weight: bold;
-  }
-  .search-input {
-    font-size: 1.2em;
-    width: 80%;
-  }
-  
-  .pac-controls label {
-    font-family: Roboto;
-    font-size: 13px;
-    font-weight: 300;
-  }
-  
-  #pac-input {
-    background-color: #fff;
-    font-family: Roboto;
-    font-size: 15px;
-    font-weight: 300;
-    margin-left: 12px;
-    padding: 0 11px 0 13px;
-    text-overflow: ellipsis;
-    width: 400px;
-  }
-  
-  #pac-input:focus {
-    border-color: #4d90fe;
-  }
-  
-  #title {
-    color: #fff;
-    background-color: #4d90fe;
-    font-size: 25px;
-    font-weight: 500;
-    padding: 6px 12px;
-  }
-  
-  #target {
-    width: 345px;
-  }
+.change_color {
+  color: black;
+}
+
+#map {
+  height: 100%;
+}
+
+/* Optional: Makes the sample page fill the window. */
+.main-wrapper {
+  height: 60vh;
+  margin: 10px 50px;
+  filter: drop-shadow(-1px 5px 3px #ccc);
+}
+.info-wrapper {
+  margin-top: 15px;
+}
+.map-details {
+  text-align: center;
+  font-size: 1.2em;
+}
+.map-details span {
+  font-weight: bold;
+}
+.search-input {
+  font-size: 1.2em;
+  width: 80%;
+}
+
+.pac-controls label {
+  font-family: Roboto;
+  font-size: 13px;
+  font-weight: 300;
+}
+
+#pac-input {
+  background-color: #fff;
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: 300;
+  margin-left: 12px;
+  padding: 0 11px 0 13px;
+  text-overflow: ellipsis;
+  width: 400px;
+}
+
+#pac-input:focus {
+  border-color: #4d90fe;
+}
+
+#title {
+  color: #fff;
+  background-color: #4d90fe;
+  font-size: 25px;
+  font-weight: 500;
+  padding: 6px 12px;
+}
+
+#target {
+  width: 345px;
+}
