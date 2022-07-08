@@ -444,11 +444,11 @@ const Moderatecustomer = () => {
               {ModurateData &&
                 ModurateData.map((item, index) => (
                   <Tr key={index}>
-                    <Td>{index + 1}</Td>
-                    <Td>{item.date}</Td>
-                    <Td>{item.requirementAddBy}</Td>
-                    <Td>{item.secretName}</Td>
-                    <Td>
+                    <Td textAlign="center">{index + 1}</Td>
+                    <Td textAlign="center">{item.date}</Td>
+                    <Td textAlign="center">{item.requirementAddBy}</Td>
+                    <Td textAlign="center">{item.secretName}</Td>
+                    <Td textAlign="center">
                       <Button
                         size="md"
                         colorScheme="blue"
@@ -458,7 +458,7 @@ const Moderatecustomer = () => {
                         {item.name}
                       </Button>
                     </Td>
-                    <Td>{item.product}</Td>
+                    <Td textAlign="center">{item.product}</Td>
                     <Td textAlign="center">
                       <Button
                         size="md"
@@ -483,7 +483,7 @@ const Moderatecustomer = () => {
                         {item.expectedPrice}
                       </Button>
                     </Td>
-                    <Td>
+                    <Td textAlign="center">
                       {item.moderatedPrice === null ? (
                         <div>Nil</div>
                       ) : (
@@ -498,11 +498,11 @@ const Moderatecustomer = () => {
                       )}
                     </Td>
                     {item.moderateStatus === "" ? (
-                      <Td>Nil</Td>
+                      <Td textAlign="center">Nil</Td>
                     ) : (
-                      <Td>{item.moderateStatus}</Td>
+                      <Td textAlign="center">{item.moderateStatus}</Td>
                     )}
-                    <Td>
+                    <Td textAlign="center">
                       {item.moderateStatus === "" ? (
                         <ButtonGroup
                           spacing="1"
@@ -565,63 +565,63 @@ const Moderatecustomer = () => {
             <ModalBody>
               <div className="border border-graycolor cursor-pointer">
                 <div className="grid grid-cols-5 px-4">
-                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                  <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
                     Product Name
                   </div>
-                  <div className="col-span-4 p-1">{SupplierData.product}</div>
+                  <div className="col-span-3 p-1">{SupplierData.product}</div>
                 </div>
                 <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                  <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
                     Stock Location
                   </div>
-                  <div className="col-span-4 p-1">
+                  <div className="col-span-3 p-1">
                     {SupplierData.stockLocation}
                   </div>
                 </div>
                 <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                  <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
                     Stock Position
                   </div>
-                  <div className="col-span-4 p-1">
+                  <div className="col-span-3 p-1">
                     {SupplierData.stockPosition}
                   </div>
                 </div>
                 <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                  <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
                     Packed Type
                   </div>
-                  <div className="col-span-4 p-1">{SupplierData.packType}</div>
+                  <div className="col-span-3 p-1">{SupplierData.packType}</div>
                 </div>
                 <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                  <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
                     Excepted Quantity
                   </div>
-                  <div className="col-span-4 p-1">
+                  <div className="col-span-3 p-1">
                     {SupplierData.expectedQnty}
                   </div>
                 </div>
                 <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                  <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
                     Excepted Price
                   </div>
-                  <div className="col-span-4 p-1">
+                  <div className="col-span-3 p-1">
                     {SupplierData.expectedPrice}
                   </div>
                 </div>
                 <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                  <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                  <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
                     Payment Mode
                   </div>
-                  <div className="col-span-4 p-1">
+                  <div className="col-span-3 p-1">
                     {SupplierData.paymentMode}
                   </div>
                 </div>
                 {SupplierData.paymentMode == "advance" ? (
                   <div className="grid grid-cols-5 px-4 border-t border-graycolor">
-                    <div className="col-span-1 text-blue-500 text-semibold border-r border-graycolor p-1">
+                    <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
                       Advance
                     </div>
-                    <div className="col-span-4 p-1">{SupplierData.advance}</div>
+                    <div className="col-span-3 p-1">{SupplierData.advance}</div>
                   </div>
                 ) : null}
               </div>
@@ -857,10 +857,10 @@ const Moderatecustomer = () => {
                 >
                   <Thead className="bg-headergreen text-center">
                     <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>moderate price</Th>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date</Th>
+                      <Th textAlign="center">Time</Th>
+                      <Th textAlign="center">moderate price</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -878,10 +878,10 @@ const Moderatecustomer = () => {
                     {ModuratePriceList &&
                       ModuratePriceList.map((item, index) => (
                         <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>{item.stockLocation}</Td>
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center">{item.date}</Td>
+                          <Td textAlign="center">{item.time}</Td>
+                          <Td textAlign="center">{item.moderatedPrice}</Td>
                         </Tr>
                       ))}
                   </Tbody>
@@ -914,10 +914,10 @@ const Moderatecustomer = () => {
                 >
                   <Thead className="bg-headergreen text-center">
                     <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Changed Qty</Th>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date</Th>
+                      <Th textAlign="center">Time</Th>
+                      <Th textAlign="center">Changed Qty</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -935,10 +935,10 @@ const Moderatecustomer = () => {
                     {UpdateQty &&
                       UpdateQty.map((item, index) => (
                         <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>{item.updatedQty}</Td>
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center">{item.date}</Td>
+                          <Td textAlign="center">{item.time}</Td>
+                          <Td textAlign="center">{item.updatedQty}</Td>
                         </Tr>
                       ))}
                   </Tbody>
@@ -975,10 +975,10 @@ const Moderatecustomer = () => {
                 >
                   <Thead className="bg-headergreen text-center">
                     <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Changed Price</Th>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date</Th>
+                      <Th textAlign="center">Time</Th>
+                      <Th textAlign="center">Changed Price</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -996,10 +996,10 @@ const Moderatecustomer = () => {
                     {UpdatePrice &&
                       UpdatePrice.map((item, index) => (
                         <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>{item.price}</Td>
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center">{item.date}</Td>
+                          <Td textAlign="center">{item.time}</Td>
+                          <Td textAlign="center">{item.price}</Td>
                         </Tr>
                       ))}
                   </Tbody>
