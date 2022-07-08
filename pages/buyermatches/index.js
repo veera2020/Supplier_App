@@ -104,7 +104,7 @@ const BuyerMatches = () => {
     axios
       .get("/v1/requirementCollection/thirdPartyApi/product")
       .then((res) => setproductslist(res.data));
-  }, []);
+  }, [reload]);
 
   //table
   const EmployeeTable = useTable();
@@ -120,13 +120,14 @@ const BuyerMatches = () => {
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
       console.log(response.data);
+   //   setreload(!reload);
     } else {
       EmployeeTable.setRowData([]);
     }
   };
   useEffect(() => {
     fetchdata(EmployeeTable.currentPage, EmployeeTable.showLimit);
-  }, []);
+  }, [reload]);
 
   // Search Method
   const handlesearch = () => {
@@ -265,12 +266,14 @@ const BuyerMatches = () => {
   const [matchesDetails, setmatchesDetails] = useState([]);
   const matcheslistclose = () => {
     setmatches(false);
+    // setreload(!reload);
   };
   const matcheslist = (props) => {
     setmatches(true);
     axios
       .get(`/v1/requirementCollectionBS/Buyer/SameProduct/all/${props}`)
       .then((res) => {
+       // setreload(!reload);
         setmatchesDetails(res.data);
         console.log(res.data);
       });
@@ -282,27 +285,15 @@ const BuyerMatches = () => {
       .then((res) => setBuyerData(res.data[0]));
   };
   const saveinterest = (props) => {
-    console.log("hema");
-    console.log(BuyerData, "bid");
-    console.log(props, "sid");
     const data = {
       data: [props],
       BId: BuyerData._id,
     };
     axios.post("/v1/interestTable", data).then((res) => {
-      console.log(res.data);
+      setreload(!reload);
     });
   };
-  const [streetidarr, setstreetidarr] = useState([]);
-  const streetChange = (selected) => {
-    // seterrorMessage("");
-    // setoptionSelected(selected);
-    // selected.forEach((item, index) => {
-    //   setstreetidarr(item);
-    //   console.log(item)
-    // });
-    //   setoptionSelected(selected);
-  };
+
   return (
     <>
       <Head>
@@ -553,43 +544,20 @@ const BuyerMatches = () => {
                       {"/ "}
                       {item.deliveryTime}
                     </Td>
-                    {item.interestCount === null ? (
-                      <Td>0</Td>
-                    ) : (
-                      <Td>{item.interestCount}</Td>
-                    )}
-                    {/* <Button
-                        variant="link"
+                    {item.interest ? <Td>{item.interest}</Td> : <Td>0</Td>}
+                    {item.interest >= 1 ? <Td>Matched</Td> : <Td>Pending</Td>}
+                    <Td>
+                      <Button
                         size="xs"
                         colorScheme="blue"
-                        onClick={() => match(item._id)}
+                        onClick={() => {
+                          matcheslist(item._id);
+                        }}
                       >
-                        VIEW
-                      </Button> */}
-                    {item.matchesStatus === "" ? (
-                      <Td>Pending</Td>
-                    ) : (
-                      <Td>{item.matchesStatus}</Td>
-                    )}
-                    {item.matchesStatus === "" ? (
-                      <Td>
-                        <Button
-                          size="xs"
-                          colorScheme="blue"
-                          onClick={() => {
-                            matcheslist(item._id);
-                          }}
-                        >
-                          Match
-                        </Button>
-                      </Td>
-                    ) : (
-                      <Td>
-                        <Button size="xs" colorScheme="blue" disabled>
-                          Match
-                        </Button>
-                      </Td>
-                    )}
+                        Match
+                      </Button>
+                    </Td>
+
                     {/* <Td textAlign="center">
                       {Destination != "" ? (
                         <Button
@@ -644,22 +612,14 @@ const BuyerMatches = () => {
             </Tbody>
           </Table>
         </div>
-        {isSupplieropen && (
-          <Supplier
-            isSupplieropen={isSupplieropen}
-            isSupplierclose={isSupplierclose}
-            SupplierDetails={Details}
-            setreload={setreload}
-            reload={reload}
-          />
-        )}
+       
         <Modal isOpen={isBuyerDetails} onClose={isBuyerDetailsClose} size="xl">
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Buyer Details</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <div className="p-4 ">
+              <div className="p-4">
                 <>
                   <div className="border border-graycolor cursor-pointer">
                     <div className="grid grid-cols-6 px-4 px-1">
@@ -1069,7 +1029,7 @@ const BuyerMatches = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <Modal size="3xl" isOpen={matches} onClose={matcheslistclose}>
+        <Modal size="4xl" isOpen={matches} onClose={matcheslistclose}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Matches Suppliers</ModalHeader>
@@ -1120,8 +1080,9 @@ const BuyerMatches = () => {
                       <Th>Supplier Name</Th>
                       <Th>Available Quantity</Th>
                       <Th>Moderate Price</Th>
+                      <Th>Product Total Amount</Th>
+                      <Th>Stock Location</Th>
                       <Th>Landing Price</Th>
-                      <Th>Stock Position</Th>
                       <Th>Status</Th>
                       <Th>Action</Th>
                     </Tr>
@@ -1145,6 +1106,8 @@ const BuyerMatches = () => {
                           <Td>{item.secretName}</Td>
                           <Td>{item.expectedQnty}</Td>
                           <Td>{item.moderatedPrice}</Td>
+                          <Td>{item.expectedQnty * item.moderatedPrice}</Td>
+                          <Td>{item.stockLocation}</Td>
                           <Td>
                             <Button
                               variant="link"
@@ -1155,35 +1118,52 @@ const BuyerMatches = () => {
                               VIEW
                             </Button>
                           </Td>
-                          <Td>{item.stockLocation}</Td>
-                          {/* {item.inte[0].interestStatus && (
-                            <Td>{item.inte[0].interestStatus}</Td>
-                          )} */}
-                          {
-                            item.inte.map((item, index) => (
-                              <Td>{item.interestStatus}</Td>
-                            ))
-                            // && (
-                            //   <Td>{item.interestStatus}</Td>
-                            // )
-                          }
+                          {item.inte.map((item, index) => (
+                            <Td key={index}>{item.interestStatus}</Td>
+                          ))}
                           {item.inte.length === 0 && <Td>Pending</Td>}
+                          {item.inte.length === 0 ? (
+                            <Td>
+                              <Button
+                                size="xs"
+                                colorScheme="blue"
+                                onClick={() => {
+                                  saveinterest(item.id);
+                                }}
+                              >
+                                Interest
+                              </Button>
+                            </Td>
+                          ) : (
+                            <Td>
+                              <Button
+                                disabled
+                                size="xs"
+                                colorScheme="blue"
+                                onClick={() => {
+                                  saveinterest(item.id);
+                                }}
+                              >
+                                Interest
+                              </Button>
+                            </Td>
+                          )}
 
                           {/* <Td>l</Td> */}
-                          <Td>
+                          {/* <Td>
                             <Button
                               size="xs"
                               colorScheme="blue"
                               onClick={() => {
                                 //setstatusname([...statusname, item.data._id]);
-                                console.log(item._id);
-                                saveinterest(item._id);
+                                console.log(item.id);
+                                saveinterest(item.id);
                                 //streetChange();
                               }}
                             >
                               Interest
                             </Button>
-                          </Td>
+                          </Td> */}
                           {/* {item.data.InterestStatus === "" ? (
                             <Td>Pending</Td>
                           ) : (
