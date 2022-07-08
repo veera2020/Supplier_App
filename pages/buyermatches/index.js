@@ -94,7 +94,7 @@ const BuyerMatches = () => {
   const [FromQty, setFromQty] = useState("null");
   const [ToQty, setToQty] = useState("null");
   const [reload, setreload] = useState(false);
-  const [Destination, setDestination] = useState("");
+  const [statusname, setstatusname] = useState([]);
   const [productslist, setproductslist] = useState([]);
   const [distance, setdistance] = useState("");
   const [distancetonum, setdistancetonum] = useState("");
@@ -141,28 +141,25 @@ const BuyerMatches = () => {
   const vehicleopen = (props) => {
     console.log(props);
     setTotalprice(
-      props.expquantity * props.editedPrice + props.expquantity * 5
+      props.expectedQnty * props.moderatedPrice + props.expectedQnty * 5
     );
     //let a = props.expquantity * props.editedPrice + props.expquantity * 5
-    console.log(Destination);
-    console.log(props.stocklocation);
+    console.log(props.stockLocation);
     setisvehicle(true);
-    if (Destination != "") {
-      const key = "AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI";
-      axios
-        .get(
-          `/v1/requirementCollection/thirdPartyApi/googleMap/${props.stocklocation}/${Destination}/${key}`
-        )
-        .then((res) => {
-          console.log(res.data);
-          console.log(res.data.rows[0].elements[0].distance.text);
-          setdistance(res.data.rows[0].elements[0].distance.text);
-          // if(res.data.rows[0].elements[0].distance.text )
-          const myArray = res.data.rows[0].elements[0].distance.text.split(" ");
-          console.log(myArray[0]);
-          setdistancetonum(myArray[0]);
-        });
-    }
+    const key = "AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI";
+    axios
+      .get(
+        `/v1/requirementCollection/thirdPartyApi/googleMap/${BuyerData.deliverylocation}/${props.stockLocation}/${key}`
+      )
+      .then((res) => {
+        console.log(res.data);
+        console.log(res.data.rows[0].elements[0].distance.text);
+        setdistance(res.data.rows[0].elements[0].distance.text);
+        // if(res.data.rows[0].elements[0].distance.text )
+        const myArray = res.data.rows[0].elements[0].distance.text.split(" ");
+        console.log(myArray[0]);
+        setdistancetonum(myArray[0]);
+      });
   };
   // const Interested = (props) => {
   //   const data = {
@@ -274,12 +271,37 @@ const BuyerMatches = () => {
     axios
       .get(`/v1/requirementCollectionBS/Buyer/SameProduct/all/${props}`)
       .then((res) => {
-        setmatchesDetails(res.data.data);
-        console.log(res.data.data);
+        setmatchesDetails(res.data);
+        console.log(res.data);
       });
+
+    //handle change for multiselect
+
     axios
       .get(`/v1/requirementCollectionBS/Buyer/${props}`)
       .then((res) => setBuyerData(res.data[0]));
+  };
+  const saveinterest = (props) => {
+    console.log("hema");
+    console.log(BuyerData, "bid");
+    console.log(props, "sid");
+    const data = {
+      data: [props],
+      BId: BuyerData._id,
+    };
+    axios.post("/v1/interestTable", data).then((res) => {
+      console.log(res.data);
+    });
+  };
+  const [streetidarr, setstreetidarr] = useState([]);
+  const streetChange = (selected) => {
+    // seterrorMessage("");
+    // setoptionSelected(selected);
+    // selected.forEach((item, index) => {
+    //   setstreetidarr(item);
+    //   console.log(item)
+    // });
+    //   setoptionSelected(selected);
   };
   return (
     <>
@@ -771,14 +793,14 @@ const BuyerMatches = () => {
             <ModalHeader>Vehicle Chosen</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              {distance != "" ? (
-                <div className="py-2 flex">
-                  <div className="px-1 font-semibold">Total Kilometers -</div>
-                  <div>{distancetonum}</div>
-                </div>
-              ) : null}
+              {/* {distance != "" ? ( */}
+              <div className="py-2 flex">
+                <div className="px-1 font-semibold">Total Kilometers -</div>
+                <div>{distancetonum}</div>
+              </div>
+              {/* // ) : null} */}
               {distancetonum && (
-                <div className="border-gray-500 scroll-smooth border pb-5">
+                <div className="border-gray-500 scroll-smooth border pb-5 overflow-y-scroll">
                   <Table
                     size="sm"
                     scaleY="44"
@@ -1105,7 +1127,7 @@ const BuyerMatches = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {matchesDetails.rowData != "" ? null : (
+                    {matchesDetails != "" ? null : (
                       <Tr>
                         <Td
                           style={{ textAlign: "center" }}
@@ -1121,11 +1143,48 @@ const BuyerMatches = () => {
                         <Tr colSpan="2" key={index}>
                           <Td>{index + 1}</Td>
                           <Td>{item.secretName}</Td>
-                          <Td>{item.data.expectedQnty}</Td>
-                          <Td>{item.data.moderatedPrice}</Td>
-                          <Td>L</Td>
-                          <Td>{item.data.stockLocation}</Td>
-                          {item.data.InterestStatus === "" ? (
+                          <Td>{item.expectedQnty}</Td>
+                          <Td>{item.moderatedPrice}</Td>
+                          <Td>
+                            <Button
+                              variant="link"
+                              size="xs"
+                              colorScheme="blue"
+                              onClick={() => vehicleopen(item)}
+                            >
+                              VIEW
+                            </Button>
+                          </Td>
+                          <Td>{item.stockLocation}</Td>
+                          {/* {item.inte[0].interestStatus && (
+                            <Td>{item.inte[0].interestStatus}</Td>
+                          )} */}
+                          {
+                            item.inte.map((item, index) => (
+                              <Td>{item.interestStatus}</Td>
+                            ))
+                            // && (
+                            //   <Td>{item.interestStatus}</Td>
+                            // )
+                          }
+                          {item.inte.length === 0 && <Td>Pending</Td>}
+
+                          {/* <Td>l</Td> */}
+                          <Td>
+                            <Button
+                              size="xs"
+                              colorScheme="blue"
+                              onClick={() => {
+                                //setstatusname([...statusname, item.data._id]);
+                                console.log(item._id);
+                                saveinterest(item._id);
+                                //streetChange();
+                              }}
+                            >
+                              Interest
+                            </Button>
+                          </Td>
+                          {/* {item.data.InterestStatus === "" ? (
                             <Td>Pending</Td>
                           ) : (
                             <Td>{item.data.InterestStatus}</Td>
@@ -1155,7 +1214,7 @@ const BuyerMatches = () => {
                                 Interest
                               </Button>
                             </Td>
-                          )}
+                          )} */}
                         </Tr>
                       ))}
                   </Tbody>
@@ -1166,12 +1225,15 @@ const BuyerMatches = () => {
               <Button onClick={matcheslistclose} colorScheme="blue" mr={3}>
                 Close
               </Button>
-              <Button
+              {/* <Button
                 //onClick={matcheslistclose}
                 colorScheme="blue"
+                // onClick={() => {
+                //   saveinterest();
+                // }}
               >
                 save
-              </Button>
+              </Button> */}
             </ModalFooter>
           </ModalContent>
         </Modal>
