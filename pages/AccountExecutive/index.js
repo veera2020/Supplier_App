@@ -1,15 +1,13 @@
 /*
- *  Document    : BuyerMatches.js
+ *  Document    : index.js
  *  Author      : uyarchi
- *  Description : Buyer Matches from Search
+ *  Description : Account Executive
  */
 import { useState, useEffect } from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { Breadcrumb } from "antd";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+
 import {
   Table,
   Thead,
@@ -53,44 +51,12 @@ const useTable = () => {
     setRowData,
   };
 };
-//data for vehicle
-const data = [
-  {
-    vname: "TATA ACE",
-    capacity: "850 kgs",
-    amount: 10,
-  },
-  {
-    vname: "ASHOK LEYLAND DOST",
-    capacity: "1 Ton",
-    amount: 20,
-  },
-  {
-    vname: "MAHINDRA BOLERO",
-    capacity: "1.5 Ton",
-    amount: 30,
-  },
-  {
-    vname: "TATA 407",
-    capacity: "2.5 Ton",
-    amount: 40,
-  },
-  {
-    vname: "EICHER 14 FEET",
-    capacity: "4 Ton",
-    amount: 50,
-  },
-  {
-    vname: "EICHER 17 FEET",
-    capacity: "5 Ton",
-    amount: 60,
-  },
-];
 //function init
-const ShortlistOrder = () => {
+const AmountExecutive = () => {
   //router
   const router = useRouter();
   // UseState
+
   const [reload, setreload] = useState(false);
   const [statusname, setstatusname] = useState([]);
   const [productslist, setproductslist] = useState([]);
@@ -103,20 +69,7 @@ const ShortlistOrder = () => {
       .get("/v1/requirementCollection/thirdPartyApi/product")
       .then((res) => setproductslist(res.data));
   }, []);
-  //Formik InitialValue
-  const initialvalue = {
-    callstatus: "",
-    shortlistedQty: "",
-  };
-  //formik validation
-  const formik = useFormik({
-    enableReinitialize: true,
-    initialValues: initialvalue,
-    validationSchema: Yup.object().shape({
-      callstatus: Yup.string(),
-      shortlistedQty: Yup.string(),
-    }),
-  });
+
   //table
   const EmployeeTable = useTable();
   //get employees
@@ -131,7 +84,7 @@ const ShortlistOrder = () => {
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
       console.log(response.data);
-      setreload(!reload);
+      //   setreload(!reload);
     } else {
       EmployeeTable.setRowData([]);
     }
@@ -173,14 +126,22 @@ const ShortlistOrder = () => {
         setdistancetonum(myArray[0]);
       });
   };
-
+  // const Interested = (props) => {
+  //   const data = {
+  //     matchesstatus: "Interested",
+  //   };
+  //   axios.put(`/v1/requirementCollection/${props}`, data).then((res) => {
+  //     console.log(res.data);
+  //     setreload(!reload);
+  //   });
+  // };
   //usestate
-  const [isSupplierCall, setIsSupplierCall] = useState(false);
+  const [isSupplieropen, setIsSupplieropen] = useState(false);
   const isSupplierclose = () => {
-    setIsSupplierCall(false);
+    setIsSupplieropen(false);
   };
-  const Call = (props) => {
-    setIsSupplierCall(true);
+  const Matche = (props) => {
+    setIsSupplieropen(true);
     setDetails(props);
   };
   //usestate
@@ -248,20 +209,30 @@ const ShortlistOrder = () => {
       .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
       .then((res) => setUpdatedDetails(res.data));
   };
-  //modal for map
-  const [slat, setslat] = useState("");
-  const [slng, setslng] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  //mapview
-  const isOpenmap = (props) => {
-    console.log(props);
-    onOpen();
-    setslat(props.lat);
-    setslng(props.lang);
+  //   //modal for map
+  //   const [slat, setslat] = useState("");
+  //   const [slng, setslng] = useState("");
+  //   const { isOpen, onOpen, onClose } = useDisclosure();
+  //   //mapview
+  //   const isOpenmap = (props) => {
+  //     console.log(props);
+  //     onOpen();
+  //     setslat(props.lat);
+  //     setslng(props.lang);
+  //   };
+  //   const mapStyles = {
+  //     height: "100%",
+  //     width: "100%",
+  //   };
+  //usestate
+  const [fixed, setfixed] = useState(false);
+  const [fixedd, setfixedd] = useState([]);
+  const fixedclose = () => {
+    setfixed(false);
+    // setreload(!reload);
   };
-  const mapStyles = {
-    height: "100%",
-    width: "100%",
+  const fixedTable = () => {
+    setfixed(true);
   };
 
   //usestate
@@ -274,7 +245,7 @@ const ShortlistOrder = () => {
   const matcheslist = (props) => {
     setmatches(true);
     axios
-      .get(`/v1/requirementCollectionBS/Buyer/SameProduct/short/all/${props}`)
+      .get(`/v1/requirementCollectionBS/Buyer/sameProduct/short/all/${props}`)
       .then((res) => {
         // setreload(!reload);
         setmatchesDetails(res.data);
@@ -296,67 +267,24 @@ const ShortlistOrder = () => {
       setreload(!reload);
     });
   };
-  const UpdatedSupplierCallStatus = () => {
-    let values = formik.values;
-    const locale = "en";
-    var today = new Date();
-    const totime = today.toLocaleTimeString(locale, {
-      hour: "numeric",
-      hour12: false,
-      minute: "numeric",
-    });
-    var dd = String(today.getDate()).padStart(2, "0");
-    var mm = String(today.getMonth() + 1).padStart(2, "0");
-    var yyyy = today.getFullYear();
-    today = dd + "-" + mm + "-" + yyyy;
-    // convert time string to number
-    // var a = values.stockavailabilitytime;
-    // a = a.replace(/\:/g, "");
-    //const availableTime = parseInt(a);
-    var b = totime;
-    b = b.replace(/\:/g, "");
-    const time = parseInt(b);
-    const data = {
-      callstatus: values.callstatus,
-      shortlistedQty: values.shortlistedQty,
-      date: today,
-      time: time,
-    };
-    console.log(data);
-    axios
-      .put(`/v1/requirementCollectionBS/Supplier/${id}`, data)
-      .then((res) => {
-        console.log(res.data);
-        setreload(!reload);
-        setIsSupplierCallStatus(false);
-        formik.resetForm();
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.log(error.response);
-          seterrorMessage(error.response.data.message);
-        }
-      });
-    console.log(data);
-  };
 
   return (
     <>
       <Head>
-        <title>Supplier/Buyer App - Shortlisted Order</title>
+        <title>Supplier/Buyer App - Account Executive</title>
         <meta name="description" content="Generated by create next app" />
       </Head>
       <div className="p-4 ">
         <div className="w-full pb-4">
           <Breadcrumb separator=">">
             <Breadcrumb.Item href="/home">Home</Breadcrumb.Item>
-            <Breadcrumb.Item>Shortlisted Order</Breadcrumb.Item>
+            <Breadcrumb.Item>Account Executive</Breadcrumb.Item>
           </Breadcrumb>
         </div>
         <hr className="p-1"></hr>
         <div className="flex items-center pb-4">
           <span className="flex-auto text-sky-500 text-xl">
-            Shortlisted Order
+            Account Executive
           </span>
           <div className="flex items-center gap-3">
             <Button colorScheme="blue" onClick={() => router.reload()}>
@@ -364,6 +292,90 @@ const ShortlistOrder = () => {
             </Button>
           </div>
         </div>
+        {/* <hr className="p-1"></hr>
+        <div className="flex items-center gap-3 pb-4">
+          <div className="flex-auto font-semibold text-primary"></div>
+          <div className="flex">
+            <select
+              placeholder="Select"
+              name="product"
+              style={{ outline: 0 }}
+              className="border border-graycolor w-24 focus-outline-none bg-whitecolor experience p-1"
+              onChange={(e) => {
+                EmployeeTable.setCurrentPage(1);
+                e.target.classList.add("change_color");
+                setProduct(e.target.value.toLowerCase());
+              }}
+            >
+              <option value="null">Select</option>
+              {productslist &&
+                productslist.map((item, index) => (
+                  <option key={index} value={item.productTitle}>
+                    {item.productTitle}
+                  </option>
+                ))}
+            </select>
+            <span className="text-secondary">*</span>
+          </div>
+          <div className="flex">
+            <InputFields
+              type="number"
+              placeholder="From Price"
+              onChange={(e) => setFromPrice(e.target.value)}
+              className="border border-graycolor px-2 w-24 "
+            />
+            <span className="text-secondary">*</span>
+          </div>
+          <div className="flex">
+            <InputFields
+              type="number"
+              placeholder="To Price"
+              onChange={(e) => setToPrice(e.target.value)}
+              className="border border-graycolor px-2 w-24"
+            />
+            <span className="text-secondary">*</span>
+          </div>
+          <div className="flex">
+            <InputFields
+              type="number"
+              placeholder="From Quantity"
+              onChange={(e) => setFromQty(e.target.value)}
+              className="border border-graycolor px-2 w-24"
+            />
+          </div>
+          <div className="flex">
+            <InputFields
+              type="number"
+              placeholder="To Quantity"
+              onChange={(e) => setToQty(e.target.value)}
+              className="border border-graycolor px-2 w-24"
+            />
+          </div>
+          <div className="flex">
+            <InputFields
+              type="string"
+              placeholder="Destination"
+              onChange={(e) => {
+                setDestination(e.target.value);
+                setdistance("");
+                setdistancetonum("");
+              }}
+              className="border border-graycolor px-2 w-24"
+            />
+          </div>
+          {Product != "null" ? (
+            FromPrice != "null" ? (
+              ToPrice != "null" ? (
+                <div className="flex text-center pr-2 gap-2">
+                  <Button colorScheme="blue" onClick={handlesearch}>
+                    Go
+                  </Button>
+                </div>
+              ) : null
+            ) : null
+          ) : null}
+        </div> */}
+
         <div className="border-gray-500 scroll-smooth border overflow-y-scroll">
           <Table
             size="sm"
@@ -392,17 +404,21 @@ const ShortlistOrder = () => {
                 <Th textAlign="center" className="border">
                   product
                 </Th>
+
                 <Th textAlign="center" className="border">
-                  qty range
+                  count for Fixed suppliers
                 </Th>
                 <Th textAlign="center" className="border">
-                  price range
+                  total amount
                 </Th>
                 <Th textAlign="center" className="border">
-                  No.of suppliers found
+                  call status
                 </Th>
                 <Th textAlign="center" className="border">
-                  Count for confirmed suppliers
+                  call Action
+                </Th>
+                <Th textAlign="center" className="border">
+                  payment status
                 </Th>
               </Tr>
             </Thead>
@@ -441,7 +457,7 @@ const ShortlistOrder = () => {
                     </Td>
                     <Td textAlign="center">{item.product}</Td>
                     <Td textAlign="center">
-                      {/* <Button
+                      <Button
                         size="md"
                         colorScheme="blue"
                         variant="link"
@@ -452,48 +468,72 @@ const ShortlistOrder = () => {
                         {item.minrange}
                         {"-"}
                         {item.maxrange}
-                      </Button> */}
-                      {item.minrange}
-                      {"-"}
-                      {item.maxrange}
+                      </Button>
                     </Td>
-                    <Td textAlign="center">
-                      {item.minprice}
-                      {"-"}
-                      {item.maxprice}
-                      {/* <Button
-                        size="md"
+                    <Td textAlign="center">{item.shortlist}</Td>
+                    {item.fixed ? <Td>{item.fixed}</Td> : <Td>0</Td>}
+                    {item.fixed >= 1 ? <Td>Matched</Td> : <Td>Pending</Td>}
+                    <Td>
+                      <Button
+                        size="xs"
                         colorScheme="blue"
-                        variant="link"
                         onClick={() => {
-                          UpdatedPriceRangeList(item._id);
+                          matcheslist(item._id);
                         }}
                       >
-                        {item.minprice}
-                        {"-"}
-                        {item.maxprice}
-                      </Button> */}
+                        call
+                      </Button>
                     </Td>
-                    <Td textAlign="center">
-                      {item.shortlist === 1 ? (
+
+                    {/* <Td textAlign="center">
+                      {Destination != "" ? (
                         <Button
-                          size="md"
-                          colorScheme="blue"
                           variant="link"
-                          onClick={() => {
-                            matcheslist(item._id);
-                            // isOpenmap(item);
-                          }}
+                          size="xs"
+                          colorScheme="blue"
+                          onClick={() => vehicleopen(item)}
                         >
-                          {item.shortlist}
+                          VIEW
                         </Button>
                       ) : (
-                        <Button size="md" colorScheme="blue" variant="link">
-                          {item.shortlist}
+                        <Button
+                          disabled
+                          variant="link"
+                          size="xs"
+                          colorScheme="blue"
+                          onClick={() => vehicleopen(item)}
+                        >
+                          VIEW
                         </Button>
                       )}
                     </Td>
-                    <Td></Td>
+                    <Td textAlign="center">
+                      {item.matchesstatus === "" ? (
+                        <div>Pending</div>
+                      ) : (
+                        <div>{item.matchesstatus}</div>
+                      )}
+                    </Td>
+                    <Td textAlign="center">
+                      {item.matchesstatus === "" ? (
+                        <Button
+                          size="xs"
+                          colorScheme="blue"
+                          onClick={() => Matche(item)}
+                        >
+                          Interest
+                        </Button>
+                      ) : (
+                        <Button
+                          disabled
+                          size="xs"
+                          colorScheme="blue"
+                          onClick={() => Matche()}
+                        >
+                          Interest
+                        </Button>
+                      )}
+                    </Td> */}
                   </Tr>
                 ))}
             </Tbody>
@@ -697,13 +737,14 @@ const ShortlistOrder = () => {
         <Modal
           isOpen={islastTimeUpdatedQtyRange}
           onClose={isLastTimeUpdatedQtyRangeClose}
+          size="2xl"
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Updated Quentity Range List</ModalHeader>
+            <ModalHeader></ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <div className="border-gray-500 scroll-smooth border">
+              <div className="border-gray-500 scroll-smooth border mt-2">
                 <Table
                   size="sm"
                   scaleY="44"
@@ -713,10 +754,12 @@ const ShortlistOrder = () => {
                 >
                   <Thead className="bg-headergreen text-center">
                     <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Changed Qty Range</Th>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Supplier Name</Th>
+                      <Th textAlign="center">Available Qty</Th>
+                      <Th textAlign="center">Shortlisted Qty</Th>
+                      <Th textAlign="center">Moderated Price</Th>
+                      <Th textAlign="center">Total Price</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -881,78 +924,41 @@ const ShortlistOrder = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <Modal isOpen={isSupplierCall} onClose={isSupplierclose}>
+        {/* <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Call Status</ModalHeader>
+            <ModalHeader>Map View</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <Forms>
-                <div className="grid items-center gap-2">
-                  <div className="grid pb-2 gap-2">
-                    <label className="font-semibold">Status :</label>
-                    <select
-                      name="status"
-                      // value={formik.values.callstatus}
-                      onChange={(e) => {
-                        formik.setFieldValue("callstatus", e.target.value);
-                        e.target.classList.add("change_color");
+              <div className="flex justify-center text-center">
+                <div className="object-cover h-48 w-96">
+                  <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
+                    <GoogleMap
+                      mapContainerStyle={mapStyles}
+                      zoom={13}
+                      center={{
+                        lat: parseFloat(slat),
+                        lng: parseFloat(slng),
                       }}
-                      onBlur={formik.handleBlur}
-                      style={{ outline: 0 }}
-                      className="input-primary"
                     >
-                      <option value="null">Select Status</option>
-                      <option value="Accepted">Accepted</option>
-                      <option value="CallBack">CallBack</option>
-                    </select>
-                  </div>
-                  <div className="flex flex-row gap-2">
-                    <label className="font-semibold ">Buyer Qty Range :</label>
-                    {BuyerData.minrange}-{BuyerData.maxrange}
-                  </div>
-                  <div className="flex flex-row gap-2">
-                    <label className="font-semibold ">
-                      Available Quentity :
-                    </label>
-                    {Details.expectedQnty}
-                  </div>
-                  <div className="grid pb-2 gap-2">
-                    <label className="font-semibold ">
-                      Shortlisted Quentity
-                    </label>
-                    <InputFields
-                      type="string"
-                      name="shortlistedQty"
-                      placeholder="Enter Shortlisted Quentity"
-                      value={formik.values.shortlistedQty || ""}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      className="input-primary"
-                    />
-                    {/* {formik.touched.advance && formik.errors.advance ? (
-                      <FormikErrorMessage>
-                        {formik.errors.advance}
-                      </FormikErrorMessage>
-                    ) : null} */}
-                  </div>
+                      <Marker
+                        position={{
+                          lat: parseFloat(slat),
+                          lng: parseFloat(slng),
+                        }}
+                      />
+                    </GoogleMap>
+                  </LoadScript>
                 </div>
-              </Forms>
+              </div>
             </ModalBody>
             <ModalFooter>
-              <Button onClick={isSupplierclose} colorScheme="blue" mr={3}>
+              <Button onClick={onClose} colorScheme="blue" mr={3}>
                 Close
-              </Button>
-              <Button
-                onClick={UpdatedSupplierCallStatus}
-                colorScheme="blue"
-                mr={3}
-              >
-                Save
               </Button>
             </ModalFooter>
           </ModalContent>
-        </Modal>
+        </Modal> */}
         <Modal size="4xl" isOpen={matches} onClose={matcheslistclose}>
           <ModalOverlay />
           <ModalContent>
@@ -1002,13 +1008,13 @@ const ShortlistOrder = () => {
                     <Tr>
                       <Th>S.No</Th>
                       <Th>Supplier Name</Th>
-                      <Th>Available Quantity</Th>
+                      <Th>Quantity</Th>
+                      <Th>Shortlisted qty</Th>
                       <Th>Moderate Price</Th>
-                      <Th>Landing price</Th>
-                      <Th>confirmed order qty</Th>
+                      <Th>total Price</Th>
+                      <Th>Landing Price</Th>
                       <Th>Status</Th>
-                      <Th>Call Status</Th>
-                      <Th>Call Action</Th>
+                      <Th>Action</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -1030,34 +1036,77 @@ const ShortlistOrder = () => {
                           <Td>{item.secretName}</Td>
                           <Td>{item.expectedQnty}</Td>
                           <Td>{item.moderatedPrice}</Td>
+                          <Td>{item.moderatedPrice}</Td>
                           <Td>{item.expectedQnty * item.moderatedPrice}</Td>
-                          <Td>{item.stockLocation}</Td>
                           <Td>
-                            {item.ghrfstatus === "shortlist" ? (
-                              <div>{item.ghrfstatus}</div>
-                            ) : (
-                              <div>Pending</div>
-                            )}
+                            <Button
+                              variant="link"
+                              size="xs"
+                              colorScheme="blue"
+                              onClick={() => vehicleopen(item)}
+                            >
+                              VIEW
+                            </Button>
                           </Td>
-                          <Td>
-                            {item.status === "Accepted" ? (
-                              <div>{item.status}</div>
-                            ) : null}
-                            {item.status === "Callback" ? (
-                              <div>{item.status}</div>
-                            ) : null}
-                          </Td>
+                          <Td></Td>
                           <Td>
                             <Button
                               size="xs"
                               colorScheme="blue"
                               onClick={() => {
-                                Call(item);
+                                fixedTable(item.id);
                               }}
                             >
-                              Call
+                              Fixed
                             </Button>
                           </Td>
+
+                          {/* <Td>l</Td> */}
+                          {/* <Td>
+                            <Button
+                              size="xs"
+                              colorScheme="blue"
+                              onClick={() => {
+                                //setstatusname([...statusname, item.data._id]);
+                                console.log(item.id);
+                                saveinterest(item.id);
+                                //streetChange();
+                              }}
+                            >
+                              Interest
+                            </Button>
+                          </Td> */}
+                          {/* {item.data.InterestStatus === "" ? (
+                            <Td>Pending</Td>
+                          ) : (
+                            <Td>{item.data.InterestStatus}</Td>
+                          )}
+                          {item.data.InterestStatus === "" ? (
+                            <Td>
+                              <Button
+                                size="xs"
+                                colorScheme="blue"
+                                // onClick={() => {
+                                //   UpdatedQtyRangeList(item._id);
+                                // }}
+                              >
+                                Interest
+                              </Button>
+                            </Td>
+                          ) : (
+                            <Td>
+                              <Button
+                                disabled
+                                size="xs"
+                                colorScheme="blue"
+                                // onClick={() => {
+                                //   UpdatedQtyRangeList(item._id);
+                                // }}
+                              >
+                                Interest
+                              </Button>
+                            </Td>
+                          )} */}
                         </Tr>
                       ))}
                   </Tbody>
@@ -1080,8 +1129,62 @@ const ShortlistOrder = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
+        <Modal isOpen={fixed} onClose={fixedclose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Call Status</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Forms>
+                <div className="grid items-center gap-2">
+                  <div className="flex flex-row gap-2">
+                    <label className="font-semibold ">Total Amount :</label>
+                    {BuyerData.minrange}
+                  </div>
+                  <div className="flex flex-row gap-2">
+                    <label className="font-semibold ">Payment Mode :</label>
+                    {Details.expectedQnty}
+                  </div>
+                  <div className="flex flex-row gap-2">
+                    <label className="font-semibold ">Pay To Be Amount :</label>
+                    {Details.expectedQnty}
+                  </div>
+                  <div className="grid pb-2 gap-2">
+                    <label className="font-semibold ">Pay to be Amount</label>
+                    <InputFields
+                      type="string"
+                      name="shortlistedQty"
+                      placeholder="Enter Shortlisted Quentity"
+                      //   value={formik.values.shortlistedQty || ""}
+                      //   onChange={formik.handleChange}
+                      //   onBlur={formik.handleBlur}
+                      className="input-primary"
+                    />
+                    {/* {formik.touched.advance && formik.errors.advance ? (
+                      <FormikErrorMessage>
+                        {formik.errors.advance}
+                      </FormikErrorMessage>
+                    ) : null} */}
+                  </div>
+                </div>
+              </Forms>
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={fixedclose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+              <Button
+                //onClick={UpdatedSupplierCallStatus}
+                colorScheme="blue"
+                mr={3}
+              >
+                Save
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </div>
     </>
   );
 };
-export default ShortlistOrder;
+export default AmountExecutive;

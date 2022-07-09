@@ -136,11 +136,26 @@ export default function Navbar({ defaultOpenKeys }) {
           </Link>
         </Menu.Item>
         <Menu.Item key="12">
-          <Link href="/buyermatches">
+          <Link href="/shortlistedOrder">
             <a>Shortlisted Order</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="13">
+          <Link href="/FixedOrder">
+            <a>Fixed Order</a>
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="14">
+          <Link href="/AccountExecutive">
+            <a>Account Executive</a>
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="15">
+          <Link href="/SupplierMatches">
+            <a>Supplier Matches</a>
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="16">
           <Link href="/videostreaming">
             <a>Video Streaming</a>
           </Link>

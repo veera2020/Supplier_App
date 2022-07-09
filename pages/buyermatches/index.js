@@ -29,7 +29,7 @@ import {
 //components
 import InputFields from "../controls/InputFields";
 import axios from "../../axios";
-import Supplier from "./Supplier";
+
 //useTable
 const useTable = () => {
   const [Loading, setLoading] = useState(false);
@@ -104,7 +104,7 @@ const BuyerMatches = () => {
     axios
       .get("/v1/requirementCollection/thirdPartyApi/product")
       .then((res) => setproductslist(res.data));
-  }, [reload]);
+  }, []);
 
   //table
   const EmployeeTable = useTable();
@@ -120,14 +120,14 @@ const BuyerMatches = () => {
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
       console.log(response.data);
-   //   setreload(!reload);
+      //   setreload(!reload);
     } else {
       EmployeeTable.setRowData([]);
     }
   };
   useEffect(() => {
     fetchdata(EmployeeTable.currentPage, EmployeeTable.showLimit);
-  }, [reload]);
+  }, []);
 
   // Search Method
   const handlesearch = () => {
@@ -273,7 +273,7 @@ const BuyerMatches = () => {
     axios
       .get(`/v1/requirementCollectionBS/Buyer/SameProduct/all/${props}`)
       .then((res) => {
-       // setreload(!reload);
+        // setreload(!reload);
         setmatchesDetails(res.data);
         console.log(res.data);
       });
@@ -612,7 +612,7 @@ const BuyerMatches = () => {
             </Tbody>
           </Table>
         </div>
-       
+
         <Modal isOpen={isBuyerDetails} onClose={isBuyerDetailsClose} size="xl">
           <ModalOverlay />
           <ModalContent>
