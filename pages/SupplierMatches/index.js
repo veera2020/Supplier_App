@@ -1,7 +1,7 @@
 /*
- *  Document    : BuyerMatches.js
+ *  Document    : index.js
  *  Author      : uyarchi
- *  Description : Buyer Matches from Search
+ *  Description : Supplier Matches from Search
  */
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
@@ -97,18 +97,16 @@ const SupplierMatches = () => {
     setDetails(props);
   };
   //usestate
-  const [isBuyerDetails, setBuyerDetails] = useState(false);
-  const [BuyerData, setBuyerData] = useState("");
+  const [isSupplierDetails, setSupplierDetails] = useState(false);
   const [SupplierData, setSupplierData] = useState("");
-
-  const isBuyerDetailsClose = () => {
-    setBuyerDetails(false);
+  const isSupplierDetailsClose = () => {
+    setSupplierDetails(false);
   };
-  const Buyer = (props) => {
-    setBuyerDetails(true);
+  const Supplier = (props) => {
+    setSupplierDetails(true);
     axios
-      .get(`/v1/requirementCollectionBS/Buyer/${props}`)
-      .then((res) => setBuyerData(res.data[0]));
+      .get(`/v1/requirementCollectionBS/Supplier/${props}`)
+      .then((res) => setSupplierData(res.data[0]));
   };
   //usestate
   const [islastTimeUpdatedQtyRange, setLastTimeUpdatedQtyRange] =
@@ -117,14 +115,10 @@ const SupplierMatches = () => {
   let UpdateQty = [];
   let UpdatePrice = [];
   let UpdateLocation = [];
+  UpdatedDetails.map((item) => (item.updatedQty ? UpdateQty.push(item) : null));
+  UpdatedDetails.map((item) => (item.price ? UpdatePrice.push(item) : null));
   UpdatedDetails.map((item) =>
-    item.QtyMin && item.QtyMax ? UpdateQty.push(item) : null
-  );
-  UpdatedDetails.map((item) =>
-    item.priceMin && item.priceMax ? UpdatePrice.push(item) : null
-  );
-  UpdatedDetails.map((item) =>
-    item.deliveryLocation ? UpdateLocation.push(item) : null
+    item.stockLocation ? UpdateLocation.push(item) : null
   );
   const isLastTimeUpdatedQtyRangeClose = () => {
     setLastTimeUpdatedQtyRange(false);
@@ -132,7 +126,7 @@ const SupplierMatches = () => {
   const UpdatedQtyRangeList = (props) => {
     setLastTimeUpdatedQtyRange(true);
     axios
-      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
+      .get(`/v1/requirementCollectionBS/Supplier/UpdataData/${props}`)
       .then((res) => setUpdatedDetails(res.data));
   };
   //usestate
@@ -145,7 +139,7 @@ const SupplierMatches = () => {
   const UpdatedPriceRangeList = (props) => {
     setLastTimeUpdatedPriceRange(true);
     axios
-      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
+      .get(`/v1/requirementCollectionBS/Supplier/UpdataData/${props}`)
       .then((res) => setUpdatedDetails(res.data));
   };
   //usestate
@@ -158,7 +152,7 @@ const SupplierMatches = () => {
   const UpdatedLocationList = (props) => {
     setLastTimeUpdatedLocation(true);
     axios
-      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
+      .get(`/v1/requirementCollectionBS/Supplier/UpdataData/${props}`)
       .then((res) => setUpdatedDetails(res.data));
   };
   //usestate
@@ -282,7 +276,7 @@ const SupplierMatches = () => {
                         size="md"
                         colorScheme="blue"
                         variant="link"
-                        onClick={() => Buyer(item._id)}
+                        onClick={() => Supplier(item._id)}
                       >
                         {item.name}
                       </Button>
@@ -342,7 +336,6 @@ const SupplierMatches = () => {
                         variant="link"
                         onClick={() => {
                           BuyerMatches(item._id);
-                          // isOpenmap(item);
                         }}
                       >
                         {item.stockLocation}
@@ -353,7 +346,11 @@ const SupplierMatches = () => {
             </Tbody>
           </Table>
         </div>
-        <Modal isOpen={isBuyerDetails} onClose={isBuyerDetailsClose} size="xl">
+        <Modal
+          isOpen={isSupplierDetails}
+          onClose={isSupplierDetailsClose}
+          size="xl"
+        >
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Supplier Details</ModalHeader>
@@ -508,7 +505,7 @@ const SupplierMatches = () => {
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button onClick={isBuyerDetailsClose} colorScheme="red" mr={3}>
+              <Button onClick={isSupplierDetailsClose} colorScheme="red" mr={3}>
                 Close
               </Button>
             </ModalFooter>
@@ -557,9 +554,7 @@ const SupplierMatches = () => {
                           <Td>{index + 1}</Td>
                           <Td>{item.date}</Td>
                           <Td>{item.time}</Td>
-                          <Td>
-                            {item.QtyMin}-{item.QtyMax}
-                          </Td>
+                          <Td>{item.updatedQty}</Td>
                         </Tr>
                       ))}
                   </Tbody>
@@ -620,9 +615,7 @@ const SupplierMatches = () => {
                           <Td>{index + 1}</Td>
                           <Td>{item.date}</Td>
                           <Td>{item.time}</Td>
-                          <Td>
-                            {item.priceMin}-{item.priceMax}
-                          </Td>
+                          <Td>{item.price}</Td>
                         </Tr>
                       ))}
                   </Tbody>
@@ -683,7 +676,7 @@ const SupplierMatches = () => {
                           <Td>{index + 1}</Td>
                           <Td>{item.date}</Td>
                           <Td>{item.time}</Td>
-                          <Td>{item.deliveryLocation}</Td>
+                          <Td>{item.stockLocation}</Td>
                         </Tr>
                       ))}
                   </Tbody>

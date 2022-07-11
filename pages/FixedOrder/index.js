@@ -536,7 +536,7 @@ const FixedOrder = () => {
                           // isOpenmap(item);
                         }}
                       >
-                        {item.deliverylocation}
+                        {item.interest}
                       </Button>
                     </Td>
                     <Td textAlign="center">{item.shortlist}</Td>
@@ -1101,7 +1101,7 @@ const FixedOrder = () => {
                           <Td>{index + 1}</Td>
                           <Td>{item.secretName}</Td>
                           <Td>{item.expectedQnty}</Td>
-                          <Td>{item.moderatedPrice}</Td>
+                          <Td>{item.shortlistQuantity}</Td>
                           <Td>{item.moderatedPrice}</Td>
                           <Td>{item.expectedQnty * item.moderatedPrice}</Td>
                           <Td>

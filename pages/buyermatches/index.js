@@ -120,7 +120,7 @@ const BuyerMatches = () => {
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
       console.log(response.data);
-      //   setreload(!reload);
+      setreload(!reload);
     } else {
       EmployeeTable.setRowData([]);
     }
@@ -273,7 +273,7 @@ const BuyerMatches = () => {
     axios
       .get(`/v1/requirementCollectionBS/Buyer/SameProduct/all/${props}`)
       .then((res) => {
-        // setreload(!reload);
+        setreload(!reload);
         setmatchesDetails(res.data);
         console.log(res.data);
       });

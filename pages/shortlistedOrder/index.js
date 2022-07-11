@@ -98,6 +98,7 @@ const ShortlistOrder = () => {
   const [distancetonum, setdistancetonum] = useState("");
   const [totalprice, setTotalprice] = useState("");
   const [Details, setDetails] = useState("");
+  const [id, setId] = useState("");
   useEffect(() => {
     axios
       .get("/v1/requirementCollection/thirdPartyApi/product")
@@ -106,7 +107,7 @@ const ShortlistOrder = () => {
   //Formik InitialValue
   const initialvalue = {
     callstatus: "",
-    shortlistedQty: "",
+    shortlistQuantity: "",
   };
   //formik validation
   const formik = useFormik({
@@ -114,7 +115,7 @@ const ShortlistOrder = () => {
     initialValues: initialvalue,
     validationSchema: Yup.object().shape({
       callstatus: Yup.string(),
-      shortlistedQty: Yup.string(),
+      shortlistQuantity: Yup.string(),
     }),
   });
   //table
@@ -184,6 +185,18 @@ const ShortlistOrder = () => {
     setDetails(props);
   };
   //usestate
+  const [isSupplierDetails, setIsSupplierDetails] = useState(false);
+  const [isSupplierData, setIsSupplierData] = useState("");
+  const isSupplierDetailsclose = () => {
+    setIsSupplierDetails(false);
+  };
+  const supplierData = (props) => {
+    setIsSupplierDetails(true);
+    axios
+      .get(`/v1/requirementCollectionBS/Supplier/${props}`)
+      .then((res) => setIsSupplierData(res.data[0]));
+  };
+  //usestate
   const [isBuyerDetails, setBuyerDetails] = useState(false);
   const [BuyerData, setBuyerData] = useState("");
   const [SupplierData, setSupplierData] = useState("");
@@ -197,57 +210,57 @@ const ShortlistOrder = () => {
       .get(`/v1/requirementCollectionBS/Buyer/${props}`)
       .then((res) => setBuyerData(res.data[0]));
   };
-  //usestate
-  const [islastTimeUpdatedQtyRange, setLastTimeUpdatedQtyRange] =
-    useState(false);
-  const [UpdatedDetails, setUpdatedDetails] = useState([]);
-  let UpdateQty = [];
-  let UpdatePrice = [];
-  let UpdateLocation = [];
-  UpdatedDetails.map((item) =>
-    item.QtyMin && item.QtyMax ? UpdateQty.push(item) : null
-  );
-  UpdatedDetails.map((item) =>
-    item.priceMin && item.priceMax ? UpdatePrice.push(item) : null
-  );
-  UpdatedDetails.map((item) =>
-    item.deliveryLocation ? UpdateLocation.push(item) : null
-  );
-  const isLastTimeUpdatedQtyRangeClose = () => {
-    setLastTimeUpdatedQtyRange(false);
-  };
-  const UpdatedQtyRangeList = (props) => {
-    setLastTimeUpdatedQtyRange(true);
-    axios
-      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
-      .then((res) => setUpdatedDetails(res.data));
-  };
-  //usestate
-  const [islastTimeUpdatedPriceRange, setLastTimeUpdatedPriceRange] =
-    useState(false);
-  //const [UpdatedDetails, setUpdatedDetails] = useState("");
-  const isLastTimeUpdatedPriceRangeClose = () => {
-    setLastTimeUpdatedPriceRange(false);
-  };
-  const UpdatedPriceRangeList = (props) => {
-    setLastTimeUpdatedPriceRange(true);
-    axios
-      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
-      .then((res) => setUpdatedDetails(res.data));
-  };
-  //usestate
-  const [islastTimeUpdatedLocation, setLastTimeUpdatedLocation] =
-    useState(false);
-  //const [UpdatedDetails, setUpdatedDetails] = useState("");
-  const isLastTimeUpdatedLocationClose = () => {
-    setLastTimeUpdatedLocation(false);
-  };
-  const UpdatedLocationList = (props) => {
-    setLastTimeUpdatedLocation(true);
-    axios
-      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
-      .then((res) => setUpdatedDetails(res.data));
-  };
+  // //usestate
+  // const [islastTimeUpdatedQtyRange, setLastTimeUpdatedQtyRange] =
+  //   useState(false);
+  // const [UpdatedDetails, setUpdatedDetails] = useState([]);
+  // let UpdateQty = [];
+  // let UpdatePrice = [];
+  // let UpdateLocation = [];
+  // UpdatedDetails.map((item) =>
+  //   item.QtyMin && item.QtyMax ? UpdateQty.push(item) : null
+  // );
+  // UpdatedDetails.map((item) =>
+  //   item.priceMin && item.priceMax ? UpdatePrice.push(item) : null
+  // );
+  // UpdatedDetails.map((item) =>
+  //   item.deliveryLocation ? UpdateLocation.push(item) : null
+  // );
+  // const isLastTimeUpdatedQtyRangeClose = () => {
+  //   setLastTimeUpdatedQtyRange(false);
+  // };
+  // const UpdatedQtyRangeList = (props) => {
+  //   setLastTimeUpdatedQtyRange(true);
+  //   axios
+  //     .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
+  //     .then((res) => setUpdatedDetails(res.data));
+  // };
+  // //usestate
+  // const [islastTimeUpdatedPriceRange, setLastTimeUpdatedPriceRange] =
+  //   useState(false);
+  // //const [UpdatedDetails, setUpdatedDetails] = useState("");
+  // const isLastTimeUpdatedPriceRangeClose = () => {
+  //   setLastTimeUpdatedPriceRange(false);
+  // };
+  // const UpdatedPriceRangeList = (props) => {
+  //   setLastTimeUpdatedPriceRange(true);
+  //   axios
+  //     .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
+  //     .then((res) => setUpdatedDetails(res.data));
+  // };
+  // //usestate
+  // const [islastTimeUpdatedLocation, setLastTimeUpdatedLocation] =
+  //   useState(false);
+  // //const [UpdatedDetails, setUpdatedDetails] = useState("");
+  // const isLastTimeUpdatedLocationClose = () => {
+  //   setLastTimeUpdatedLocation(false);
+  // };
+  // const UpdatedLocationList = (props) => {
+  //   setLastTimeUpdatedLocation(true);
+  //   axios
+  //     .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
+  //     .then((res) => setUpdatedDetails(res.data));
+  // };
   //modal for map
   const [slat, setslat] = useState("");
   const [slng, setslng] = useState("");
@@ -274,9 +287,9 @@ const ShortlistOrder = () => {
   const matcheslist = (props) => {
     setmatches(true);
     axios
-      .get(`/v1/requirementCollectionBS/Buyer/SameProduct/short/all/${props}`)
+      .get(`/v1/requirementCollectionBS/Buyer/sameProduct/short/all/${props}`)
       .then((res) => {
-        // setreload(!reload);
+        setreload(!reload);
         setmatchesDetails(res.data);
         console.log(res.data);
       });
@@ -287,15 +300,7 @@ const ShortlistOrder = () => {
       .get(`/v1/requirementCollectionBS/Buyer/${props}`)
       .then((res) => setBuyerData(res.data[0]));
   };
-  const saveinterest = (props) => {
-    const data = {
-      data: [props],
-      BId: BuyerData._id,
-    };
-    axios.post("/v1/interestTable", data).then((res) => {
-      setreload(!reload);
-    });
-  };
+
   const UpdatedSupplierCallStatus = () => {
     let values = formik.values;
     const locale = "en";
@@ -316,25 +321,36 @@ const ShortlistOrder = () => {
     var b = totime;
     b = b.replace(/\:/g, "");
     const time = parseInt(b);
+    let status;
+    if (values.callstatus == "accepted") {
+      status = "shortlist";
+    }
+    if (values.callstatus == "callback") {
+      status = "pending";
+    }
+    if (values.callstatus == "rejected") {
+      status = "rejected";
+    }
     const data = {
-      callstatus: values.callstatus,
-      shortlistedQty: values.shortlistedQty,
-      date: today,
-      time: time,
+      interestStatus: status,
+      callStatus: values.callstatus,
+      shortlistQuantity: values.shortlistQuantity,
+      // date: today,
+      // time: time,
     };
     console.log(data);
     axios
-      .put(`/v1/requirementCollectionBS/Supplier/${id}`, data)
+      .put(`/v1/interestTable/${id}`, data)
       .then((res) => {
         console.log(res.data);
         setreload(!reload);
-        setIsSupplierCallStatus(false);
+        setIsSupplierCall(false);
         formik.resetForm();
       })
       .catch((error) => {
         if (error.response) {
           console.log(error.response);
-          seterrorMessage(error.response.data.message);
+          //seterrorMessage(error.response.data.message);
         }
       });
     console.log(data);
@@ -441,18 +457,6 @@ const ShortlistOrder = () => {
                     </Td>
                     <Td textAlign="center">{item.product}</Td>
                     <Td textAlign="center">
-                      {/* <Button
-                        size="md"
-                        colorScheme="blue"
-                        variant="link"
-                        onClick={() => {
-                          UpdatedQtyRangeList(item._id);
-                        }}
-                      >
-                        {item.minrange}
-                        {"-"}
-                        {item.maxrange}
-                      </Button> */}
                       {item.minrange}
                       {"-"}
                       {item.maxrange}
@@ -461,21 +465,9 @@ const ShortlistOrder = () => {
                       {item.minprice}
                       {"-"}
                       {item.maxprice}
-                      {/* <Button
-                        size="md"
-                        colorScheme="blue"
-                        variant="link"
-                        onClick={() => {
-                          UpdatedPriceRangeList(item._id);
-                        }}
-                      >
-                        {item.minprice}
-                        {"-"}
-                        {item.maxprice}
-                      </Button> */}
                     </Td>
                     <Td textAlign="center">
-                      {item.shortlist === 1 ? (
+                      {item.interest > 0 ? (
                         <Button
                           size="md"
                           colorScheme="blue"
@@ -485,15 +477,15 @@ const ShortlistOrder = () => {
                             // isOpenmap(item);
                           }}
                         >
-                          {item.shortlist}
+                          {item.interest}
                         </Button>
                       ) : (
                         <Button size="md" colorScheme="blue" variant="link">
-                          {item.shortlist}
+                          {item.interest}
                         </Button>
                       )}
                     </Td>
-                    <Td></Td>
+                    <Td textAlign="center">{item.shortlist}</Td>
                   </Tr>
                 ))}
             </Tbody>
@@ -634,6 +626,172 @@ const ShortlistOrder = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
+        <Modal
+          isOpen={isSupplierDetails}
+          onClose={isSupplierDetailsclose}
+          size="xl"
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Supplier Details</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="p-4 ">
+                <div className="border border-graycolor cursor-pointer">
+                  <div className="grid grid-cols-6 px-4 px-1">
+                    <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                      Product Name
+                    </div>
+                    <div className="col-span-4 border-b p-1">
+                      {isSupplierData.product}
+                    </div>
+                    <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                      Stock Location
+                    </div>
+                    <div className="col-span-4 border-b p-1">
+                      {isSupplierData.stockLocation}
+                    </div>
+                    <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                      Stock position
+                    </div>
+                    <div className="col-span-4 border-b p-1">
+                      {isSupplierData.stockPosition}
+                    </div>
+                    {isSupplierData.stockPosition == "ready" ? (
+                      <>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Pack Type
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {isSupplierData.packType}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Excepted Quantity
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {isSupplierData.expectedQnty}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Excepted Price
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {isSupplierData.expectedPrice}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Stock Availability Date
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {isSupplierData.stockAvailabilityDate}
+                        </div>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Stock Availability Time
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {isSupplierData.stockAvailabilityTime}
+                        </div>
+                      </>
+                    )}
+                    <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                      Payment Mode
+                    </div>
+                    <div className="col-span-4 border-b p-1">
+                      {isSupplierData.paymentMode}
+                    </div>
+                    {isSupplierData.paymentMode == "advance" ? (
+                      <>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-graycolor p-1">
+                          Advance
+                        </div>
+                        <div className="col-span-4 p-1">
+                          {isSupplierData.advance}
+                        </div>
+                      </>
+                    ) : null}
+                    {isSupplierData.status ? (
+                      <>
+                        <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                          Status
+                        </div>
+                        <div className="col-span-4 border-b p-1">
+                          {isSupplierData.status}
+                        </div>
+                        {isSupplierData.status == "Accepted" ? (
+                          <>
+                            <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                              Accepted Reason
+                            </div>
+                            <div className="col-span-4 border-b p-1">
+                              {isSupplierData.statusAccept}
+                            </div>
+                            <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                              FeedBack
+                            </div>
+                            <div className="col-span-4 border-b p-1">
+                              {isSupplierData.statusAccept ==
+                              "Requirement Alive"
+                                ? isSupplierData.aliveFeedback != ""
+                                  ? isSupplierData.aliveFeedback
+                                  : "null"
+                                : null}
+                              {isSupplierData.statusAccept == "Requirement dead"
+                                ? isSupplierData.deadFeedback != ""
+                                  ? isSupplierData.deadFeedback
+                                  : "null"
+                                : null}
+                              {isSupplierData.statusAccept ==
+                              "Requirement Alive with modification"
+                                ? isSupplierData.modificationFeedback != ""
+                                  ? isSupplierData.modificationFeedback
+                                  : "null"
+                                : null}
+                            </div>
+                          </>
+                        ) : null}
+                        {isSupplierData.status == "CallBack" ? (
+                          <>
+                            <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                              Callback Reason
+                            </div>
+                            <div className="col-span-4 border-b p-1">
+                              {isSupplierData.reasonCallback}
+                            </div>
+                            {isSupplierData.reasonCallback ==
+                            "Answer to call later" ? (
+                              <>
+                                <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                                  Back to Call
+                                </div>
+                                <div className="col-span-4 border-b p-1">
+                                  {isSupplierData.dateCallback.split("T")[0]}
+                                </div>
+                              </>
+                            ) : null}
+                            <div className="col-span-2 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                              FeedBack
+                            </div>
+                            <div className="col-span-4 border-b p-1">
+                              {isSupplierData.feedbackCallback == ""
+                                ? "null"
+                                : isSupplierData.feedbackCallback}
+                            </div>
+                          </>
+                        ) : null}
+                      </>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={isSupplierDetailsclose} colorScheme="red" mr={3}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
         <Modal isOpen={isvehicle} onClose={isvehicleclose} size="2xl">
           <ModalOverlay />
           <ModalContent>
@@ -694,7 +852,7 @@ const ShortlistOrder = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <Modal
+        {/* <Modal
           isOpen={islastTimeUpdatedQtyRange}
           onClose={isLastTimeUpdatedQtyRangeClose}
         >
@@ -880,7 +1038,7 @@ const ShortlistOrder = () => {
               </Button>
             </ModalFooter>
           </ModalContent>
-        </Modal>
+        </Modal> */}
         <Modal isOpen={isSupplierCall} onClose={isSupplierclose}>
           <ModalOverlay />
           <ModalContent>
@@ -893,7 +1051,6 @@ const ShortlistOrder = () => {
                     <label className="font-semibold">Status :</label>
                     <select
                       name="status"
-                      // value={formik.values.callstatus}
                       onChange={(e) => {
                         formik.setFieldValue("callstatus", e.target.value);
                         e.target.classList.add("change_color");
@@ -903,8 +1060,9 @@ const ShortlistOrder = () => {
                       className="input-primary"
                     >
                       <option value="null">Select Status</option>
-                      <option value="Accepted">Accepted</option>
-                      <option value="CallBack">CallBack</option>
+                      <option value="accepted">Accepted</option>
+                      <option value="callback">CallBack</option>
+                      <option value="rejected">Rejected</option>
                     </select>
                   </div>
                   <div className="flex flex-row gap-2">
@@ -923,9 +1081,9 @@ const ShortlistOrder = () => {
                     </label>
                     <InputFields
                       type="string"
-                      name="shortlistedQty"
+                      name="shortlistQuantity"
                       placeholder="Enter Shortlisted Quentity"
-                      value={formik.values.shortlistedQty || ""}
+                      value={formik.values.shortlistQuantity || ""}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       className="input-primary"
@@ -1027,11 +1185,29 @@ const ShortlistOrder = () => {
                       matchesDetails.map((item, index) => (
                         <Tr colSpan="2" key={index}>
                           <Td>{index + 1}</Td>
-                          <Td>{item.secretName}</Td>
+                          <Td>
+                            <Button
+                              variant="link"
+                              size="xs"
+                              colorScheme="blue"
+                              onClick={() => supplierData(item.id)}
+                            >
+                              {item.secretName}
+                            </Button>
+                          </Td>
                           <Td>{item.expectedQnty}</Td>
                           <Td>{item.moderatedPrice}</Td>
-                          <Td>{item.expectedQnty * item.moderatedPrice}</Td>
-                          <Td>{item.stockLocation}</Td>
+                          <Td>
+                            <Button
+                              variant="link"
+                              size="xs"
+                              colorScheme="blue"
+                              onClick={() => vehicleopen(item)}
+                            >
+                              VIEW
+                            </Button>
+                          </Td>
+                          <Td>{item.shortlistQuantity}</Td>
                           <Td>
                             {item.ghrfstatus === "shortlist" ? (
                               <div>{item.ghrfstatus}</div>
@@ -1040,11 +1216,8 @@ const ShortlistOrder = () => {
                             )}
                           </Td>
                           <Td>
-                            {item.status === "Accepted" ? (
-                              <div>{item.status}</div>
-                            ) : null}
-                            {item.status === "Callback" ? (
-                              <div>{item.status}</div>
+                            {item.callStatus !== "" ? (
+                              <div>{item.callStatus}</div>
                             ) : null}
                           </Td>
                           <Td>
@@ -1053,6 +1226,7 @@ const ShortlistOrder = () => {
                               colorScheme="blue"
                               onClick={() => {
                                 Call(item);
+                                setId(item.interestId);
                               }}
                             >
                               Call
