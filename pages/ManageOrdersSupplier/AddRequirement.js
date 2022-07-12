@@ -126,7 +126,7 @@ const AddRequirement = ({ setreload, reload }) => {
       b = b.replace(/\:/g, "");
       const time = parseInt(b);
       const data = {
-        requirementAddBy: "telecller",
+        requirementAddBy: "telecaller",
         userId: supplierId,
         product: values.supplierpname.toLowerCase(),
         stockLocation: values.stocklocation.toLowerCase(),

@@ -285,9 +285,25 @@ const BuyerMatches = () => {
       .then((res) => setBuyerData(res.data[0]));
   };
   const saveinterest = (props) => {
+    const locale = "en";
+    var today = new Date();
+    const totime = today.toLocaleTimeString(locale, {
+      hour: "numeric",
+      hour12: false,
+      minute: "numeric",
+    });
+    var dd = String(today.getDate()).padStart(2, "0");
+    var mm = String(today.getMonth() + 1).padStart(2, "0");
+    var yyyy = today.getFullYear();
+    today = dd + "-" + mm + "-" + yyyy;
+    var b = totime;
+    b = b.replace(/\:/g, "");
+    const time = parseInt(b);
     const data = {
       data: [props],
       BId: BuyerData._id,
+      interestDate: today,
+      interestTime: time,
     };
     axios.post("/v1/interestTable", data).then((res) => {
       setreload(!reload);
@@ -544,8 +560,20 @@ const BuyerMatches = () => {
                       {"/ "}
                       {item.deliveryTime}
                     </Td>
-                    {item.interest ? <Td>{item.interest}</Td> : <Td>0</Td>}
-                    {item.interest >= 1 ? <Td>Matched</Td> : <Td>Pending</Td>}
+                    <Td textAlign="center">
+                      {item.interest ? (
+                        <div>{item.interest}</div>
+                      ) : (
+                        <div>0</div>
+                      )}
+                    </Td>
+                    <Td textAlign="center">
+                      {item.interest >= 1 ? (
+                        <div>Matched</div>
+                      ) : (
+                        <div>Pending</div>
+                      )}
+                    </Td>
                     <Td>
                       <Button
                         size="xs"
@@ -1029,7 +1057,7 @@ const BuyerMatches = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <Modal size="4xl" isOpen={matches} onClose={matcheslistclose}>
+        <Modal size="5xl" isOpen={matches} onClose={matcheslistclose}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Matches Suppliers</ModalHeader>
@@ -1077,6 +1105,7 @@ const BuyerMatches = () => {
                   <Thead className="bg-headergreen text-center">
                     <Tr>
                       <Th>S.No</Th>
+                      <Th>Date & Time</Th>
                       <Th>Supplier Name</Th>
                       <Th>Available Quantity</Th>
                       <Th>Moderate Price</Th>
@@ -1103,6 +1132,7 @@ const BuyerMatches = () => {
                       matchesDetails.map((item, index) => (
                         <Tr colSpan="2" key={index}>
                           <Td>{index + 1}</Td>
+                          <Td>{item.inte[0].interestDate}/{item.inte[0].interestTime}</Td>
                           <Td>{item.secretName}</Td>
                           <Td>{item.expectedQnty}</Td>
                           <Td>{item.moderatedPrice}</Td>

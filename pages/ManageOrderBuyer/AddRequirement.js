@@ -116,7 +116,7 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
       b = b.replace(/\:/g, "");
       const time = parseInt(b);
       const data = {
-        requirementAddBy: "telecller",
+        requirementAddBy: "telecaller",
         userId: buyerId,
         product: values.buyerpname.toLowerCase(),
         minrange: values.minrange,

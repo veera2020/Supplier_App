@@ -332,11 +332,11 @@ const ShortlistOrder = () => {
       status = "rejected";
     }
     const data = {
-      interestStatus: status,
-      callStatus: values.callstatus,
+      shortlistStatus: status,
+      shortStatus: values.callstatus,
       shortlistQuantity: values.shortlistQuantity,
-      // date: today,
-      // time: time,
+      shortDate: today,
+      shortTime: time,
     };
     console.log(data);
     axios
@@ -1111,7 +1111,7 @@ const ShortlistOrder = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <Modal size="4xl" isOpen={matches} onClose={matcheslistclose}>
+        <Modal size="5xl" isOpen={matches} onClose={matcheslistclose}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Matches Suppliers</ModalHeader>
@@ -1159,6 +1159,7 @@ const ShortlistOrder = () => {
                   <Thead className="bg-headergreen text-center">
                     <Tr>
                       <Th>S.No</Th>
+                      <Th>Date & Time</Th>
                       <Th>Supplier Name</Th>
                       <Th>Available Quantity</Th>
                       <Th>Moderate Price</Th>
@@ -1186,6 +1187,10 @@ const ShortlistOrder = () => {
                         <Tr colSpan="2" key={index}>
                           <Td>{index + 1}</Td>
                           <Td>
+                            {item.shortDate}
+                            {"/"} {item.shortTime}
+                          </Td>
+                          <Td>
                             <Button
                               variant="link"
                               size="xs"
@@ -1209,15 +1214,15 @@ const ShortlistOrder = () => {
                           </Td>
                           <Td>{item.shortlistQuantity}</Td>
                           <Td>
-                            {item.ghrfstatus === "shortlist" ? (
-                              <div>{item.ghrfstatus}</div>
+                            {item.shortliststatus === "shortlist" ? (
+                              <div>{item.shortliststatus}</div>
                             ) : (
                               <div>Pending</div>
                             )}
                           </Td>
                           <Td>
-                            {item.callStatus !== "" ? (
-                              <div>{item.callStatus}</div>
+                            {item.shortStatus !== "" ? (
+                              <div>{item.shortStatus}</div>
                             ) : null}
                           </Td>
                           <Td>
