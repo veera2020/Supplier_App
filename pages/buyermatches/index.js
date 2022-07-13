@@ -5,6 +5,8 @@
  */
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import Head from "next/head";
 import { Breadcrumb } from "antd";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
@@ -24,11 +26,13 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
+  Input,
 } from "@chakra-ui/react";
 
 //components
 import InputFields from "../controls/InputFields";
 import axios from "../../axios";
+import { Formik } from "formik";
 
 //useTable
 const useTable = () => {
@@ -88,7 +92,7 @@ const BuyerMatches = () => {
   //router
   const router = useRouter();
   // UseState
-  const [Product, setProduct] = useState("null");
+  const [buyerId, setBuyerId] = useState("");
   const [FromPrice, setFromPrice] = useState("null");
   const [ToPrice, setToPrice] = useState("null");
   const [FromQty, setFromQty] = useState("null");
@@ -105,7 +109,22 @@ const BuyerMatches = () => {
       .get("/v1/requirementCollection/thirdPartyApi/product")
       .then((res) => setproductslist(res.data));
   }, []);
-
+  //Formik InitialValue
+  const initialvalue = {
+    callStatus: "",
+    dateCallback: "",
+    timeCallback: "",
+  };
+  //formik validation
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: initialvalue,
+    validationSchema: Yup.object().shape({
+      callStatus: Yup.string(),
+      dateCallback: Yup.string(),
+      timeCallback: Yup.string(),
+    }),
+  });
   //table
   const EmployeeTable = useTable();
   //get employees
@@ -284,6 +303,18 @@ const BuyerMatches = () => {
       .get(`/v1/requirementCollectionBS/Buyer/${props}`)
       .then((res) => setBuyerData(res.data[0]));
   };
+  //usestate
+  const [iscallStatus, setIsCallStatus] = useState(false);
+  //const [UpdatedDetails, setUpdatedDetails] = useState("");
+  const IsCallStatusClose = () => {
+    setIsCallStatus(false);
+  };
+  const IsCallStatus = () => {
+    setIsCallStatus(true);
+    // axios
+    //   .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
+    //   .then((res) => setUpdatedDetails(res.data));
+  };
   const saveinterest = (props) => {
     const locale = "en";
     var today = new Date();
@@ -310,6 +341,49 @@ const BuyerMatches = () => {
     });
   };
 
+  const saveCallStatus = () => {
+    const locale = "en";
+    var today = new Date();
+    const totime = today.toLocaleTimeString(locale, {
+      hour: "numeric",
+      hour12: false,
+      minute: "numeric",
+    });
+    var dd = String(today.getDate()).padStart(2, "0");
+    var mm = String(today.getMonth() + 1).padStart(2, "0");
+    var yyyy = today.getFullYear();
+    today = dd + "-" + mm + "-" + yyyy;
+    var b = totime;
+    b = b.replace(/\:/g, "");
+    const time = parseInt(b);
+    let timeCall = formik.values.timeCallback;
+    timeCall = timeCall.replace(/\:/g, "");
+    const timeCallStatus = parseInt(timeCall);
+    if (formik.values.callStatus === "rejected") {
+      const data = {
+        confirmCallStatus: formik.values.callStatus,
+      };
+      axios
+        .delete(`/v1/requirementCollectionBS/Buyer/${buyerId}`, data)
+        .then((res) => {
+          setreload(!reload);
+          IsCallStatusClose;
+        });
+    }
+    if (formik.values.callStatus != "rejected") {
+      const data = {
+        confirmCallStatus: formik.values.callStatus,
+        confirmCallStatusDate: formik.values.dateCallback,
+        confirmCallStatusTime: timeCallStatus,
+      };
+      axios
+        .put(`/v1/requirementCollectionBS/Buyer/${buyerId}`, data)
+        .then((res) => {
+          setreload(!reload);
+          IsCallStatusClose;
+        });
+    }
+  };
   return (
     <>
       <Head>
@@ -466,6 +540,9 @@ const BuyerMatches = () => {
                   Status
                 </Th>
                 <Th textAlign="center" className="border">
+                  Call Status
+                </Th>
+                <Th textAlign="center" className="border">
                   Action
                 </Th>
               </Tr>
@@ -574,73 +651,24 @@ const BuyerMatches = () => {
                         <div>Pending</div>
                       )}
                     </Td>
+                    <Td>{item.confirmCallStatus}</Td>
                     <Td>
                       <Button
                         size="xs"
                         colorScheme="blue"
                         onClick={() => {
                           matcheslist(item._id);
+                          setBuyerId(item._id);
                         }}
                       >
-                        Match
+                        Matches
                       </Button>
                     </Td>
-
-                    {/* <Td textAlign="center">
-                      {Destination != "" ? (
-                        <Button
-                          variant="link"
-                          size="xs"
-                          colorScheme="blue"
-                          onClick={() => vehicleopen(item)}
-                        >
-                          VIEW
-                        </Button>
-                      ) : (
-                        <Button
-                          disabled
-                          variant="link"
-                          size="xs"
-                          colorScheme="blue"
-                          onClick={() => vehicleopen(item)}
-                        >
-                          VIEW
-                        </Button>
-                      )}
-                    </Td>
-                    <Td textAlign="center">
-                      {item.matchesstatus === "" ? (
-                        <div>Pending</div>
-                      ) : (
-                        <div>{item.matchesstatus}</div>
-                      )}
-                    </Td>
-                    <Td textAlign="center">
-                      {item.matchesstatus === "" ? (
-                        <Button
-                          size="xs"
-                          colorScheme="blue"
-                          onClick={() => Matche(item)}
-                        >
-                          Interest
-                        </Button>
-                      ) : (
-                        <Button
-                          disabled
-                          size="xs"
-                          colorScheme="blue"
-                          onClick={() => Matche()}
-                        >
-                          Interest
-                        </Button>
-                      )}
-                    </Td> */}
                   </Tr>
                 ))}
             </Tbody>
           </Table>
         </div>
-
         <Modal isOpen={isBuyerDetails} onClose={isBuyerDetailsClose} size="xl">
           <ModalOverlay />
           <ModalContent>
@@ -1092,6 +1120,15 @@ const BuyerMatches = () => {
                     <label className="font-semibold"> Location: </label>{" "}
                     {BuyerData.deliverylocation}
                   </div>
+                  <div>
+                    <Button
+                      size="sm"
+                      colorScheme="blue"
+                      onClick={() => IsCallStatus()}
+                    >
+                      call
+                    </Button>
+                  </div>
                 </div>
               </div>
               <div className="border-gray-500 scroll-smooth border mt-3">
@@ -1132,7 +1169,9 @@ const BuyerMatches = () => {
                       matchesDetails.map((item, index) => (
                         <Tr colSpan="2" key={index}>
                           <Td>{index + 1}</Td>
-                          <Td>{item.inte[0].interestDate}/{item.inte[0].interestTime}</Td>
+                          <Td>
+                            {item.inteDate}/{item.inteTime}
+                          </Td>
                           <Td>{item.secretName}</Td>
                           <Td>{item.expectedQnty}</Td>
                           <Td>{item.moderatedPrice}</Td>
@@ -1235,15 +1274,84 @@ const BuyerMatches = () => {
               <Button onClick={matcheslistclose} colorScheme="blue" mr={3}>
                 Close
               </Button>
-              {/* <Button
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal isOpen={iscallStatus} onClose={IsCallStatusClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Call Status</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="grid pb-2 gap-2">
+                {/* <label className="font-semibold">Status :</label> */}
+                <select
+                  name="status"
+                  onChange={(e) => {
+                    formik.setFieldValue("callStatus", e.target.value);
+                    e.target.classList.add("change_color");
+                  }}
+                  onBlur={formik.handleBlur}
+                  style={{ outline: 0 }}
+                  className="input-primary"
+                >
+                  <option value="null">Select Call Status</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="callback">CallBack</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+              {formik.values.callStatus === "callback" ? (
+                <>
+                  <div className="grid pb-2 gap-2">
+                    <Input
+                      type="date"
+                      name="dateCallback"
+                      placeholder="Enter Price"
+                      value={formik.values.dateCallback || ""}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      className={
+                        formik.touched.dateCallback &&
+                        formik.errors.dateCallback
+                          ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                          : "input-primary bg-whitecolor focus-outline-none experience"
+                      }
+                    />
+                  </div>
+                  <div className="grid pb-2 gap-2">
+                    <Input
+                      type="time"
+                      name="timeCallback"
+                      placeholder="Enter Price"
+                      value={formik.values.timeCallback || ""}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      className={
+                        formik.touched.timeCallback &&
+                        formik.errors.timeCallback
+                          ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                          : "input-primary bg-whitecolor focus-outline-none experience"
+                      }
+                    />
+                  </div>
+                </>
+              ) : null}
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={IsCallStatusClose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+              <Button
                 //onClick={matcheslistclose}
                 colorScheme="blue"
-                // onClick={() => {
-                //   saveinterest();
-                // }}
+                onClick={() => {
+                  saveCallStatus();
+                  IsCallStatusClose();
+                }}
               >
                 save
-              </Button> */}
+              </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>

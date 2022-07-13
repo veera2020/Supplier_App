@@ -25,6 +25,7 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
+  Input,
   useDisclosure,
 } from "@chakra-ui/react";
 
@@ -107,18 +108,22 @@ const FixedOrder = () => {
   }, []);
   //Formik InitialValue
   const initialvalue = {
-    callstatus: "",
+    callStatus: "",
     buyerFixedQty: "",
     totalPrice: "",
+    dateCallback: "",
+    timeCallback: "",
   };
   //formik validation
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initialvalue,
     validationSchema: Yup.object().shape({
-      callstatus: Yup.string(),
+      callStatus: Yup.string(),
       buyerFixedQty: Yup.string(),
       totalPrice: Yup.string(),
+      dateCallback: Yup.string(),
+      timeCallback: Yup.string(),
     }),
   });
   //table
@@ -177,15 +182,18 @@ const FixedOrder = () => {
         setdistancetonum(myArray[0]);
       });
   };
-  // const Interested = (props) => {
-  //   const data = {
-  //     matchesstatus: "Interested",
-  //   };
-  //   axios.put(`/v1/requirementCollection/${props}`, data).then((res) => {
-  //     console.log(res.data);
-  //     setreload(!reload);
-  //   });
-  // };
+  //usestate
+  const [iscallStatus, setIsCallStatus] = useState(false);
+  //const [UpdatedDetails, setUpdatedDetails] = useState("");
+  const IsCallStatusClose = () => {
+    setIsCallStatus(false);
+  };
+  const IsCallStatus = () => {
+    setIsCallStatus(true);
+    // axios
+    //   .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
+    //   .then((res) => setUpdatedDetails(res.data));
+  };
   //usestate
   const [isSupplieropen, setIsSupplieropen] = useState(false);
   const isSupplierclose = () => {
@@ -208,57 +216,6 @@ const FixedOrder = () => {
     axios
       .get(`/v1/requirementCollectionBS/Buyer/${props}`)
       .then((res) => setBuyerData(res.data[0]));
-  };
-  //usestate
-  const [islastTimeUpdatedQtyRange, setLastTimeUpdatedQtyRange] =
-    useState(false);
-  const [UpdatedDetails, setUpdatedDetails] = useState([]);
-  let UpdateQty = [];
-  let UpdatePrice = [];
-  let UpdateLocation = [];
-  UpdatedDetails.map((item) =>
-    item.QtyMin && item.QtyMax ? UpdateQty.push(item) : null
-  );
-  UpdatedDetails.map((item) =>
-    item.priceMin && item.priceMax ? UpdatePrice.push(item) : null
-  );
-  UpdatedDetails.map((item) =>
-    item.deliveryLocation ? UpdateLocation.push(item) : null
-  );
-  const isLastTimeUpdatedQtyRangeClose = () => {
-    setLastTimeUpdatedQtyRange(false);
-  };
-  const UpdatedQtyRangeList = (props) => {
-    setLastTimeUpdatedQtyRange(true);
-    axios
-      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
-      .then((res) => setUpdatedDetails(res.data));
-  };
-  //usestate
-  const [islastTimeUpdatedPriceRange, setLastTimeUpdatedPriceRange] =
-    useState(false);
-  //const [UpdatedDetails, setUpdatedDetails] = useState("");
-  const isLastTimeUpdatedPriceRangeClose = () => {
-    setLastTimeUpdatedPriceRange(false);
-  };
-  const UpdatedPriceRangeList = (props) => {
-    setLastTimeUpdatedPriceRange(true);
-    axios
-      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
-      .then((res) => setUpdatedDetails(res.data));
-  };
-  //usestate
-  const [islastTimeUpdatedLocation, setLastTimeUpdatedLocation] =
-    useState(false);
-  //const [UpdatedDetails, setUpdatedDetails] = useState("");
-  const isLastTimeUpdatedLocationClose = () => {
-    setLastTimeUpdatedLocation(false);
-  };
-  const UpdatedLocationList = (props) => {
-    setLastTimeUpdatedLocation(true);
-    axios
-      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
-      .then((res) => setUpdatedDetails(res.data));
   };
   //   //modal for map
   //   const [slat, setslat] = useState("");
@@ -332,19 +289,19 @@ const FixedOrder = () => {
     b = b.replace(/\:/g, "");
     const time = parseInt(b);
     let status;
-    if (values.callstatus == "accepted") {
+    if (values.callStatus == "accepted") {
       status = "fixed";
     }
-    if (values.callstatus == "callback") {
+    if (values.callStatus == "callback") {
       status = "pending";
     }
-    if (values.callstatus == "rejected") {
+    if (values.callStatus == "rejected") {
       status = "rejected";
     }
+    console.log(values.callStatus);
     let totalPrice = fixedd.shortlistQuantity * fixedd.moderatedPrice;
     const data = {
-      fixedStatus: status,
-      fixStatus: values.callstatus,
+      fixStatus: status,
       buyerFixedQty: values.buyerFixedQty,
       totalPrice: totalPrice,
       fixDate: today,
@@ -356,7 +313,7 @@ const FixedOrder = () => {
       .then((res) => {
         console.log(res.data);
         setreload(!reload);
-        setIsSupplierCall(false);
+        fixedclose();
         formik.resetForm();
       })
       .catch((error) => {
@@ -365,7 +322,64 @@ const FixedOrder = () => {
           //seterrorMessage(error.response.data.message);
         }
       });
+    setreload(!reload);
     console.log(data);
+  };
+  const saveCallStatus = () => {
+    const locale = "en";
+    var today = new Date();
+    const totime = today.toLocaleTimeString(locale, {
+      hour: "numeric",
+      hour12: false,
+      minute: "numeric",
+    });
+    var dd = String(today.getDate()).padStart(2, "0");
+    var mm = String(today.getMonth() + 1).padStart(2, "0");
+    var yyyy = today.getFullYear();
+    today = dd + "-" + mm + "-" + yyyy;
+    var b = totime;
+    b = b.replace(/\:/g, "");
+    const time = parseInt(b);
+    console.log(formik.values.timeCallback);
+    //convert time string to number
+    var a = formik.values.timeCallback;
+    a = a.replace(/\:/g, "");
+    const availableTime = parseInt(a);
+    if (formik.values.callStatus === "rejected") {
+      const data = {
+        fixCallStatus: formik.values.callStatus,
+      };
+      axios
+        .delete(`/v1/requirementCollectionBS/Buyer/${buyerId}`, data)
+        .then((res) => {
+          setreload(!reload);
+          IsCallStatusClose;
+        });
+    }
+    if (formik.values.callStatus === "accepted") {
+      const data = {
+        fixCallStatus: formik.values.callStatus,
+      };
+      axios
+        .put(`/v1/requirementCollectionBS/Buyer/${buyerId}`, data)
+        .then((res) => {
+          setreload(!reload);
+          IsCallStatusClose;
+        });
+    }
+    if (formik.values.callStatus == "callback") {
+      const data = {
+        fixCallStatus: formik.values.callStatus,
+        fixCallStatusDate: formik.values.dateCallback,
+        fixCallStatusTime: availableTime,
+      };
+      axios
+        .put(`/v1/requirementCollectionBS/Buyer/${buyerId}`, data)
+        .then((res) => {
+          setreload(!reload);
+          IsCallStatusClose;
+        });
+    }
   };
 
   return (
@@ -575,10 +589,10 @@ const FixedOrder = () => {
                       {item.fixed ? <div>{item.fixed}</div> : <div>0</div>}
                     </Td>
                     <Td>
-                      {item.fixed >= 1 ? (
-                        <div>Matched</div>
-                      ) : (
+                      {item.fixCallStatus == "" ? (
                         <div>Pending</div>
+                      ) : (
+                        <div>{item.fixCallStatus}</div>
                       )}
                     </Td>
                     <Td>
@@ -588,9 +602,10 @@ const FixedOrder = () => {
                         onClick={() => {
                           matcheslist(item._id);
                           setBuyerId(item._id);
+                          setreload(!reload);
                         }}
                       >
-                        call
+                        Fixed
                       </Button>
                     </Td>
                   </Tr>
@@ -793,228 +808,6 @@ const FixedOrder = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <Modal
-          isOpen={islastTimeUpdatedQtyRange}
-          onClose={isLastTimeUpdatedQtyRangeClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Updated Quentity Range List</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <div className="border-gray-500 scroll-smooth border">
-                <Table
-                  size="sm"
-                  scaleY="44"
-                  variant="striped"
-                  colorScheme="whatsapp"
-                  className="overflow-auto"
-                >
-                  <Thead className="bg-headergreen text-center">
-                    <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Changed Qty Range</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
-                      <Tr>
-                        <Td
-                          style={{ textAlign: "center" }}
-                          className="font-semibold"
-                          colSpan="11"
-                        >
-                          No Data Found
-                        </Td>
-                      </Tr>
-                    )}
-                    {UpdateQty &&
-                      UpdateQty.map((item, index) => (
-                        <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>
-                            {item.QtyMin}-{item.QtyMax}
-                          </Td>
-                        </Tr>
-                      ))}
-                  </Tbody>
-                </Table>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                onClick={isLastTimeUpdatedQtyRangeClose}
-                colorScheme="blue"
-                mr={3}
-              >
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        <Modal
-          isOpen={islastTimeUpdatedPriceRange}
-          onClose={isLastTimeUpdatedPriceRangeClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Updated Price Range</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <div className="border-gray-500 scroll-smooth border">
-                <Table
-                  size="sm"
-                  scaleY="44"
-                  variant="striped"
-                  colorScheme="whatsapp"
-                  className="overflow-auto"
-                >
-                  <Thead className="bg-headergreen text-center">
-                    <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Changed Price</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
-                      <Tr>
-                        <Td
-                          style={{ textAlign: "center" }}
-                          className="font-semibold"
-                          colSpan="11"
-                        >
-                          No Data Found
-                        </Td>
-                      </Tr>
-                    )}
-                    {UpdatePrice &&
-                      UpdatePrice.map((item, index) => (
-                        <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>
-                            {item.priceMin}-{item.priceMax}
-                          </Td>
-                        </Tr>
-                      ))}
-                  </Tbody>
-                </Table>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                onClick={isLastTimeUpdatedPriceRangeClose}
-                colorScheme="blue"
-                mr={3}
-              >
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        <Modal
-          isOpen={islastTimeUpdatedLocation}
-          onClose={isLastTimeUpdatedLocationClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Updated Location List</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <div className="border-gray-500 scroll-smooth border">
-                <Table
-                  size="sm"
-                  scaleY="44"
-                  variant="striped"
-                  colorScheme="whatsapp"
-                  className="overflow-auto"
-                >
-                  <Thead className="bg-headergreen text-center">
-                    <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Location</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
-                      <Tr>
-                        <Td
-                          style={{ textAlign: "center" }}
-                          className="font-semibold"
-                          colSpan="11"
-                        >
-                          No Data Found
-                        </Td>
-                      </Tr>
-                    )}
-                    {UpdateLocation &&
-                      UpdateLocation.map((item, index) => (
-                        <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>{item.deliveryLocation}</Td>
-                        </Tr>
-                      ))}
-                  </Tbody>
-                </Table>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                onClick={isLastTimeUpdatedLocationClose}
-                colorScheme="blue"
-                mr={3}
-              >
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        {/* <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Map View</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <div className="flex justify-center text-center">
-                <div className="object-cover h-48 w-96">
-                  <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
-                    <GoogleMap
-                      mapContainerStyle={mapStyles}
-                      zoom={13}
-                      center={{
-                        lat: parseFloat(slat),
-                        lng: parseFloat(slng),
-                      }}
-                    >
-                      <Marker
-                        position={{
-                          lat: parseFloat(slat),
-                          lng: parseFloat(slng),
-                        }}
-                      />
-                    </GoogleMap>
-                  </LoadScript>
-                </div>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button onClick={onClose} colorScheme="blue" mr={3}>
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal> */}
         <Modal size="5xl" isOpen={matches} onClose={matcheslistclose}>
           <ModalOverlay />
           <ModalContent>
@@ -1049,6 +842,15 @@ const FixedOrder = () => {
                   <div>
                     <label className="font-semibold"> Location: </label>{" "}
                     {BuyerData.deliverylocation}
+                  </div>
+                  <div>
+                    <Button
+                      size="sm"
+                      colorScheme="blue"
+                      onClick={() => IsCallStatus()}
+                    >
+                      call
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -1111,14 +913,14 @@ const FixedOrder = () => {
                             </Button>
                           </Td>
                           <Td>
-                            {item.fixedliststatus == "fixed" ? (
-                              <div>{item.fixedliststatus}</div>
+                            {item.fixStatus == "fixed" ? (
+                              <div>{item.fixStatus}</div>
                             ) : (
                               <div>Pending</div>
                             )}
                           </Td>
                           <Td>
-                            {item.fixedliststatus == "fixed" ? (
+                            {item.fixStatus == "fixed" ? (
                               <Button
                                 size="xs"
                                 colorScheme="blue"
@@ -1173,7 +975,7 @@ const FixedOrder = () => {
             <ModalBody>
               <Forms>
                 <div className="grid items-center gap-2">
-                  <div className="grid pb-2 gap-2">
+                  {/* <div className="grid pb-2 gap-2">
                     <label className="font-semibold">Status :</label>
                     <select
                       name="status"
@@ -1190,7 +992,7 @@ const FixedOrder = () => {
                       <option value="callback">CallBack</option>
                       <option value="rejected">Rejected</option>
                     </select>
-                  </div>
+                  </div> */}
                   <div className="flex flex-row gap-2">
                     <label className="font-semibold ">
                       Shortlisted Qty Range :
@@ -1233,6 +1035,84 @@ const FixedOrder = () => {
               </Button>
               <Button onClick={UpdatedCallStatus} colorScheme="blue" mr={3}>
                 Save
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal isOpen={iscallStatus} onClose={IsCallStatusClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Call Status</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="grid pb-2 gap-2">
+                {/* <label className="font-semibold">Status :</label> */}
+                <select
+                  name="status"
+                  onChange={(e) => {
+                    formik.setFieldValue("callStatus", e.target.value);
+                    e.target.classList.add("change_color");
+                  }}
+                  onBlur={formik.handleBlur}
+                  style={{ outline: 0 }}
+                  className="input-primary"
+                >
+                  <option value="null">Select Call Status</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="callback">CallBack</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+              {formik.values.callStatus === "callback" ? (
+                <>
+                  <div className="grid pb-2 gap-2">
+                    <Input
+                      type="date"
+                      name="dateCallback"
+                      placeholder="Enter Price"
+                      value={formik.values.dateCallback || ""}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      className={
+                        formik.touched.dateCallback &&
+                        formik.errors.dateCallback
+                          ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                          : "input-primary bg-whitecolor focus-outline-none experience"
+                      }
+                    />
+                  </div>
+                  <div className="grid pb-2 gap-2">
+                    <Input
+                      type="time"
+                      name="timeCallback"
+                      placeholder="Enter Price"
+                      value={formik.values.timeCallback || ""}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      className={
+                        formik.touched.timeCallback &&
+                        formik.errors.timeCallback
+                          ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                          : "input-primary bg-whitecolor focus-outline-none experience"
+                      }
+                    />
+                  </div>
+                </>
+              ) : null}
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={IsCallStatusClose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+              <Button
+                //onClick={matcheslistclose}
+                colorScheme="blue"
+                onClick={() => {
+                  saveCallStatus();
+                  IsCallStatusClose();
+                }}
+              >
+                save
               </Button>
             </ModalFooter>
           </ModalContent>

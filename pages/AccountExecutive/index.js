@@ -404,7 +404,6 @@ const AmountExecutive = () => {
                 <Th textAlign="center" className="border">
                   product
                 </Th>
-
                 <Th textAlign="center" className="border">
                   count for Fixed suppliers
                 </Th>
@@ -418,7 +417,10 @@ const AmountExecutive = () => {
                   call Action
                 </Th>
                 <Th textAlign="center" className="border">
-                  payment status
+                  status
+                </Th>
+                <Th textAlign="center" className="border">
+                  Action
                 </Th>
               </Tr>
             </Thead>
