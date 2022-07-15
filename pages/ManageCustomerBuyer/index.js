@@ -302,6 +302,16 @@ const Buyer = () => {
       .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
       .then((res) => setUpdatedDetails(res.data));
   };
+  const Time = (props) => {
+    const a = props.data;
+    console.log(a);
+    const first2Str = String(a).slice(0, 2); // 👉️ '13'
+    const second2Str = String(a).slice(2, 4); // 👉️ '13'
+    const first2Num = Number(first2Str);
+    const second2Num = Number(second2Str);
+    const final = first2Num + ":" + second2Num;
+    return <>{final}</>;
+  };
   return (
     <>
       <Head>
@@ -329,7 +339,7 @@ const Buyer = () => {
             </Button>
           </div>
         </div>
-        <div className="border-gray-500 scroll-smooth border overflow-y-scroll">
+        <div className="border-gray-500 scroll-smooth border ">
           <Table
             size="sm"
             scaleY="44"
@@ -337,10 +347,10 @@ const Buyer = () => {
             colorScheme="whatsapp"
             className="overflow-auto"
           >
-            <Thead className="bg-headergreen text-center">
+            <Thead className="bg-headergreen ">
               <Tr>
                 <Th textAlign="center">S.No</Th>
-                <Th textAlign="center">Date</Th>
+                <Th textAlign="center">Date / Time</Th>
                 <Th textAlign="center">Registered By Whom</Th>
                 <Th textAlign="center">Requirement Id</Th>
                 <Th textAlign="center">name</Th>
@@ -349,7 +359,7 @@ const Buyer = () => {
                 <Th textAlign="center">Price range</Th>
                 <Th textAlign="center">map View</Th>
                 <Th textAlign="center">Delivery location</Th>
-                <Th textAlign="center">Delivery Date & time</Th>
+                <Th textAlign="center">Delivery Date / time</Th>
                 <Th textAlign="center">Status</Th>
                 <Th textAlign="center">Action</Th>
               </Tr>
@@ -371,7 +381,7 @@ const Buyer = () => {
                   <Tr colSpan="2" key={index}>
                     <Td textAlign="center">{index + 1}</Td>
                     <Td textAlign="center" className="w-32">
-                      {item.date}
+                      {item.date} / {<Time data={item.time} />}
                     </Td>
                     <Td textAlign="center">{item.requirementAddBy}</Td>
                     <Td textAlign="center">{item.secretName}</Td>
@@ -439,10 +449,10 @@ const Buyer = () => {
                         {item.deliverylocation}
                       </Button>
                     </Td>
-                    <Td textAlign="center">
+                    <Td textAlign="center" className="w-32">
                       {item.deliveryDate}
-                      {"/ "}
-                      {item.deliveryTime}
+                      {" / "}
+                      {<Time data={item.deliveryTime} />}
                     </Td>
                     <Td textAlign="center">
                       {item.status === "" ? (
@@ -494,19 +504,19 @@ const Buyer = () => {
                 >
                   <Thead className="bg-headergreen text-center">
                     <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Changed Qty Range</Th>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date</Th>
+                      <Th textAlign="center">Time</Th>
+                      <Th textAlign="center">Changed Qty Range</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
+                    {UpdateQty != "" ? null : (
                       <Tr>
                         <Td
                           style={{ textAlign: "center" }}
                           className="font-semibold"
-                          colSpan="11"
+                          colSpan="4"
                         >
                           No Data Found
                         </Td>
@@ -515,11 +525,17 @@ const Buyer = () => {
                     {UpdateQty &&
                       UpdateQty.map((item, index) => (
                         <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>
-                            {item.QtyMin}-{item.QtyMax}
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center" className="w-32">
+                            {item.date}
+                          </Td>
+                          <Td textAlign="center">
+                            <Time data={item.time} />
+                          </Td>
+                          <Td textAlign="center">
+                            {item.QtyMin}
+                            {" - "}
+                            {item.QtyMax}
                           </Td>
                         </Tr>
                       ))}
@@ -557,19 +573,19 @@ const Buyer = () => {
                 >
                   <Thead className="bg-headergreen text-center">
                     <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Changed Price</Th>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date</Th>
+                      <Th textAlign="center">Time</Th>
+                      <Th textAlign="center">Changed Price</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
+                    {UpdatePrice != "" ? null : (
                       <Tr>
                         <Td
                           style={{ textAlign: "center" }}
                           className="font-semibold"
-                          colSpan="11"
+                          colSpan="4"
                         >
                           No Data Found
                         </Td>
@@ -578,11 +594,15 @@ const Buyer = () => {
                     {UpdatePrice &&
                       UpdatePrice.map((item, index) => (
                         <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>
-                            {item.priceMin}-{item.priceMax}
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center">{item.date}</Td>
+                          <Td textAlign="center">
+                            <Time data={item.time} />
+                          </Td>
+                          <Td textAlign="center">
+                            {item.priceMin}
+                            {" - "}
+                            {item.priceMax}
                           </Td>
                         </Tr>
                       ))}
@@ -620,19 +640,19 @@ const Buyer = () => {
                 >
                   <Thead className="bg-headergreen text-center">
                     <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Location</Th>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date</Th>
+                      <Th textAlign="center">Time</Th>
+                      <Th textAlign="center">Location</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
+                    {UpdateLocation != "" ? null : (
                       <Tr>
                         <Td
                           style={{ textAlign: "center" }}
                           className="font-semibold"
-                          colSpan="11"
+                          colSpan="4"
                         >
                           No Data Found
                         </Td>
@@ -641,10 +661,12 @@ const Buyer = () => {
                     {UpdateLocation &&
                       UpdateLocation.map((item, index) => (
                         <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>{item.deliveryLocation}</Td>
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center">{item.date}</Td>
+                          <Td textAlign="center">
+                            <Time data={item.time} />
+                          </Td>
+                          <Td textAlign="center">{item.deliveryLocation}</Td>
                         </Tr>
                       ))}
                   </Tbody>

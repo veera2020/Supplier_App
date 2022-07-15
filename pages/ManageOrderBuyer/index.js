@@ -157,7 +157,7 @@ const BuyerPostOrder = () => {
               <Tr>
                 <Th textAlign="center">S.No</Th>
                 <Th textAlign="center">Date</Th>
-                {/* <Th>Type</Th> */}
+                <Th textAlign="center">Time</Th>
                 <Th textAlign="center">Id</Th>
                 <Th textAlign="center">Name</Th>
                 <Th textAlign="center">Product Name</Th>
@@ -180,10 +180,8 @@ const BuyerPostOrder = () => {
                 EmployeeTable.rowData.map((item, index) => (
                   <Tr key={index}>
                     <Td textAlign="center">{index + 1}</Td>
-                    <Td textAlign="center">
-                      {item.date} / <Time data={item.time} />
-                    </Td>
-                    {/* <Td>{item.type}</Td> */}
+                    <Td textAlign="center">{item.date}</Td>
+                    <Td textAlign="center">{<Time data={item.time} />}</Td>
                     <Td textAlign="center">{item.secretName}</Td>
                     <Td textAlign="center">
                       <Button

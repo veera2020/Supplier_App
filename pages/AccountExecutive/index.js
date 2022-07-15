@@ -329,6 +329,16 @@ const AmountExecutive = () => {
       return "";
     }
   };
+  const Time = (props) => {
+    const a = props.data;
+    console.log(a);
+    const first2Str = String(a).slice(0, 2); // 👉️ '13'
+    const second2Str = String(a).slice(2, 4); // 👉️ '13'
+    const first2Num = Number(first2Str);
+    const second2Num = Number(second2Str);
+    const final = first2Num + ":" + second2Num;
+    return <>{final}</>;
+  };
   return (
     <>
       <Head>
@@ -451,7 +461,7 @@ const AmountExecutive = () => {
                   S.No
                 </Th>
                 <Th textAlign="center" className="border">
-                  Date
+                  Date / time
                 </Th>
                 <Th textAlign="center" className="border">
                   registered by whom
@@ -480,9 +490,6 @@ const AmountExecutive = () => {
                 <Th textAlign="center" className="border">
                   call Action
                 </Th>
-                {/* <Th textAlign="center" className="border">
-                  Action
-                </Th> */}
               </Tr>
             </Thead>
             <Tbody>
@@ -505,7 +512,11 @@ const AmountExecutive = () => {
                         10 * (parseInt(EmployeeTable.currentPage) - 1) +
                         1}
                     </Td>
-                    <Td textAlign="center">{item.date}</Td>
+                    <Td textAlign="center">
+                      {item.date}
+                      {" / "}
+                      {<Time data={item.time} />}
+                    </Td>
                     <Td textAlign="center">{item.requirementAddBy}</Td>
                     <Td textAlign="center">{item.secretName}</Td>
                     <Td textAlign="center">

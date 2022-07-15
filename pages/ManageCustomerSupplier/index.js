@@ -275,6 +275,16 @@ const Supplier = () => {
       .get(`/v1/requirementCollectionBS/Supplier/UpdataData/${props}`)
       .then((res) => setUpdatedDetails(res.data));
   };
+  const Time = (props) => {
+    const a = props.data;
+    console.log(a);
+    const first2Str = String(a).slice(0, 2); // 👉️ '13'
+    const second2Str = String(a).slice(2, 4); // 👉️ '13'
+    const first2Num = Number(first2Str);
+    const second2Num = Number(second2Str);
+    const final = first2Num + ":" + second2Num;
+    return <>{final}</>;
+  };
   return (
     <>
       <Head>
@@ -314,6 +324,7 @@ const Supplier = () => {
               <Tr>
                 <Th textAlign="center">S.No</Th>
                 <Th textAlign="center">Date</Th>
+                <Th textAlign="center">Time</Th>
                 <Th textAlign="center">Registered By Whom</Th>
                 <Th textAlign="center">Requirement Id</Th>
                 <Th textAlign="center">name</Th>
@@ -341,7 +352,12 @@ const Supplier = () => {
                 EmployeeTable.rowData.map((item, index) => (
                   <Tr colSpan="2" key={index}>
                     <Td textAlign="center">{index + 1}</Td>
-                    <Td textAlign="center">{item.date}</Td>
+                    <Td textAlign="center" className="w-32">
+                      {item.date}
+                    </Td>
+                    <Td textAlign="center" className="w-32">
+                      {<Time data={item.time} />}
+                    </Td>
                     <Td textAlign="center">{item.requirementAddBy}</Td>
                     <Td textAlign="center">{item.secretName}</Td>
                     <Td textAlign="center">
@@ -453,19 +469,19 @@ const Supplier = () => {
                 >
                   <Thead className="bg-headergreen text-center">
                     <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Changed Qty</Th>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date</Th>
+                      <Th textAlign="center">Time</Th>
+                      <Th textAlign="center">Changed Qty</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {UpdatedDetails != "" ? null : (
+                    {UpdateQty != "" ? null : (
                       <Tr>
                         <Td
                           style={{ textAlign: "center" }}
                           className="font-semibold"
-                          colSpan="11"
+                          colSpan="4"
                         >
                           No Data Found
                         </Td>
@@ -474,10 +490,12 @@ const Supplier = () => {
                     {UpdateQty &&
                       UpdateQty.map((item, index) => (
                         <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>{item.updatedQty}</Td>
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center">{item.date}</Td>
+                          <Td textAlign="center">
+                            <Time data={item.time} />
+                          </Td>
+                          <Td textAlign="center">{item.updatedQty}</Td>
                         </Tr>
                       ))}
                   </Tbody>
@@ -514,19 +532,19 @@ const Supplier = () => {
                 >
                   <Thead className="bg-headergreen text-center">
                     <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Changed Price</Th>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date</Th>
+                      <Th textAlign="center">Time</Th>
+                      <Th textAlign="center">Changed Price</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
+                    {UpdatePrice != "" ? null : (
                       <Tr>
                         <Td
                           style={{ textAlign: "center" }}
                           className="font-semibold"
-                          colSpan="11"
+                          colSpan="4"
                         >
                           No Data Found
                         </Td>
@@ -535,10 +553,12 @@ const Supplier = () => {
                     {UpdatePrice &&
                       UpdatePrice.map((item, index) => (
                         <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>{item.price}</Td>
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center">{item.date}</Td>
+                          <Td textAlign="center">
+                            <Time data={item.time} />
+                          </Td>
+                          <Td textAlign="center">{item.price}</Td>
                         </Tr>
                       ))}
                   </Tbody>
@@ -575,19 +595,19 @@ const Supplier = () => {
                 >
                   <Thead className="bg-headergreen text-center">
                     <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Location</Th>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date</Th>
+                      <Th textAlign="center">Time</Th>
+                      <Th textAlign="center">Location</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
+                    {UpdateLocation != "" ? null : (
                       <Tr>
                         <Td
                           style={{ textAlign: "center" }}
                           className="font-semibold"
-                          colSpan="11"
+                          colSpan="4"
                         >
                           No Data Found
                         </Td>
@@ -596,10 +616,12 @@ const Supplier = () => {
                     {UpdateLocation &&
                       UpdateLocation.map((item, index) => (
                         <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>{item.stockLocation}</Td>
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center">{item.date}</Td>
+                          <Td textAlign="center">
+                            <Time data={item.time} />
+                          </Td>
+                          <Td textAlign="center">{item.stockLocation}</Td>
                         </Tr>
                       ))}
                   </Tbody>
