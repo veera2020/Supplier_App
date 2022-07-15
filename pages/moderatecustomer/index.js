@@ -274,11 +274,11 @@ const Moderatecustomer = () => {
   };
   const axiosfunc = () => {
     const data = {
-      moderateRejectReason: reason,
+      moderateReason: reason,
       moderateStatus: "Rejected",
     };
     axios
-      .put(`/v1/requirementCollection/${id}`, data)
+      .put(`/v1/requirementCollectionBS/Supplier/${id}`, data)
       .then((res) => {
         setreload(!reload);
         onRejectClose();
@@ -334,6 +334,17 @@ const Moderatecustomer = () => {
   };
   const { isOpen, onOpen, onClose } = useDisclosure();
   //const cancelRef = React.useRef();
+  //time split
+  const Time = (props) => {
+    const a = props.data.item.time;
+    console.log(a);
+    const first2Str = String(a).slice(0, 2); // 👉️ '13'
+    const second2Str = String(a).slice(2, 4); // 👉️ '13'
+    const first2Num = Number(first2Str);
+    const second2Num = Number(second2Str);
+    const final = first2Num + ":" + second2Num;
+    return <>{final}</>;
+  };
   return (
     <>
       <Head>
@@ -430,7 +441,7 @@ const Moderatecustomer = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {EmployeeTable.rowData != "" ? null : (
+              {ModurateData != "" ? null : (
                 <Tr>
                   <Td
                     style={{ textAlign: "center" }}
@@ -445,7 +456,9 @@ const Moderatecustomer = () => {
                 ModurateData.map((item, index) => (
                   <Tr key={index}>
                     <Td textAlign="center">{index + 1}</Td>
-                    <Td textAlign="center">{item.date}</Td>
+                    <Td textAlign="center" className="w-32">
+                      {item.date}
+                    </Td>
                     <Td textAlign="center">{item.requirementAddBy}</Td>
                     <Td textAlign="center">{item.secretName}</Td>
                     <Td textAlign="center">
@@ -503,7 +516,35 @@ const Moderatecustomer = () => {
                       <Td textAlign="center">{item.moderateStatus}</Td>
                     )}
                     <Td textAlign="center">
-                      {item.moderateStatus === "" ? (
+                      {item.moderateStatus === "Rejected" ? (
+                        <Button
+                          size="xs"
+                          colorScheme="red"
+                          onClick={() => moderatefunc(item._id)}
+                          disabled
+                        >
+                          {item.moderateStatus}
+                        </Button>
+                      ) : (
+                        // <ButtonGroup
+                        //   spacing="1"
+                        //   onClick={() => setId(item._id)}
+                        // >
+                        //   <Button
+                        //     size="xs"
+                        //     colorScheme="blue"
+                        //     onClick={() => moderatefunc(item._id)}
+                        //   >
+                        //     Moderate
+                        //   </Button>
+                        //   <Button
+                        //     size="xs"
+                        //     colorScheme="red"
+                        //     onClick={() => setIsRejectOpen(true)}
+                        //   >
+                        //     Reject
+                        //   </Button>
+                        // </ButtonGroup>
                         <ButtonGroup
                           spacing="1"
                           onClick={() => setId(item._id)}
@@ -519,33 +560,6 @@ const Moderatecustomer = () => {
                             size="xs"
                             colorScheme="red"
                             onClick={() => setIsRejectOpen(true)}
-                          >
-                            Reject
-                          </Button>
-                        </ButtonGroup>
-                      ) : (
-                        // <Button size="xs" colorScheme="blue" disabled>
-                        //   {item.moderateStatus}
-                        // </Button>
-                        <ButtonGroup
-                          spacing="1"
-                          onClick={() => setId(item._id)}
-                        >
-                          <Button
-                            disabled
-                            size="xs"
-                            colorScheme="blue"
-                            // onClick={() => moderatefunc(item._id)}
-                            //disabled
-                          >
-                            Moderate
-                          </Button>
-                          <Button
-                            disabled
-                            size="xs"
-                            colorScheme="red"
-                            // onClick={() => setIsRejectOpen(true)}
-                            // disabled
                           >
                             Reject
                           </Button>
@@ -880,7 +894,9 @@ const Moderatecustomer = () => {
                         <Tr colSpan="2" key={index}>
                           <Td textAlign="center">{index + 1}</Td>
                           <Td textAlign="center">{item.date}</Td>
-                          <Td textAlign="center">{item.time}</Td>
+                          <Td textAlign="center" className="">
+                            <Time data={{ item }} />
+                          </Td>
                           <Td textAlign="center">{item.moderatedPrice}</Td>
                         </Tr>
                       ))}

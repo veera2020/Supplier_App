@@ -41,9 +41,13 @@ const items = [
   ]),
   getItem("Navigation Four", "sub6", [
     getItem("Option 13", "13"),
-    getItem("Option 14", "14"),
-    getItem("Option 15", "15"),
+    getItem("Submenu", "sub7", null, [
+      getItem("Option 14", "14"),
+      getItem("Option 15", "15"),
+    ]),
     getItem("Option 16", "16"),
+    getItem("Option 17", "17"),
+    getItem("Option 18", "18"),
   ]),
 ]; // submenu keys of first level
 
@@ -145,17 +149,24 @@ export default function Navbar({ defaultOpenKeys }) {
             <a>Fixed Order</a>
           </Link>
         </Menu.Item>
-        <Menu.Item key="14">
-          <Link href="/AccountExecutive">
-            <a>Account Executive</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="15">
+        <SubMenu key="14" title="Account Statement">
+          <Menu.Item key="15">
+            <Link href="/AccountExecutive">
+              <a>Account Executive</a>
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="16">
+            <Link href="/AccountHistory">
+              <a>Account History</a>
+            </Link>
+          </Menu.Item>
+        </SubMenu>
+        <Menu.Item key="17">
           <Link href="/SupplierMatches">
             <a>Supplier Matches</a>
           </Link>
         </Menu.Item>
-        <Menu.Item key="16">
+        <Menu.Item key="18">
           <Link href="/videostreaming">
             <a>Video Streaming</a>
           </Link>

@@ -92,7 +92,7 @@ const ShortlistOrder = () => {
   const router = useRouter();
   // UseState
   const [reload, setreload] = useState(false);
-  const [statusname, setstatusname] = useState([]);
+  const [BuyerId, setBuyerId] = useState("");
   const [productslist, setproductslist] = useState([]);
   const [distance, setdistance] = useState("");
   const [distancetonum, setdistancetonum] = useState("");
@@ -124,22 +124,18 @@ const ShortlistOrder = () => {
   const fetchdata = async (page = 1) => {
     EmployeeTable.setLoading(true);
     const response = await axios.get(
-      // `/v1/requirementCollection/supplier/productName/${Product}/${FromPrice}/${ToPrice}/${FromQty}/${ToQty}/null/${
-      //   page - 1
-      // }`
       "/v1/requirementCollectionBS/Buyer/Live/all"
     );
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
       console.log(response.data);
-      setreload(!reload);
     } else {
       EmployeeTable.setRowData([]);
     }
   };
   useEffect(() => {
     fetchdata(EmployeeTable.currentPage, EmployeeTable.showLimit);
-  }, []);
+  }, [reload, EmployeeTable.currentPage, EmployeeTable.showLimit]);
 
   // Search Method
   const handlesearch = () => {
@@ -343,7 +339,7 @@ const ShortlistOrder = () => {
       .put(`/v1/interestTable/${id}`, data)
       .then((res) => {
         console.log(res.data);
-        setreload(!reload);
+        matcheslist(BuyerId);
         setIsSupplierCall(false);
         formik.resetForm();
       })
@@ -418,7 +414,7 @@ const ShortlistOrder = () => {
                   No.of suppliers found
                 </Th>
                 <Th textAlign="center" className="border">
-                  Count for confirmed suppliers
+                  Count of confirmed suppliers
                 </Th>
               </Tr>
             </Thead>
@@ -442,7 +438,9 @@ const ShortlistOrder = () => {
                         10 * (parseInt(EmployeeTable.currentPage) - 1) +
                         1}
                     </Td>
-                    <Td textAlign="center">{item.date}</Td>
+                    <Td textAlign="center" className="w-32">
+                      {item.date}
+                    </Td>
                     <Td textAlign="center">{item.requirementAddBy}</Td>
                     <Td textAlign="center">{item.secretName}</Td>
                     <Td textAlign="center">
@@ -474,7 +472,7 @@ const ShortlistOrder = () => {
                           variant="link"
                           onClick={() => {
                             matcheslist(item._id);
-                            // isOpenmap(item);
+                            setBuyerId(item._id);
                           }}
                         >
                           {item.interest}
@@ -1071,18 +1069,18 @@ const ShortlistOrder = () => {
                   </div>
                   <div className="flex flex-row gap-2">
                     <label className="font-semibold ">
-                      Available Quentity :
+                      Available Quantity :
                     </label>
                     {Details.expectedQnty}
                   </div>
                   <div className="grid pb-2 gap-2">
                     <label className="font-semibold ">
-                      Shortlisted Quentity
+                      Shortlisted Quantity
                     </label>
                     <InputFields
                       type="string"
                       name="shortlistQuantity"
-                      placeholder="Enter Shortlisted Quentity"
+                      placeholder="Enter Shortlisted Quantity"
                       value={formik.values.shortlistQuantity || ""}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
@@ -1114,7 +1112,7 @@ const ShortlistOrder = () => {
         <Modal size="5xl" isOpen={matches} onClose={matcheslistclose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Matches Suppliers</ModalHeader>
+            <ModalHeader>Shortlist Suppliers</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <div className="space-y-3">
@@ -1158,16 +1156,16 @@ const ShortlistOrder = () => {
                 >
                   <Thead className="bg-headergreen text-center">
                     <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date & Time</Th>
-                      <Th>Supplier Name</Th>
-                      <Th>Available Quantity</Th>
-                      <Th>Moderate Price</Th>
-                      <Th>Landing price</Th>
-                      <Th>confirmed order qty</Th>
-                      <Th>Status</Th>
-                      <Th>Call Status</Th>
-                      <Th>Call Action</Th>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date & Time</Th>
+                      <Th textAlign="center">Supplier Name</Th>
+                      <Th textAlign="center">Available Quantity</Th>
+                      <Th textAlign="center">Moderate Price</Th>
+                      <Th textAlign="center">Landing price</Th>
+                      <Th textAlign="center">confirmed order qty</Th>
+                      <Th textAlign="center">Status</Th>
+                      <Th textAlign="center">Call Status</Th>
+                      <Th textAlign="center">Call Action</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -1185,12 +1183,15 @@ const ShortlistOrder = () => {
                     {matchesDetails &&
                       matchesDetails.map((item, index) => (
                         <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>
-                            {item.shortDate}
-                            {"/"} {item.shortTime}
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center">
+                            {item.shortDate ? (
+                              <div className="w-32">
+                                {item.shortDate}/{item.shortTime}
+                              </div>
+                            ) : null}
                           </Td>
-                          <Td>
+                          <Td textAlign="center">
                             <Button
                               variant="link"
                               size="xs"
@@ -1200,9 +1201,9 @@ const ShortlistOrder = () => {
                               {item.secretName}
                             </Button>
                           </Td>
-                          <Td>{item.expectedQnty}</Td>
-                          <Td>{item.moderatedPrice}</Td>
-                          <Td>
+                          <Td textAlign="center">{item.expectedQnty}</Td>
+                          <Td textAlign="center">{item.moderatedPrice}</Td>
+                          <Td textAlign="center">
                             <Button
                               variant="link"
                               size="xs"
@@ -1212,30 +1213,44 @@ const ShortlistOrder = () => {
                               VIEW
                             </Button>
                           </Td>
-                          <Td>{item.shortlistQuantity}</Td>
-                          <Td>
+                          <Td textAlign="center">
+                            {item.shortlistQuantity ? (
+                              <div>{item.shortlistQuantity}</div>
+                            ) : (
+                              <div>0</div>
+                            )}
+                          </Td>
+                          <Td textAlign="center">
                             {item.shortliststatus === "shortlist" ? (
                               <div>{item.shortliststatus}</div>
                             ) : (
                               <div>Pending</div>
                             )}
                           </Td>
-                          <Td>
-                            {item.shortStatus !== "" ? (
+                          <Td textAlign="center">
+                            {item.shortStatus ? (
                               <div>{item.shortStatus}</div>
-                            ) : null}
+                            ) : (
+                              <div>pending</div>
+                            )}
                           </Td>
-                          <Td>
-                            <Button
-                              size="xs"
-                              colorScheme="blue"
-                              onClick={() => {
-                                Call(item);
-                                setId(item.interestId);
-                              }}
-                            >
-                              Call
-                            </Button>
+                          <Td textAlign="center">
+                            {item.shortliststatus === "shortlist" ? (
+                              <Button size="xs" colorScheme="blue" disabled>
+                                Call
+                              </Button>
+                            ) : (
+                              <Button
+                                size="xs"
+                                colorScheme="blue"
+                                onClick={() => {
+                                  Call(item);
+                                  setId(item.interestId);
+                                }}
+                              >
+                                Call
+                              </Button>
+                            )}
                           </Td>
                         </Tr>
                       ))}

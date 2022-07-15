@@ -139,20 +139,13 @@ const BuyerMatches = () => {
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
       console.log(response.data);
-      setreload(!reload);
     } else {
       EmployeeTable.setRowData([]);
     }
   };
   useEffect(() => {
     fetchdata(EmployeeTable.currentPage, EmployeeTable.showLimit);
-  }, []);
-
-  // Search Method
-  const handlesearch = () => {
-    EmployeeTable.setCurrentPage(1);
-    fetchdata(EmployeeTable.currentPage, EmployeeTable.showLimit);
-  };
+  }, [reload, EmployeeTable.currentPage, EmployeeTable.showLimit]);
   //usestate
   const [isvehicle, setisvehicle] = useState(false);
   const isvehicleclose = () => {
@@ -209,9 +202,10 @@ const BuyerMatches = () => {
   };
   const Buyer = (props) => {
     setBuyerDetails(true);
-    axios
-      .get(`/v1/requirementCollectionBS/Buyer/${props}`)
-      .then((res) => setBuyerData(res.data[0]));
+    axios.get(`/v1/requirementCollectionBS/Buyer/${props}`).then((res) => {
+      setBuyerData(res.data[0]);
+      console.log(res.data[0]);
+    });
   };
   //usestate
   const [islastTimeUpdatedQtyRange, setLastTimeUpdatedQtyRange] =
@@ -297,7 +291,7 @@ const BuyerMatches = () => {
         console.log(res.data);
       });
 
-    //handle change for multiselect
+    //   //handle change for multiselect
 
     axios
       .get(`/v1/requirementCollectionBS/Buyer/${props}`)
@@ -337,7 +331,8 @@ const BuyerMatches = () => {
       interestTime: time,
     };
     axios.post("/v1/interestTable", data).then((res) => {
-      setreload(!reload);
+      matcheslist(buyerId);
+      console.log(res.data);
     });
   };
 
@@ -366,7 +361,7 @@ const BuyerMatches = () => {
       axios
         .delete(`/v1/requirementCollectionBS/Buyer/${buyerId}`, data)
         .then((res) => {
-          setreload(!reload);
+          //setreload(!reload);
           IsCallStatusClose;
         });
     }
@@ -567,7 +562,9 @@ const BuyerMatches = () => {
                         10 * (parseInt(EmployeeTable.currentPage) - 1) +
                         1}
                     </Td>
-                    <Td textAlign="center">{item.date}</Td>
+                    <Td textAlign="center" className="w-32">
+                      {item.date}
+                    </Td>
                     <Td textAlign="center">{item.requirementAddBy}</Td>
                     <Td textAlign="center">{item.secretName}</Td>
                     <Td textAlign="center">
@@ -639,7 +636,19 @@ const BuyerMatches = () => {
                     </Td>
                     <Td textAlign="center">
                       {item.interest ? (
-                        <div>{item.interest}</div>
+                        <div>
+                          <Button
+                            size="xs"
+                            variant={"link"}
+                            colorScheme="blue"
+                            onClick={() => {
+                              setBuyerId(item._id);
+                              matcheslist(item._id);
+                            }}
+                          >
+                            {item.interest}
+                          </Button>
+                        </div>
                       ) : (
                         <div>0</div>
                       )}
@@ -651,18 +660,38 @@ const BuyerMatches = () => {
                         <div>Pending</div>
                       )}
                     </Td>
-                    <Td>{item.confirmCallStatus}</Td>
                     <Td>
-                      <Button
-                        size="xs"
-                        colorScheme="blue"
-                        onClick={() => {
-                          matcheslist(item._id);
-                          setBuyerId(item._id);
-                        }}
-                      >
-                        Matches
-                      </Button>
+                      {item.confirmCallStatus ? (
+                        <div>{item.confirmCallStatus}</div>
+                      ) : (
+                        <div>Pending</div>
+                      )}
+                    </Td>
+                    <Td>
+                      {item.confirmCallStatus ? (
+                        <Button
+                          size="xs"
+                          colorScheme="blue"
+                          onClick={() => {
+                            setBuyerId(item._id);
+                            matcheslist(item._id);
+                          }}
+                          disabled
+                        >
+                          Matches
+                        </Button>
+                      ) : (
+                        <Button
+                          size="xs"
+                          colorScheme="blue"
+                          onClick={() => {
+                            setBuyerId(item._id);
+                            matcheslist(item._id);
+                          }}
+                        >
+                          Matches
+                        </Button>
+                      )}
                     </Td>
                   </Tr>
                 ))}
@@ -1120,6 +1149,7 @@ const BuyerMatches = () => {
                     <label className="font-semibold"> Location: </label>{" "}
                     {BuyerData.deliverylocation}
                   </div>
+                  <div className="flex flex-auto"></div>
                   <div>
                     <Button
                       size="sm"
@@ -1170,7 +1200,11 @@ const BuyerMatches = () => {
                         <Tr colSpan="2" key={index}>
                           <Td>{index + 1}</Td>
                           <Td>
-                            {item.inteDate}/{item.inteTime}
+                            {item.inte.map((itemA, indexA) => (
+                              <div key={indexA}>
+                                {itemA.interestDate}/{itemA.interestTime}
+                              </div>
+                            ))}
                           </Td>
                           <Td>{item.secretName}</Td>
                           <Td>{item.expectedQnty}</Td>

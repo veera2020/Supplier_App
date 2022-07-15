@@ -1174,13 +1174,13 @@ const Supplier = () => {
                                   : SupplierData.aliveFeedback
                                 : null}
                               {SupplierData.statusAccept == "Requirement dead"
-                                ? SupplierData.aliveFeedback == ""
+                                ? SupplierData.deadFeedback == ""
                                   ? "null"
                                   : SupplierData.deadFeedback
                                 : null}
                               {SupplierData.statusAccept ==
                               "Requirement Alive with modification"
-                                ? SupplierData.aliveFeedback == ""
+                                ? SupplierData.modificationFeedback == ""
                                   ? "null"
                                   : SupplierData.modificationFeedback
                                 : null}

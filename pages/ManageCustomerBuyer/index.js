@@ -370,7 +370,9 @@ const Buyer = () => {
                 EmployeeTable.rowData.map((item, index) => (
                   <Tr colSpan="2" key={index}>
                     <Td textAlign="center">{index + 1}</Td>
-                    <Td textAlign="center">{item.date}</Td>
+                    <Td textAlign="center" className="w-32">
+                      {item.date}
+                    </Td>
                     <Td textAlign="center">{item.requirementAddBy}</Td>
                     <Td textAlign="center">{item.secretName}</Td>
                     <Td textAlign="center">

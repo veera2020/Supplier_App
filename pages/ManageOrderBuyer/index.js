@@ -106,6 +106,17 @@ const BuyerPostOrder = () => {
     height: "100%",
     width: "100%",
   };
+  //time split
+  const Time = (props) => {
+    const a = props.data;
+    console.log(a);
+    const first2Str = String(a).slice(0, 2); // 👉️ '13'
+    const second2Str = String(a).slice(2, 4); // 👉️ '13'
+    const first2Num = Number(first2Str);
+    const second2Num = Number(second2Str);
+    const final = first2Num + ":" + second2Num;
+    return <>{final}</>;
+  };
   return (
     <>
       <Head>
@@ -169,7 +180,9 @@ const BuyerPostOrder = () => {
                 EmployeeTable.rowData.map((item, index) => (
                   <Tr key={index}>
                     <Td textAlign="center">{index + 1}</Td>
-                    <Td textAlign="center">{item.date}</Td>
+                    <Td textAlign="center">
+                      {item.date} / <Time data={item.time} />
+                    </Td>
                     {/* <Td>{item.type}</Td> */}
                     <Td textAlign="center">{item.secretName}</Td>
                     <Td textAlign="center">

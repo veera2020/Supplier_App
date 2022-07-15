@@ -289,7 +289,7 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
               ) : null}
               <div className="flex flex-col gap-2">
                 <label className="font-semibold">
-                  Landing Price
+                  Product Price
                   <span className="text-secondary pb-2">*</span>
                 </label>
                 <div className="flex gap-5">

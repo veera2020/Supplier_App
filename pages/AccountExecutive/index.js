@@ -7,7 +7,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { Breadcrumb } from "antd";
-
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import {
   Table,
   Thead,
@@ -56,42 +57,57 @@ const AmountExecutive = () => {
   //router
   const router = useRouter();
   // UseState
-
   const [reload, setreload] = useState(false);
-  const [statusname, setstatusname] = useState([]);
+  const [detail, setDetail] = useState("");
   const [productslist, setproductslist] = useState([]);
   const [distance, setdistance] = useState("");
   const [distancetonum, setdistancetonum] = useState("");
   const [totalprice, setTotalprice] = useState("");
   const [Details, setDetails] = useState("");
+  const [isTotalPrice, setTotalPrice] = useState("");
+  const [IsSupplierId, setSupplierId] = useState([]);
   useEffect(() => {
     axios
       .get("/v1/requirementCollection/thirdPartyApi/product")
       .then((res) => setproductslist(res.data));
   }, []);
-
+  //Formik InitialValue
+  const initialvalue = {
+    callStatus: "",
+    paymentMode: "",
+    paymentType: "",
+    amountToBePaid: "",
+  };
+  //formik validation
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: initialvalue,
+    validationSchema: Yup.object().shape({
+      callStatus: Yup.string(),
+      paymentMode: Yup.string(),
+      paymentType: Yup.string(),
+      amountToBePaid: Yup.string(),
+    }),
+  });
   //table
+  var data = 0;
   const EmployeeTable = useTable();
   //get employees
   const fetchdata = async (page = 1) => {
     EmployeeTable.setLoading(true);
     const response = await axios.get(
-      // `/v1/requirementCollection/supplier/productName/${Product}/${FromPrice}/${ToPrice}/${FromQty}/${ToQty}/null/${
-      //   page - 1
-      // }`
       "/v1/requirementCollectionBS/Buyer/Live/all"
     );
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
-      console.log(response.data);
-      //   setreload(!reload);
+      //console.log(response.data);
     } else {
       EmployeeTable.setRowData([]);
     }
   };
   useEffect(() => {
     fetchdata(EmployeeTable.currentPage, EmployeeTable.showLimit);
-  }, []);
+  }, [reload]);
 
   // Search Method
   const handlesearch = () => {
@@ -162,68 +178,17 @@ const AmountExecutive = () => {
   const [islastTimeUpdatedQtyRange, setLastTimeUpdatedQtyRange] =
     useState(false);
   const [UpdatedDetails, setUpdatedDetails] = useState([]);
-  let UpdateQty = [];
-  let UpdatePrice = [];
-  let UpdateLocation = [];
-  UpdatedDetails.map((item) =>
-    item.QtyMin && item.QtyMax ? UpdateQty.push(item) : null
-  );
-  UpdatedDetails.map((item) =>
-    item.priceMin && item.priceMax ? UpdatePrice.push(item) : null
-  );
-  UpdatedDetails.map((item) =>
-    item.deliveryLocation ? UpdateLocation.push(item) : null
-  );
   const isLastTimeUpdatedQtyRangeClose = () => {
     setLastTimeUpdatedQtyRange(false);
   };
   const UpdatedQtyRangeList = (props) => {
     setLastTimeUpdatedQtyRange(true);
     axios
-      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
+      .get(
+        `/v1/requirementCollectionBS/Buyer/sameProduct/fixed/only/all/${props}`
+      )
       .then((res) => setUpdatedDetails(res.data));
   };
-  //usestate
-  const [islastTimeUpdatedPriceRange, setLastTimeUpdatedPriceRange] =
-    useState(false);
-  //const [UpdatedDetails, setUpdatedDetails] = useState("");
-  const isLastTimeUpdatedPriceRangeClose = () => {
-    setLastTimeUpdatedPriceRange(false);
-  };
-  const UpdatedPriceRangeList = (props) => {
-    setLastTimeUpdatedPriceRange(true);
-    axios
-      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
-      .then((res) => setUpdatedDetails(res.data));
-  };
-  //usestate
-  const [islastTimeUpdatedLocation, setLastTimeUpdatedLocation] =
-    useState(false);
-  //const [UpdatedDetails, setUpdatedDetails] = useState("");
-  const isLastTimeUpdatedLocationClose = () => {
-    setLastTimeUpdatedLocation(false);
-  };
-  const UpdatedLocationList = (props) => {
-    setLastTimeUpdatedLocation(true);
-    axios
-      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
-      .then((res) => setUpdatedDetails(res.data));
-  };
-  //   //modal for map
-  //   const [slat, setslat] = useState("");
-  //   const [slng, setslng] = useState("");
-  //   const { isOpen, onOpen, onClose } = useDisclosure();
-  //   //mapview
-  //   const isOpenmap = (props) => {
-  //     console.log(props);
-  //     onOpen();
-  //     setslat(props.lat);
-  //     setslng(props.lang);
-  //   };
-  //   const mapStyles = {
-  //     height: "100%",
-  //     width: "100%",
-  //   };
   //usestate
   const [fixed, setfixed] = useState(false);
   const [fixedd, setfixedd] = useState([]);
@@ -259,15 +224,111 @@ const AmountExecutive = () => {
       .then((res) => setBuyerData(res.data[0]));
   };
   const saveinterest = (props) => {
-    const data = {
-      data: [props],
-      BId: BuyerData._id,
-    };
-    axios.post("/v1/interestTable", data).then((res) => {
-      setreload(!reload);
+    console.log(IsSupplierId, "hema");
+    let supplierId = [];
+    let TotalPrice = 0;
+    if (IsSupplierId.length != 0) {
+      IsSupplierId.forEach((element) => {
+        if (element.totalPrice) {
+          TotalPrice += element.totalPrice;
+        }
+        supplierId.push(element.supplierReqId);
+        // console.log(element.supplierReqId)
+        //  setSupplierId(element.supplierReqId);
+      });
+    }
+    console.log(supplierId);
+    const locale = "en";
+    var today = new Date();
+    const totime = today.toLocaleTimeString(locale, {
+      hour: "numeric",
+      hour12: false,
+      minute: "numeric",
     });
+    var dd = String(today.getDate()).padStart(2, "0");
+    var mm = String(today.getMonth() + 1).padStart(2, "0");
+    var yyyy = today.getFullYear();
+    today = dd + "-" + mm + "-" + yyyy;
+    var b = totime;
+    b = b.replace(/\:/g, "");
+    const time = parseInt(b);
+    let status;
+    if (formik.values.amountToBePaid == isTotalPrice) {
+      status = "fully paid";
+    }
+    if (formik.values.amountToBePaid != isTotalPrice) {
+      status = "partially paid";
+    }
+    if (formik.values.callStatus == "callback") {
+      // convert time string to number
+      var a = formik.values.timeCallback;
+      a = a.replace(/\:/g, "");
+      const availableTime = parseInt(a);
+      const data = {
+        finalcallStatus: formik.values.callStatus,
+        finalcallbackdate: formik.values.dateCallback,
+        finalcallbacktime: availableTime,
+        // totalPrice: TotalPrice,
+        // paymentMode: formik.values.paymentMode,
+        // paymentType: formik.values.paymentType,
+        // amountPaid: formik.values.amountToBePaid,
+        // supplierId: supplierId,
+        // buyerId: BuyerData._id,
+        date: today,
+        time: time,
+        // status: status,
+      };
+      console.log(data);
+      // axios.post(`/v1/paymentData/${BuyerData._id}`, data).then((res) => {
+      //   console.log(res);
+      // });
+    }
+    if (formik.values.callStatus == "accepted") {
+      const data = {
+        finalcallStatus: formik.values.callStatus,
+        // finalcallbackdate: formik.values.dateCallback,
+        // finalcallbacktime: availableTime,
+        totalPrice: TotalPrice,
+        paymentMode: formik.values.paymentMode,
+        paymentType: formik.values.paymentType,
+        amountPaid: formik.values.amountToBePaid,
+        supplierId: supplierId,
+        buyerId: BuyerData._id,
+        date: today,
+        time: time,
+        status: "confirmed",
+        payStatus: status,
+      };
+      console.log(data);
+      // axios.post(`/v1/paymentData/${BuyerData._id}`, data).then((res) => {
+      //   console.log(res);
+      // });
+    }
   };
-
+  // Total Price Count
+  const TotalPriceCount = (props) => {
+    let tpc = props.data.totalPrice;
+    setSupplierId(props.data.totalPrice);
+    let supplierId = [];
+    let TotalPrice = 0;
+    if (tpc.length != 0) {
+      tpc.forEach((element) => {
+        // console.log(element,"hema")
+        if (element.totalPrice) {
+          TotalPrice += element.totalPrice;
+        }
+      });
+      setTotalPrice(TotalPrice);
+      //   setSupplierId(supplierId);
+      if (TotalPrice != 0) {
+        return <>{TotalPrice}</>;
+      } else {
+        return <>nill</>;
+      }
+    } else {
+      return "";
+    }
+  };
   return (
     <>
       <Head>
@@ -414,14 +475,14 @@ const AmountExecutive = () => {
                   call status
                 </Th>
                 <Th textAlign="center" className="border">
-                  call Action
-                </Th>
-                <Th textAlign="center" className="border">
                   status
                 </Th>
                 <Th textAlign="center" className="border">
-                  Action
+                  call Action
                 </Th>
+                {/* <Th textAlign="center" className="border">
+                  Action
+                </Th> */}
               </Tr>
             </Thead>
             <Tbody>
@@ -467,75 +528,33 @@ const AmountExecutive = () => {
                           UpdatedQtyRangeList(item._id);
                         }}
                       >
-                        {item.minrange}
-                        {"-"}
-                        {item.maxrange}
+                        {item.fixed}
                       </Button>
                     </Td>
+                    <Td textAlign="center">
+                      <TotalPriceCount data={item} />
+                    </Td>
                     <Td textAlign="center">{item.shortlist}</Td>
-                    {item.fixed ? <Td>{item.fixed}</Td> : <Td>0</Td>}
-                    {item.fixed >= 1 ? <Td>Matched</Td> : <Td>Pending</Td>}
-                    <Td>
+                    <Td textAlign="center">
+                      {item.fixed >= 1 ? (
+                        <div>Matched</div>
+                      ) : (
+                        <div>Pending</div>
+                      )}
+                    </Td>
+                    <Td textAlign="center">
                       <Button
                         size="xs"
                         colorScheme="blue"
                         onClick={() => {
                           matcheslist(item._id);
+                          setDetail(item);
+                          <TotalPriceCount data={item} />;
                         }}
                       >
                         call
                       </Button>
                     </Td>
-
-                    {/* <Td textAlign="center">
-                      {Destination != "" ? (
-                        <Button
-                          variant="link"
-                          size="xs"
-                          colorScheme="blue"
-                          onClick={() => vehicleopen(item)}
-                        >
-                          VIEW
-                        </Button>
-                      ) : (
-                        <Button
-                          disabled
-                          variant="link"
-                          size="xs"
-                          colorScheme="blue"
-                          onClick={() => vehicleopen(item)}
-                        >
-                          VIEW
-                        </Button>
-                      )}
-                    </Td>
-                    <Td textAlign="center">
-                      {item.matchesstatus === "" ? (
-                        <div>Pending</div>
-                      ) : (
-                        <div>{item.matchesstatus}</div>
-                      )}
-                    </Td>
-                    <Td textAlign="center">
-                      {item.matchesstatus === "" ? (
-                        <Button
-                          size="xs"
-                          colorScheme="blue"
-                          onClick={() => Matche(item)}
-                        >
-                          Interest
-                        </Button>
-                      ) : (
-                        <Button
-                          disabled
-                          size="xs"
-                          colorScheme="blue"
-                          onClick={() => Matche()}
-                        >
-                          Interest
-                        </Button>
-                      )}
-                    </Td> */}
                   </Tr>
                 ))}
             </Tbody>
@@ -765,7 +784,7 @@ const AmountExecutive = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
+                    {UpdatedDetails != "" ? null : (
                       <Tr>
                         <Td
                           style={{ textAlign: "center" }}
@@ -776,15 +795,15 @@ const AmountExecutive = () => {
                         </Td>
                       </Tr>
                     )}
-                    {UpdateQty &&
-                      UpdateQty.map((item, index) => (
+                    {UpdatedDetails &&
+                      UpdatedDetails.map((item, index) => (
                         <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>
-                            {item.QtyMin}-{item.QtyMax}
-                          </Td>
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center">{item.secretName}</Td>
+                          <Td textAlign="center">{item.expectedQnty}</Td>
+                          <Td textAlign="center">{item.shortlistQuantity}</Td>
+                          <Td textAlign="center">{item.moderatedPrice}</Td>
+                          <Td textAlign="center">{item.totalPrice}</Td>
                         </Tr>
                       ))}
                   </Tbody>
@@ -802,332 +821,149 @@ const AmountExecutive = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <Modal
-          isOpen={islastTimeUpdatedPriceRange}
-          onClose={isLastTimeUpdatedPriceRangeClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Updated Price Range</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <div className="border-gray-500 scroll-smooth border">
-                <Table
-                  size="sm"
-                  scaleY="44"
-                  variant="striped"
-                  colorScheme="whatsapp"
-                  className="overflow-auto"
-                >
-                  <Thead className="bg-headergreen text-center">
-                    <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Changed Price</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
-                      <Tr>
-                        <Td
-                          style={{ textAlign: "center" }}
-                          className="font-semibold"
-                          colSpan="11"
-                        >
-                          No Data Found
-                        </Td>
-                      </Tr>
-                    )}
-                    {UpdatePrice &&
-                      UpdatePrice.map((item, index) => (
-                        <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>
-                            {item.priceMin}-{item.priceMax}
-                          </Td>
-                        </Tr>
-                      ))}
-                  </Tbody>
-                </Table>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                onClick={isLastTimeUpdatedPriceRangeClose}
-                colorScheme="blue"
-                mr={3}
-              >
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        <Modal
-          isOpen={islastTimeUpdatedLocation}
-          onClose={isLastTimeUpdatedLocationClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Updated Location List</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <div className="border-gray-500 scroll-smooth border">
-                <Table
-                  size="sm"
-                  scaleY="44"
-                  variant="striped"
-                  colorScheme="whatsapp"
-                  className="overflow-auto"
-                >
-                  <Thead className="bg-headergreen text-center">
-                    <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date</Th>
-                      <Th>Time</Th>
-                      <Th>Location</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
-                      <Tr>
-                        <Td
-                          style={{ textAlign: "center" }}
-                          className="font-semibold"
-                          colSpan="11"
-                        >
-                          No Data Found
-                        </Td>
-                      </Tr>
-                    )}
-                    {UpdateLocation &&
-                      UpdateLocation.map((item, index) => (
-                        <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>{item.deliveryLocation}</Td>
-                        </Tr>
-                      ))}
-                  </Tbody>
-                </Table>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                onClick={isLastTimeUpdatedLocationClose}
-                colorScheme="blue"
-                mr={3}
-              >
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        {/* <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Map View</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <div className="flex justify-center text-center">
-                <div className="object-cover h-48 w-96">
-                  <LoadScript googleMapsApiKey="AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI">
-                    <GoogleMap
-                      mapContainerStyle={mapStyles}
-                      zoom={13}
-                      center={{
-                        lat: parseFloat(slat),
-                        lng: parseFloat(slng),
-                      }}
-                    >
-                      <Marker
-                        position={{
-                          lat: parseFloat(slat),
-                          lng: parseFloat(slng),
-                        }}
-                      />
-                    </GoogleMap>
-                  </LoadScript>
-                </div>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button onClick={onClose} colorScheme="blue" mr={3}>
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal> */}
         <Modal size="4xl" isOpen={matches} onClose={matcheslistclose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Matches Suppliers</ModalHeader>
+            <ModalHeader></ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <div className="space-y-3">
-                <div className="flex flex-row gap-2">
-                  <div>{BuyerData.secretName}</div>
-                  <div>
-                    <label className="font-semibold">Name:</label>{" "}
-                    {BuyerData.name}
-                  </div>
-                  <div>
-                    <label className="font-semibold">Mobile No:</label>{" "}
-                    {BuyerData.mobileNumber}
-                  </div>
+              <div className="grid items-center gap-2">
+                <div className="grid pb-2 gap-2">
+                  <label className="font-semibold ">Call Status</label>
+                  <select
+                    name="callStatus"
+                    onChange={(e) => {
+                      formik.setFieldValue("callStatus", e.target.value);
+                      e.target.classList.add("change_color");
+                    }}
+                    onBlur={formik.handleBlur}
+                    style={{ outline: 0 }}
+                    className="input-primary"
+                  >
+                    <option value="null">Select Call Status</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="callback">CallBack</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
                 </div>
-                <div className="flex flex-row gap-2">
-                  <div>
-                    <label className="font-semibold">Price:</label>{" "}
-                    {BuyerData.product}
-                  </div>
-                  <div>
-                    <label className="font-semibold">Quantity:</label>{" "}
-                    {BuyerData.minrange}-{BuyerData.maxrange}
-                  </div>
-                  <div>
-                    <label className="font-semibold"> Price: </label>{" "}
-                    {BuyerData.minprice}-{BuyerData.maxprice}
-                  </div>
-                  <div>
-                    <label className="font-semibold"> Location: </label>{" "}
-                    {BuyerData.deliverylocation}
-                  </div>
-                </div>
-              </div>
-              <div className="border-gray-500 scroll-smooth border mt-3">
-                <Table
-                  size="sm"
-                  scaleY="44"
-                  variant="striped"
-                  colorScheme="whatsapp"
-                  className="overflow-auto"
-                >
-                  <Thead className="bg-headergreen text-center">
-                    <Tr>
-                      <Th>S.No</Th>
-                      <Th>Supplier Name</Th>
-                      <Th>Quantity</Th>
-                      <Th>Shortlisted qty</Th>
-                      <Th>Moderate Price</Th>
-                      <Th>total Price</Th>
-                      <Th>Landing Price</Th>
-                      <Th>Status</Th>
-                      <Th>Action</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {matchesDetails != "" ? null : (
-                      <Tr>
-                        <Td
-                          style={{ textAlign: "center" }}
-                          className="font-semibold"
-                          colSpan="11"
-                        >
-                          No Data Found
-                        </Td>
-                      </Tr>
-                    )}
-                    {matchesDetails &&
-                      matchesDetails.map((item, index) => (
-                        <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.secretName}</Td>
-                          <Td>{item.expectedQnty}</Td>
-                          <Td>{item.moderatedPrice}</Td>
-                          <Td>{item.moderatedPrice}</Td>
-                          <Td>{item.expectedQnty * item.moderatedPrice}</Td>
-                          <Td>
-                            <Button
-                              variant="link"
-                              size="xs"
-                              colorScheme="blue"
-                              onClick={() => vehicleopen(item)}
-                            >
-                              VIEW
-                            </Button>
-                          </Td>
-                          <Td></Td>
-                          <Td>
-                            <Button
-                              size="xs"
-                              colorScheme="blue"
-                              onClick={() => {
-                                fixedTable(item.id);
-                              }}
-                            >
-                              Fixed
-                            </Button>
-                          </Td>
-
-                          {/* <Td>l</Td> */}
-                          {/* <Td>
-                            <Button
-                              size="xs"
-                              colorScheme="blue"
-                              onClick={() => {
-                                //setstatusname([...statusname, item.data._id]);
-                                console.log(item.id);
-                                saveinterest(item.id);
-                                //streetChange();
-                              }}
-                            >
-                              Interest
-                            </Button>
-                          </Td> */}
-                          {/* {item.data.InterestStatus === "" ? (
-                            <Td>Pending</Td>
-                          ) : (
-                            <Td>{item.data.InterestStatus}</Td>
-                          )}
-                          {item.data.InterestStatus === "" ? (
-                            <Td>
-                              <Button
-                                size="xs"
-                                colorScheme="blue"
-                                // onClick={() => {
-                                //   UpdatedQtyRangeList(item._id);
-                                // }}
-                              >
-                                Interest
-                              </Button>
-                            </Td>
-                          ) : (
-                            <Td>
-                              <Button
-                                disabled
-                                size="xs"
-                                colorScheme="blue"
-                                // onClick={() => {
-                                //   UpdatedQtyRangeList(item._id);
-                                // }}
-                              >
-                                Interest
-                              </Button>
-                            </Td>
-                          )} */}
-                        </Tr>
-                      ))}
-                  </Tbody>
-                </Table>
+                {formik.values.callStatus == "callback" ? (
+                  <>
+                    <div className="grid pb-2 gap-2">
+                      <InputFields
+                        type="date"
+                        name="dateCallback"
+                        placeholder="Enter Price"
+                        value={formik.values.dateCallback || ""}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        className={
+                          formik.touched.dateCallback &&
+                          formik.errors.dateCallback
+                            ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                            : "input-primary bg-whitecolor focus-outline-none experience"
+                        }
+                      />
+                    </div>
+                    <div className="grid pb-2 gap-2">
+                      <InputFields
+                        type="time"
+                        name="timeCallback"
+                        placeholder="Enter Price"
+                        value={formik.values.timeCallback || ""}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        className={
+                          formik.touched.timeCallback &&
+                          formik.errors.timeCallback
+                            ? "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                            : "input-primary bg-whitecolor focus-outline-none experience"
+                        }
+                      />
+                    </div>
+                  </>
+                ) : null}
+                {formik.values.callStatus == "accepted" ? (
+                  <>
+                    <div className="grid pb-2 gap-2">
+                      <label className="font-semibold ">Total Amount : </label>
+                      <input
+                        type="string"
+                        name="totalPrice"
+                        placeholder={isTotalPrice}
+                        value={formik.values.totalPrice || ""}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        className="input-primary"
+                        disabled
+                      />
+                    </div>
+                    <div className="grid pb-2 gap-2">
+                      <label className="font-semibold ">Payment Mode :</label>
+                      <select
+                        name="paymentMode"
+                        onChange={(e) => {
+                          formik.setFieldValue("paymentMode", e.target.value);
+                          e.target.classList.add("change_color");
+                          console.log(detail);
+                        }}
+                        onBlur={formik.handleBlur}
+                        style={{ outline: 0 }}
+                        className="input-primary"
+                      >
+                        <option value="null">Select Payment Mode</option>
+                        <option value="credit">Credit</option>
+                        <option value="advance">Advance</option>
+                        <option value="cod">COD</option>
+                      </select>
+                    </div>
+                    <div className="grid pb-2 gap-2">
+                      <label className="font-semibold ">Payment Type :</label>
+                      <select
+                        name="paymentType"
+                        onChange={(e) => {
+                          formik.setFieldValue("paymentType", e.target.value);
+                          e.target.classList.add("change_color");
+                        }}
+                        onBlur={formik.handleBlur}
+                        style={{ outline: 0 }}
+                        className="input-primary"
+                      >
+                        <option value="null">Select Payment Type</option>
+                        <option value="upi">UPI</option>
+                        <option value="netbanking">Net Banking</option>
+                        <option value="wallet">Wallet</option>
+                      </select>
+                    </div>
+                    <div className="grid pb-2 gap-2">
+                      <label className="font-semibold ">
+                        Amount To Be Paid
+                      </label>
+                      <InputFields
+                        type="string"
+                        name="amountToBePaid"
+                        placeholder="Enter Amount"
+                        value={formik.values.amountToBePaid || ""}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        className="input-primary"
+                      />
+                    </div>
+                  </>
+                ) : null}
               </div>
             </ModalBody>
             <ModalFooter>
               <Button onClick={matcheslistclose} colorScheme="blue" mr={3}>
                 Close
               </Button>
-              {/* <Button
-                //onClick={matcheslistclose}
+              <Button
                 colorScheme="blue"
-                // onClick={() => {
-                //   saveinterest();
-                // }}
+                onClick={() => {
+                  saveinterest();
+                }}
               >
-                save
-              </Button> */}
+                Pay
+              </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
