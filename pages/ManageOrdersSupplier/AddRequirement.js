@@ -85,6 +85,12 @@ const AddRequirement = ({ setreload, reload }) => {
     expquantity: "",
     expprice: "",
     paymentmode: "",
+    minimumlot: "",
+    maximumlot: "",
+    stockTakeFromDay: "",
+    stockTakeToDay: "",
+    paymentFromDay: "",
+    paymentToDay: "",
   };
   //formik validation
   const formik = useFormik({
@@ -104,6 +110,12 @@ const AddRequirement = ({ setreload, reload }) => {
       // expprice: Yup.number(),
       // expquantity: Yup.number(),
       // paymentmode: Yup.string(),
+      // minimumlot: Yup.number(),
+      // maximumlot: Yup.number(),
+      // stockTakeFromDay: Yup.string(),
+      // stockTakeToDay: Yup.string(),
+      // paymentFromDay: Yup.string(),
+      // paymentToDay: Yup.string(),
     }),
     onSubmit: (values) => {
       console.log(values);
@@ -138,15 +150,20 @@ const AddRequirement = ({ setreload, reload }) => {
         expectedQnty: values.expquantity,
         paymentMode: values.paymentmode.toLowerCase(),
         advance: values.advance,
+        minimumlot: values.minimumlot,
+        maximumlot: values.maximumlot,
+        stockTakeFromDay: values.stockTakeFromDay,
+        stockTakeToDay: values.stockTakeToDay,
+        paymentFromDay: values.paymentFromDay,
+        paymentToDay: values.paymentToDay,
         date: today,
         time: time,
         lat: slat,
         lang: slng,
         status: "",
-        moderateStatus:"",
-        moderatedPrice:""
+        moderateStatus: "",
+        moderatedPrice: "",
       };
-      console.log(data);
       axios
         .post("/v1/requirementCollectionBS/Supplier", data)
         .then((res) => {
@@ -590,6 +607,153 @@ const AddRequirement = ({ setreload, reload }) => {
                         ) : null}
                       </>
                     ) : null}
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold">
+                        Minimum Lots
+                        <span className="text-secondary pb-2">*</span>
+                      </label>
+                      <InputFields
+                        type="number"
+                        name="minimumlot"
+                        placeholder="Enter Minimum Lots"
+                        value={formik.values.minimumlot || ""}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        className={
+                          formik.touched.minimumlot && formik.errors.minimumlot
+                            ? "input-primary ring-2 ring-secondary border-none"
+                            : "input-primary"
+                        }
+                      />
+                    </div>
+                    {formik.touched.expprice && formik.errors.expprice ? (
+                      <FormikErrorMessage>
+                        {formik.errors.expprice}
+                      </FormikErrorMessage>
+                    ) : null}
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold">
+                        Multiple of Lots
+                        <span className="text-secondary pb-2">*</span>
+                      </label>
+                      <InputFields
+                        type="number"
+                        name="maximumlot"
+                        placeholder="Enter Excepted Price"
+                        value={formik.values.maximumlot || ""}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        className={
+                          formik.touched.maximumlot && formik.errors.maximumlot
+                            ? "input-primary ring-2 ring-secondary border-none"
+                            : "input-primary"
+                        }
+                      />
+                    </div>
+                    {formik.touched.maximumlot && formik.errors.maximumlot ? (
+                      <FormikErrorMessage>
+                        {formik.errors.maximumlot}
+                      </FormikErrorMessage>
+                    ) : null}
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold">
+                        Stock Should Take Within
+                        <span className="text-secondary pb-2">*</span>
+                      </label>
+                      <div className="flex flex-row gap-3">
+                        <InputFields
+                          type="number"
+                          name="stockTakeFromDay"
+                          placeholder="Enter From Day"
+                          value={formik.values.stockTakeFromDay || ""}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          className={
+                            formik.touched.stockTakeFromDay &&
+                            formik.errors.stockTakeFromDay
+                              ? "input-primary ring-2 ring-secondary border-none"
+                              : "input-primary"
+                          }
+                        />
+
+                        <label className="font-semibold">To</label>
+                        <InputFields
+                          type="number"
+                          name="stockTakeToDay"
+                          placeholder="Enter To Day"
+                          value={formik.values.stockTakeToDay || ""}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          className={
+                            formik.touched.stockTakeToDay &&
+                            formik.errors.stockTakeToDay
+                              ? "input-primary ring-2 ring-secondary border-none"
+                              : "input-primary"
+                          }
+                        />
+                      </div>
+                      {formik.touched.stockTakeFromDay &&
+                      formik.errors.stockTakeFromDay ? (
+                        <FormikErrorMessage>
+                          {formik.errors.stockTakeFromDay}
+                        </FormikErrorMessage>
+                      ) : null}
+                      {formik.touched.stockTakeToDay &&
+                      formik.errors.stockTakeToDay ? (
+                        <FormikErrorMessage>
+                          {formik.errors.stockTakeToDay}
+                        </FormikErrorMessage>
+                      ) : null}
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="font-semibold">
+                        Payment Within
+                        <span className="text-secondary pb-2">*</span>
+                      </label>
+                      <div className="flex flex-row gap-3">
+                        <InputFields
+                          type="number"
+                          name="paymentFromDay"
+                          placeholder="Enter From Day"
+                          value={formik.values.paymentFromDay || ""}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          className={
+                            formik.touched.paymentFromDay &&
+                            formik.errors.paymentFromDay
+                              ? "input-primary ring-2 ring-secondary border-none"
+                              : "input-primary"
+                          }
+                        />
+                        <label className="font-semibold">To</label>
+                        <InputFields
+                          type="number"
+                          name="paymentToDay"
+                          placeholder="Enter To Day"
+                          value={formik.values.paymentToDay || ""}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          className={
+                            formik.touched.paymentToDay &&
+                            formik.errors.paymentToDay
+                              ? "input-primary ring-2 ring-secondary border-none"
+                              : "input-primary"
+                          }
+                        />
+                      </div>
+                      {formik.touched.paymentFromDay &&
+                      formik.errors.paymentFromDay ? (
+                        <FormikErrorMessage>
+                          {formik.errors.paymentFromDay}
+                        </FormikErrorMessage>
+                      ) : null}
+                      {formik.touched.paymentToDay &&
+                      formik.errors.paymentToDay ? (
+                        <FormikErrorMessage>
+                          {formik.errors.paymentToDay}
+                        </FormikErrorMessage>
+                      ) : null}
+                    </div>
                   </>
                 ) : null}
               </>
