@@ -129,7 +129,7 @@ const Moderatecustomer = () => {
   };
   //Formik InitialValue
   const initialvalue = {
-    editedPrice: empdetails.expectedPrice,
+    editedPrice: empdetails.moderatedPrice || empdetails.expectedPrice,
     //   saveEditPrice: "",
   };
   //formik validation
@@ -139,12 +139,29 @@ const Moderatecustomer = () => {
     validationSchema: Yup.object().shape({}),
     onSubmit: (values) => {
       console.log(values.editedPrice);
+      const locale = "en";
+      var today = new Date();
+      const totime = today.toLocaleTimeString(locale, {
+        hour: "numeric",
+        hour12: false,
+        minute: "numeric",
+      });
+      var dd = String(today.getDate()).padStart(2, "0");
+      var mm = String(today.getMonth() + 1).padStart(2, "0");
+      var yyyy = today.getFullYear();
+      today = dd + "-" + mm + "-" + yyyy;
+      var b = totime;
+      b = b.replace(/\:/g, "");
+      const time = parseInt(b);
+      console.log(time);
       if (empdetails.expectedPrice) {
         if (values.editedPrice > empdetails.expectedPrice) {
           console.log("maxprice");
           const data = {
             moderatedPrice: values.editedPrice,
             moderateStatus: "Moderated",
+            date: today,
+            time: time,
             //  saveEditPrice: values.saveEditPrice,
           };
           axios
@@ -172,6 +189,8 @@ const Moderatecustomer = () => {
           const data = {
             moderatedPrice: values.editedPrice,
             moderateStatus: "Moderated",
+            date: today,
+            time: time,
           };
           axios
             .put(`/v1/requirementCollectionBS/Supplier/${id}`, data)
@@ -662,6 +681,16 @@ const Moderatecustomer = () => {
                   <label className="font-semibold">Price per Kg -</label>
                   <div>{empdetails.expectedPrice}</div>
                 </div>
+                <div className="flex gap-1">
+                  <label className="font-semibold">
+                    Last Time Modurate Price -
+                  </label>
+                  {empdetails.moderatedPrice ? (
+                    <div>{empdetails.moderatedPrice}</div>
+                  ) : (
+                    <div>Null</div>
+                  )}
+                </div>
                 <div className="flex flex-col gap-2">
                   <label className="font-semibold">
                     Moderate Price
@@ -853,7 +882,12 @@ const Moderatecustomer = () => {
               >
                 Yes
               </Button>
-              <Button type="button" colorScheme="red" mr={3}>
+              <Button
+                type="button"
+                colorScheme="red"
+                mr={3}
+                onClick={ismoderateClose}
+              >
                 No
               </Button>
             </ModalFooter>
