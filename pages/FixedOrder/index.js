@@ -359,7 +359,16 @@ const FixedOrder = () => {
         });
     }
   };
-
+  const Time = (props) => {
+    const a = props.data;
+    console.log(a);
+    const first2Str = String(a).slice(0, 2); // 👉️ '13'
+    const second2Str = String(a).slice(2, 4); // 👉️ '13'
+    const first2Num = Number(first2Str);
+    const second2Num = Number(second2Str);
+    const final = first2Num + ":" + second2Num;
+    return <>{final}</>;
+  };
   return (
     <>
       <Head>
@@ -539,6 +548,8 @@ const FixedOrder = () => {
                     </Td>
                     <Td textAlign="center" className="w-32">
                       {item.date}
+                      {" / "}
+                      {<Time data={item.time} />}
                     </Td>
                     <Td textAlign="center">{item.requirementAddBy}</Td>
                     <Td textAlign="center">{item.secretName}</Td>
@@ -555,12 +566,12 @@ const FixedOrder = () => {
                     <Td textAlign="center">{item.product}</Td>
                     <Td textAlign="center">
                       {item.minrange}
-                      {"-"}
+                      {" - "}
                       {item.maxrange}
                     </Td>
                     <Td textAlign="center">
                       {item.minprice}
-                      {"-"}
+                      {" - "}
                       {item.maxprice}
                     </Td>
                     <Td textAlign="center">{item.interest}</Td>
@@ -866,16 +877,16 @@ const FixedOrder = () => {
                 >
                   <Thead className="bg-headergreen text-center">
                     <Tr>
-                      <Th>S.No</Th>
-                      <Th>Date & Time</Th>
-                      <Th>Supplier Name</Th>
-                      <Th>Quantity</Th>
-                      <Th>Shortlisted qty</Th>
-                      <Th>Moderate Price</Th>
-                      <Th>total Price</Th>
-                      <Th>Landing Price</Th>
-                      <Th>Status</Th>
-                      <Th>Action</Th>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date / Time</Th>
+                      <Th textAlign="center">Supplier Name</Th>
+                      <Th textAlign="center">Quantity</Th>
+                      <Th textAlign="center">Shortlisted qty</Th>
+                      <Th textAlign="center">Moderate Price</Th>
+                      <Th textAlign="center">total Price</Th>
+                      <Th textAlign="center">Landing Price</Th>
+                      <Th textAlign="center">Status</Th>
+                      <Th textAlign="center">Action</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -884,7 +895,7 @@ const FixedOrder = () => {
                         <Td
                           style={{ textAlign: "center" }}
                           className="font-semibold"
-                          colSpan="11"
+                          colSpan="10"
                         >
                           No Data Found
                         </Td>
@@ -893,18 +904,20 @@ const FixedOrder = () => {
                     {matchesDetails &&
                       matchesDetails.map((item, index) => (
                         <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>
-                            {item.shortDate} {item.shortTime}
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center" className="w-32">
+                            {item.shortDate}
+                            {" / "}
+                            {<Time data={item.shortTime} />}
                           </Td>
-                          <Td>{item.secretName}</Td>
-                          <Td>{item.expectedQnty}</Td>
-                          <Td>{item.shortlistQuantity}</Td>
-                          <Td>{item.moderatedPrice}</Td>
-                          <Td>
+                          <Td textAlign="center">{item.secretName}</Td>
+                          <Td textAlign="center">{item.expectedQnty}</Td>
+                          <Td textAlign="center">{item.shortlistQuantity}</Td>
+                          <Td textAlign="center">{item.moderatedPrice}</Td>
+                          <Td textAlign="center">
                             {item.shortlistQuantity * item.moderatedPrice}
                           </Td>
-                          <Td>
+                          <Td textAlign="center">
                             <Button
                               variant="link"
                               size="xs"
@@ -914,14 +927,14 @@ const FixedOrder = () => {
                               VIEW
                             </Button>
                           </Td>
-                          <Td>
+                          <Td textAlign="center">
                             {item.fixStatus == "fixed" ? (
                               <div>{item.fixStatus}</div>
                             ) : (
                               <div>Pending</div>
                             )}
                           </Td>
-                          <Td>
+                          <Td textAlign="center">
                             {item.fixStatus == "fixed" ? (
                               <Button
                                 size="xs"

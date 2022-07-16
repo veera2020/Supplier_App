@@ -254,7 +254,9 @@ const Moderatecustomer = () => {
     axios
       .get(`/v1/requirementCollectionBS/Supplier/${props}`)
       .then((res) => setModuratedata(res.data));
+    console.log(ModuratePriceList);
   };
+
   //
   //statusrejectchange
   const [isRejectOpen, setIsRejectOpen] = useState(false);
@@ -336,7 +338,7 @@ const Moderatecustomer = () => {
   //const cancelRef = React.useRef();
   //time split
   const Time = (props) => {
-    const a = props.data.item.time;
+    const a = props.data;
     console.log(a);
     const first2Str = String(a).slice(0, 2); // 👉️ '13'
     const second2Str = String(a).slice(2, 4); // 👉️ '13'
@@ -428,7 +430,7 @@ const Moderatecustomer = () => {
             <Thead className="bg-headergreen">
               <Tr>
                 <Th textAlign="center">S.No</Th>
-                <Th textAlign="center">Date</Th>
+                <Th textAlign="center">Date / Time</Th>
                 <Th textAlign="center">Registered By whom</Th>
                 <Th textAlign="center">Requirement Id</Th>
                 <Th textAlign="center">Name</Th>
@@ -458,6 +460,8 @@ const Moderatecustomer = () => {
                     <Td textAlign="center">{index + 1}</Td>
                     <Td textAlign="center" className="w-32">
                       {item.date}
+                      {" / "}
+                      {<Time data={item.time} />}
                     </Td>
                     <Td textAlign="center">{item.requirementAddBy}</Td>
                     <Td textAlign="center">{item.secretName}</Td>
@@ -878,12 +882,12 @@ const Moderatecustomer = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
+                    {ModuratePriceList != "" ? null : (
                       <Tr>
                         <Td
                           style={{ textAlign: "center" }}
                           className="font-semibold"
-                          colSpan="11"
+                          colSpan="4"
                         >
                           No Data Found
                         </Td>
@@ -895,7 +899,7 @@ const Moderatecustomer = () => {
                           <Td textAlign="center">{index + 1}</Td>
                           <Td textAlign="center">{item.date}</Td>
                           <Td textAlign="center" className="">
-                            <Time data={{ item }} />
+                            <Time data={item.time} />
                           </Td>
                           <Td textAlign="center">{item.moderatedPrice}</Td>
                         </Tr>
@@ -937,12 +941,12 @@ const Moderatecustomer = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {UpdatedDetails != "" ? null : (
+                    {UpdateQty != "" ? null : (
                       <Tr>
                         <Td
                           style={{ textAlign: "center" }}
                           className="font-semibold"
-                          colSpan="11"
+                          colSpan="4"
                         >
                           No Data Found
                         </Td>
@@ -953,7 +957,9 @@ const Moderatecustomer = () => {
                         <Tr colSpan="2" key={index}>
                           <Td textAlign="center">{index + 1}</Td>
                           <Td textAlign="center">{item.date}</Td>
-                          <Td textAlign="center">{item.time}</Td>
+                          <Td textAlign="center">
+                            <Time data={item.time} />
+                          </Td>
                           <Td textAlign="center">{item.updatedQty}</Td>
                         </Tr>
                       ))}
@@ -998,12 +1004,12 @@ const Moderatecustomer = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
+                    {UpdatePrice != "" ? null : (
                       <Tr>
                         <Td
                           style={{ textAlign: "center" }}
                           className="font-semibold"
-                          colSpan="11"
+                          colSpan="4"
                         >
                           No Data Found
                         </Td>
@@ -1014,7 +1020,9 @@ const Moderatecustomer = () => {
                         <Tr colSpan="2" key={index}>
                           <Td textAlign="center">{index + 1}</Td>
                           <Td textAlign="center">{item.date}</Td>
-                          <Td textAlign="center">{item.time}</Td>
+                          <Td textAlign="center">
+                            <Time data={item.time} />
+                          </Td>
                           <Td textAlign="center">{item.price}</Td>
                         </Tr>
                       ))}

@@ -351,7 +351,16 @@ const ShortlistOrder = () => {
       });
     console.log(data);
   };
-
+  const Time = (props) => {
+    const a = props.data;
+    console.log(a);
+    const first2Str = String(a).slice(0, 2); // 👉️ '13'
+    const second2Str = String(a).slice(2, 4); // 👉️ '13'
+    const first2Num = Number(first2Str);
+    const second2Num = Number(second2Str);
+    const final = first2Num + ":" + second2Num;
+    return <>{final}</>;
+  };
   return (
     <>
       <Head>
@@ -390,7 +399,7 @@ const ShortlistOrder = () => {
                   S.No
                 </Th>
                 <Th textAlign="center" className="border">
-                  Date
+                  Date / Time
                 </Th>
                 <Th textAlign="center" className="border">
                   registered by whom
@@ -440,6 +449,8 @@ const ShortlistOrder = () => {
                     </Td>
                     <Td textAlign="center" className="w-32">
                       {item.date}
+                      {" / "}
+                      {<Time data={item.time} />}
                     </Td>
                     <Td textAlign="center">{item.requirementAddBy}</Td>
                     <Td textAlign="center">{item.secretName}</Td>
@@ -456,12 +467,12 @@ const ShortlistOrder = () => {
                     <Td textAlign="center">{item.product}</Td>
                     <Td textAlign="center">
                       {item.minrange}
-                      {"-"}
+                      {" - "}
                       {item.maxrange}
                     </Td>
                     <Td textAlign="center">
                       {item.minprice}
-                      {"-"}
+                      {" - "}
                       {item.maxprice}
                     </Td>
                     <Td textAlign="center">
@@ -1157,7 +1168,7 @@ const ShortlistOrder = () => {
                   <Thead className="bg-headergreen text-center">
                     <Tr>
                       <Th textAlign="center">S.No</Th>
-                      <Th textAlign="center">Date & Time</Th>
+                      <Th textAlign="center">Date / Time</Th>
                       <Th textAlign="center">Supplier Name</Th>
                       <Th textAlign="center">Available Quantity</Th>
                       <Th textAlign="center">Moderate Price</Th>
@@ -1187,7 +1198,9 @@ const ShortlistOrder = () => {
                           <Td textAlign="center">
                             {item.shortDate ? (
                               <div className="w-32">
-                                {item.shortDate}/{item.shortTime}
+                                {item.shortDate}
+                                {" / "}
+                                {<Time data={item.shortTime} />}
                               </div>
                             ) : null}
                           </Td>
