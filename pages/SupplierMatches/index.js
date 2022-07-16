@@ -754,7 +754,7 @@ const SupplierMatches = () => {
             <ModalHeader> Buyer Details </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <div className="border-gray-500 scroll-smooth border">
+              <div className="border-gray-500 scroll-smooth border overflow-y-scroll">
                 <Table
                   size="sm"
                   scaleY="44"

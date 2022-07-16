@@ -145,7 +145,7 @@ const BuyerPostOrder = () => {
             </Button>
           </div>
         </div>
-        <div className="border-gray-500 scroll-smooth border">
+        <div className="border-gray-500 scroll-smooth border overflow-y-scroll">
           <Table
             size="sm"
             scaleY="44"
