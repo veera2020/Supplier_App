@@ -84,15 +84,15 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
     enableReinitialize: true,
     initialValues: initialvalue,
     validationSchema: Yup.object().shape({
-      // buyerpname: Yup.string(),
-      // minrange: Yup.number(),
-      // maxrange: Yup.number(),
-      // minprice: Yup.number(),
-      // maxprice: Yup.number(),
-      // pdelivery: Yup.string(),
-      // deliverylocation: Yup.string(),
-      // buyerdeliverydate: Yup.string(),
-      // buyerdeliverytime: Yup.number(),
+      buyerpname: Yup.string(),
+      minrange: Yup.number(),
+      maxrange: Yup.number(),
+      minprice: Yup.number(),
+      maxprice: Yup.number(),
+      pdelivery: Yup.string(),
+      deliverylocation: Yup.string(),
+      buyerdeliverydate: Yup.string(),
+      buyerdeliverytime: Yup.number(),
     }),
     onSubmit: (values) => {
       console.log(values);
@@ -267,6 +267,7 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
                         : "input-primary"
                     }
                   />
+                  <label className="font-semibold m-2">To</label>
                   <InputFields
                     type="number"
                     name="maxrange"
@@ -306,6 +307,7 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
                         : "input-primary"
                     }
                   />
+                  <label className="font-semibold m-2">To</label>
                   <InputFields
                     type="number"
                     name="maxprice"

@@ -293,7 +293,45 @@ const FixedOrder = () => {
         console.log(res.data);
         fixedclose();
         matcheslist(buyerId);
-        formik.resetForm();
+        // formik.resetForm();
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+          //seterrorMessage(error.response.data.message);
+        }
+      });
+    console.log(data);
+  };
+  const RejectCallStatus = () => {
+    const locale = "en";
+    var today = new Date();
+    const totime = today.toLocaleTimeString(locale, {
+      hour: "numeric",
+      hour12: false,
+      minute: "numeric",
+    });
+    var dd = String(today.getDate()).padStart(2, "0");
+    var mm = String(today.getMonth() + 1).padStart(2, "0");
+    var yyyy = today.getFullYear();
+    today = dd + "-" + mm + "-" + yyyy;
+    var b = totime;
+    b = b.replace(/\:/g, "");
+    const time = parseInt(b);
+    const data = {
+      fixStatus: "rejected",
+      confirmCallStatus: "",
+      fixDate: today,
+      fixTime: time,
+    };
+    console.log(data);
+    axios
+      .put(`/v1/interestTable/${FixedId}`, data)
+      .then((res) => {
+        console.log(res.data);
+        fixedclose();
+        matcheslist(buyerId);
+        // formik.resetForm();
       })
       .catch((error) => {
         if (error.response) {
@@ -963,7 +1001,7 @@ const FixedOrder = () => {
                                   size="xs"
                                   colorScheme="red"
                                   onClick={() => {
-                                    fixedTable(item);
+                                    RejectCallStatus();
                                     setFixedId(item.interestId);
                                   }}
                                 >
@@ -1002,24 +1040,6 @@ const FixedOrder = () => {
             <ModalBody>
               <Forms>
                 <div className="grid items-center gap-2">
-                  {/* <div className="grid pb-2 gap-2">
-                    <label className="font-semibold">Status :</label>
-                    <select
-                      name="status"
-                      onChange={(e) => {
-                        formik.setFieldValue("callstatus", e.target.value);
-                        e.target.classList.add("change_color");
-                      }}
-                      onBlur={formik.handleBlur}
-                      style={{ outline: 0 }}
-                      className="input-primary"
-                    >
-                      <option value="null">Select Status</option>
-                      <option value="accepted">Accepted</option>
-                      <option value="callback">CallBack</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
-                  </div> */}
                   <div className="flex flex-row gap-2">
                     <label className="font-semibold ">
                       Shortlisted Qty Range :

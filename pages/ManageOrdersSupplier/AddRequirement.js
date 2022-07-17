@@ -97,25 +97,25 @@ const AddRequirement = ({ setreload, reload }) => {
     enableReinitialize: true,
     initialValues: initialvalue,
     validationSchema: Yup.object().shape({
-      // type: Yup.string(),
-      // name: Yup.string(),
-      // supplierpname: Yup.string().matches(
-      //   Namepattern,
-      //   "Alphabets only allowed"
-      // ),
-      // stocklocation: Yup.string().matches(addressregex, "Enter Vaild Location"),
-      // stockposition: Yup.string(),
-      // stockavailabilitydate: Yup.string().required(),
-      // packtype: Yup.string().matches(Namepattern, "Alphabets only allowed"),
-      // expprice: Yup.number(),
-      // expquantity: Yup.number(),
-      // paymentmode: Yup.string(),
-      // minimumlot: Yup.number(),
-      // maximumlot: Yup.number(),
-      // stockTakeFromDay: Yup.string(),
-      // stockTakeToDay: Yup.string(),
-      // paymentFromDay: Yup.string(),
-      // paymentToDay: Yup.string(),
+      type: Yup.string(),
+      name: Yup.string(),
+      supplierpname: Yup.string().matches(
+        Namepattern,
+        "Alphabets only allowed"
+      ),
+      stocklocation: Yup.string().matches(addressregex, "Enter Vaild Location"),
+      stockposition: Yup.string(),
+      stockavailabilitydate: Yup.string().required(),
+      packtype: Yup.string().matches(Namepattern, "Alphabets only allowed"),
+      expprice: Yup.number(),
+      expquantity: Yup.number(),
+      paymentmode: Yup.string(),
+      minimumlot: Yup.number(),
+      maximumlot: Yup.number(),
+      stockTakeFromDay: Yup.string(),
+      stockTakeToDay: Yup.string(),
+      paymentFromDay: Yup.string(),
+      paymentToDay: Yup.string(),
     }),
     onSubmit: (values) => {
       console.log(values);
@@ -662,7 +662,7 @@ const AddRequirement = ({ setreload, reload }) => {
                       </label>
                       <div className="flex flex-row gap-3">
                         <InputFields
-                          type="number"
+                          type="date"
                           name="stockTakeFromDay"
                           placeholder="Enter From Day"
                           value={formik.values.stockTakeFromDay || ""}
@@ -676,9 +676,9 @@ const AddRequirement = ({ setreload, reload }) => {
                           }
                         />
 
-                        <label className="font-semibold">To</label>
+                        <label className="font-semibold m-2">To</label>
                         <InputFields
-                          type="number"
+                          type="date"
                           name="stockTakeToDay"
                           placeholder="Enter To Day"
                           value={formik.values.stockTakeToDay || ""}
@@ -712,7 +712,7 @@ const AddRequirement = ({ setreload, reload }) => {
                       </label>
                       <div className="flex flex-row gap-3">
                         <InputFields
-                          type="number"
+                          type="date"
                           name="paymentFromDay"
                           placeholder="Enter From Day"
                           value={formik.values.paymentFromDay || ""}
@@ -725,9 +725,9 @@ const AddRequirement = ({ setreload, reload }) => {
                               : "input-primary"
                           }
                         />
-                        <label className="font-semibold">To</label>
+                        <label className="font-semibold m-2">To</label>
                         <InputFields
-                          type="number"
+                          type="date"
                           name="paymentToDay"
                           placeholder="Enter To Day"
                           value={formik.values.paymentToDay || ""}
