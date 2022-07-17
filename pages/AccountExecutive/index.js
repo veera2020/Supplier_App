@@ -100,7 +100,6 @@ const AmountExecutive = () => {
     );
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
-      //console.log(response.data);
     } else {
       EmployeeTable.setRowData([]);
     }
@@ -205,14 +204,14 @@ const AmountExecutive = () => {
   const [matchesDetails, setmatchesDetails] = useState([]);
   const matcheslistclose = () => {
     setmatches(false);
-    // setreload(!reload);
+    setreload(!reload);
   };
   const matcheslist = (props) => {
     setmatches(true);
     axios
       .get(`/v1/requirementCollectionBS/Buyer/sameProduct/short/all/${props}`)
       .then((res) => {
-        // setreload(!reload);
+        setreload(!reload);
         setmatchesDetails(res.data);
         console.log(res.data);
       });
@@ -253,6 +252,7 @@ const AmountExecutive = () => {
     b = b.replace(/\:/g, "");
     const time = parseInt(b);
     let status;
+    let confirmStatus;
     if (formik.values.amountToBePaid == isTotalPrice) {
       status = "fully paid";
     }
@@ -260,34 +260,32 @@ const AmountExecutive = () => {
       status = "partially paid";
     }
     if (formik.values.callStatus == "callback") {
-      // convert time string to number
-      var a = formik.values.timeCallback;
-      a = a.replace(/\:/g, "");
-      const availableTime = parseInt(a);
-      const data = {
-        finalcallStatus: formik.values.callStatus,
-        finalcallbackdate: formik.values.dateCallback,
-        finalcallbacktime: availableTime,
-        // totalPrice: TotalPrice,
-        // paymentMode: formik.values.paymentMode,
-        // paymentType: formik.values.paymentType,
-        // amountPaid: formik.values.amountToBePaid,
-        // supplierId: supplierId,
-        // buyerId: BuyerData._id,
-        date: today,
-        time: time,
-        // status: status,
-      };
-      console.log(data);
-      // axios.post(`/v1/paymentData/${BuyerData._id}`, data).then((res) => {
-      //   console.log(res);
-      // });
+      confirmStatus = "pending";
     }
     if (formik.values.callStatus == "accepted") {
-      const data = {
-        finalcallStatus: formik.values.callStatus,
-        // finalcallbackdate: formik.values.dateCallback,
-        // finalcallbacktime: availableTime,
+      confirmStatus = "confirmed";
+    }
+    if (formik.values.callStatus == "rejected") {
+      confirmStatus = "rejected";
+    }
+    // if (formik.values.callStatus == "callback") {
+    //   // convert time string to number
+    //   var a = formik.values.timeCallback;
+    //   a = a.replace(/\:/g, "");
+    //   const availableTime = parseInt(a);
+    //   const data = {
+    //     finalcallStatus: formik.values.callStatus,
+    //     date: today,
+    //     time: time,
+    //     // status: status,
+    //   };
+    //   console.log(data);
+    //   // axios.post(`/v1/requirementCollectionBS/Buyer/${BuyerData._id}`, data).then((res) => {
+    //   //   console.log(res);
+    //   // });
+    // }
+    if (formik.values.callStatus != "") {
+      const data1 = {
         totalPrice: TotalPrice,
         paymentMode: formik.values.paymentMode,
         paymentType: formik.values.paymentType,
@@ -296,13 +294,30 @@ const AmountExecutive = () => {
         buyerId: BuyerData._id,
         date: today,
         time: time,
-        status: "confirmed",
-        payStatus: status,
+        status: status,
       };
-      console.log(data);
-      // axios.post(`/v1/paymentData/${BuyerData._id}`, data).then((res) => {
-      //   console.log(res);
-      // });
+      const data2 = {
+        paymentCallStatus: formik.values.callStatus,
+        // totalPrice: TotalPrice,
+        // paymentMode: formik.values.paymentMode,
+        // paymentType: formik.values.paymentType,
+        // amountPaid: formik.values.amountToBePaid,
+        // supplierId: supplierId,
+        // buyerId: BuyerData._id,
+        date: today,
+        time: time,
+        paymentConfirmCallStatus: confirmStatus,
+      };
+      axios.post(`/v1/paymentData`, data1).then((res) => {
+        console.log(res);
+        matcheslistclose();
+      });
+      axios
+        .put(`/v1/requirementCollectionBS/Buyer/${BuyerData._id}`, data2)
+        .then((res) => {
+          console.log(res);
+          matcheslistclose();
+        });
     }
   };
   // Total Price Count
@@ -545,10 +560,10 @@ const AmountExecutive = () => {
                     <Td textAlign="center">
                       <TotalPriceCount data={item} />
                     </Td>
-                    <Td textAlign="center">{item.shortlist}</Td>
+                    <Td textAlign="center">{item.paymentCallStatus}</Td>
                     <Td textAlign="center">
-                      {item.fixed >= 1 ? (
-                        <div>Matched</div>
+                      {item.paymentConfirmCallStatus ? (
+                        <div>{item.paymentConfirmCallStatus}</div>
                       ) : (
                         <div>Pending</div>
                       )}
@@ -857,7 +872,7 @@ const AmountExecutive = () => {
                     <option value="rejected">Rejected</option>
                   </select>
                 </div>
-                {formik.values.callStatus == "callback" ? (
+                {/* {formik.values.callStatus == "callback" ? (
                   <>
                     <div className="grid pb-2 gap-2">
                       <InputFields
@@ -892,7 +907,7 @@ const AmountExecutive = () => {
                       />
                     </div>
                   </>
-                ) : null}
+                ) : null} */}
                 {formik.values.callStatus == "accepted" ? (
                   <>
                     <div className="grid pb-2 gap-2">
@@ -978,7 +993,7 @@ const AmountExecutive = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <Modal isOpen={fixed} onClose={fixedclose}>
+        {/* <Modal isOpen={fixed} onClose={fixedclose}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Call Status</ModalHeader>
@@ -1009,11 +1024,11 @@ const AmountExecutive = () => {
                       //   onBlur={formik.handleBlur}
                       className="input-primary"
                     />
-                    {/* {formik.touched.advance && formik.errors.advance ? (
+                    {formik.touched.advance && formik.errors.advance ? (
                       <FormikErrorMessage>
                         {formik.errors.advance}
                       </FormikErrorMessage>
-                    ) : null} */}
+                    ) : null}
                   </div>
                 </div>
               </Forms>
@@ -1031,7 +1046,7 @@ const AmountExecutive = () => {
               </Button>
             </ModalFooter>
           </ModalContent>
-        </Modal>
+        </Modal> */}
       </div>
     </>
   );

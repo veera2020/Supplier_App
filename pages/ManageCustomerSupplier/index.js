@@ -312,7 +312,7 @@ const Supplier = () => {
             </Button>
           </div>
         </div>
-        <div className="border-gray-500 scroll-smooth border">
+        <div className="border-gray-500 scroll-smooth border overflow-y-scroll">
           <Table
             size="sm"
             scaleY="44"
@@ -355,9 +355,7 @@ const Supplier = () => {
                     <Td textAlign="center" className="w-32">
                       {item.date}
                     </Td>
-                    <Td textAlign="center" className="w-32">
-                      {<Time data={item.time} />}
-                    </Td>
+                    <Td textAlign="center">{<Time data={item.time} />}</Td>
                     <Td textAlign="center">{item.requirementAddBy}</Td>
                     <Td textAlign="center">{item.secretName}</Td>
                     <Td textAlign="center">
