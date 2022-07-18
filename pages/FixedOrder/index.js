@@ -277,7 +277,6 @@ const FixedOrder = () => {
     if (values.callStatus == "rejected") {
       status = "rejected";
     }
-    console.log(values.callStatus);
     let totalPrice = values.buyerFixedQty * fixedd.moderatedPrice;
     const data = {
       fixStatus: status,

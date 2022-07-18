@@ -4,7 +4,7 @@ import Head from "next/head";
 import Loginvalidation from "./login/LoginValidation";
 
 export default function Home() {
-  console.log("ABB")
+  console.log("AB")
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-2">
       <Head>
