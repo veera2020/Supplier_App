@@ -258,21 +258,21 @@ const BuyerMatches = () => {
       .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
       .then((res) => setUpdatedDetails(res.data));
   };
-  //modal for map
-  const [slat, setslat] = useState("");
-  const [slng, setslng] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  //mapview
-  const isOpenmap = (props) => {
-    console.log(props);
-    onOpen();
-    setslat(props.lat);
-    setslng(props.lang);
-  };
-  const mapStyles = {
-    height: "100%",
-    width: "100%",
-  };
+  // //modal for map
+  // const [slat, setslat] = useState("");
+  // const [slng, setslng] = useState("");
+  // const { isOpen, onOpen, onClose } = useDisclosure();
+  // //mapview
+  // const isOpenmap = (props) => {
+  //   console.log(props);
+  //   onOpen();
+  //   setslat(props.lat);
+  //   setslng(props.lang);
+  // };
+  // const mapStyles = {
+  //   height: "100%",
+  //   width: "100%",
+  // };
 
   //usestate
   const [matches, setmatches] = useState(false);
@@ -293,6 +293,32 @@ const BuyerMatches = () => {
 
     //   //handle change for multiselect
 
+    axios
+      .get(`/v1/requirementCollectionBS/Buyer/${props}`)
+      .then((res) => setBuyerData(res.data[0]));
+  };
+  //usestate
+  let matchedSupplierDetails = [];
+  const [matchedSupplier, setmatchedSupplier] = useState(false);
+  const [matchedSupplierDetail, setmatchedSupplierDetails] = useState([]);
+  matchedSupplierDetail.map((item) =>
+    item.inte != "" ? matchedSupplierDetails.push(item) : null
+  );
+  console.log(matchedSupplierDetails);
+  const matchesSupplierlistclose = () => {
+    setmatchedSupplier(false);
+    // setreload(!reload);
+  };
+  const matchedSupplierlist = (props) => {
+    setmatchedSupplier(true);
+    axios
+      .get(`/v1/requirementCollectionBS/Buyer/SameProduct/all/${props}`)
+      .then((res) => {
+        setreload(!reload);
+        setmatchedSupplierDetails(res.data);
+        console.log(res.data);
+      });
+    //handle change for multiselect
     axios
       .get(`/v1/requirementCollectionBS/Buyer/${props}`)
       .then((res) => setBuyerData(res.data[0]));
@@ -655,7 +681,7 @@ const BuyerMatches = () => {
                             colorScheme="blue"
                             onClick={() => {
                               setBuyerId(item._id);
-                              matcheslist(item._id);
+                              matchedSupplierlist(item._id);
                             }}
                           >
                             {item.interest}
@@ -704,6 +730,16 @@ const BuyerMatches = () => {
                           Matches
                         </Button>
                       )}
+                      {/* <Button
+                        size="xs"
+                        colorScheme="blue"
+                        onClick={() => {
+                          setBuyerId(item._id);
+                          matcheslist(item._id);
+                        }}
+                      >
+                        Matches
+                      </Button> */}
                     </Td>
                   </Tr>
                 ))}
@@ -1103,7 +1139,7 @@ const BuyerMatches = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <Modal isOpen={isOpen} onClose={onClose}>
+        {/* <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Map View</ModalHeader>
@@ -1137,7 +1173,7 @@ const BuyerMatches = () => {
               </Button>
             </ModalFooter>
           </ModalContent>
-        </Modal>
+        </Modal> */}
         <Modal size="5xl" isOpen={matches} onClose={matcheslistclose}>
           <ModalOverlay />
           <ModalContent>
@@ -1175,13 +1211,19 @@ const BuyerMatches = () => {
                   </div>
                   <div className="flex flex-auto"></div>
                   <div>
-                    <Button
-                      size="sm"
-                      colorScheme="blue"
-                      onClick={() => IsCallStatus()}
-                    >
-                      call
-                    </Button>
+                    {matchesDetails != "" ? (
+                      <Button
+                        size="sm"
+                        colorScheme="blue"
+                        onClick={() => IsCallStatus()}
+                      >
+                        call
+                      </Button>
+                    ) : (
+                      <Button size="sm" colorScheme="blue" disabled>
+                        call
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1257,15 +1299,17 @@ const BuyerMatches = () => {
                           </Td>
                           <Td textAlign="center">
                             {item.inte.length === 0 ? (
-                              <Button
-                                size="xs"
-                                colorScheme="blue"
-                                onClick={() => {
-                                  saveinterest(item.id);
-                                }}
-                              >
-                                Interest
-                              </Button>
+                              formik.values.callStatus == "accepted" ? (
+                                <Button
+                                  size="xs"
+                                  colorScheme="blue"
+                                  onClick={() => {
+                                    saveinterest(item.id);
+                                  }}
+                                >
+                                  Interest
+                                </Button>
+                              ) : null
                             ) : (
                               <Button
                                 disabled
@@ -1279,52 +1323,6 @@ const BuyerMatches = () => {
                               </Button>
                             )}
                           </Td>
-                          {/* <Td>l</Td> */}
-                          {/* <Td>
-                            <Button
-                              size="xs"
-                              colorScheme="blue"
-                              onClick={() => {
-                                //setstatusname([...statusname, item.data._id]);
-                                console.log(item.id);
-                                saveinterest(item.id);
-                                //streetChange();
-                              }}
-                            >
-                              Interest
-                            </Button>
-                          </Td> */}
-                          {/* {item.data.InterestStatus === "" ? (
-                            <Td>Pending</Td>
-                          ) : (
-                            <Td>{item.data.InterestStatus}</Td>
-                          )}
-                          {item.data.InterestStatus === "" ? (
-                            <Td>
-                              <Button
-                                size="xs"
-                                colorScheme="blue"
-                                // onClick={() => {
-                                //   UpdatedQtyRangeList(item._id);
-                                // }}
-                              >
-                                Interest
-                              </Button>
-                            </Td>
-                          ) : (
-                            <Td>
-                              <Button
-                                disabled
-                                size="xs"
-                                colorScheme="blue"
-                                // onClick={() => {
-                                //   UpdatedQtyRangeList(item._id);
-                                // }}
-                              >
-                                Interest
-                              </Button>
-                            </Td>
-                          )} */}
                         </Tr>
                       ))}
                   </Tbody>
@@ -1333,6 +1331,134 @@ const BuyerMatches = () => {
             </ModalBody>
             <ModalFooter>
               <Button onClick={matcheslistclose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal
+          size="5xl"
+          isOpen={matchedSupplier}
+          onClose={matchesSupplierlistclose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Matches Suppliers</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="space-y-3">
+                <div className="flex flex-row gap-2">
+                  <div>{BuyerData.secretName}</div>
+                  <div>
+                    <label className="font-semibold">Name:</label>{" "}
+                    {BuyerData.name}
+                  </div>
+                  <div>
+                    <label className="font-semibold">Mobile No:</label>{" "}
+                    {BuyerData.mobileNumber}
+                  </div>
+                </div>
+                <div className="flex flex-row gap-2">
+                  <div>
+                    <label className="font-semibold">Price:</label>{" "}
+                    {BuyerData.product}
+                  </div>
+                  <div>
+                    <label className="font-semibold">Quantity:</label>{" "}
+                    {BuyerData.minrange}-{BuyerData.maxrange}
+                  </div>
+                  <div>
+                    <label className="font-semibold"> Price: </label>{" "}
+                    {BuyerData.minprice}-{BuyerData.maxprice}
+                  </div>
+                  <div>
+                    <label className="font-semibold"> Location: </label>{" "}
+                    {BuyerData.deliverylocation}
+                  </div>
+                  <div className="flex flex-auto"></div>
+                </div>
+              </div>
+              <div className="border-gray-500 scroll-smooth border mt-3">
+                <Table
+                  size="sm"
+                  scaleY="44"
+                  variant="striped"
+                  colorScheme="whatsapp"
+                  className="overflow-auto"
+                >
+                  <Thead className="bg-headergreen text-center">
+                    <Tr>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date / Time</Th>
+                      <Th textAlign="center">Supplier Name</Th>
+                      <Th textAlign="center">Available Quantity</Th>
+                      <Th textAlign="center">Moderate Price</Th>
+                      <Th textAlign="center">Product Total Amount</Th>
+                      <Th textAlign="center">Stock Location</Th>
+                      <Th textAlign="center">Landing Price</Th>
+                      <Th textAlign="center">Status</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {matchedSupplierDetails != "" ? null : (
+                      <Tr>
+                        <Td
+                          style={{ textAlign: "center" }}
+                          className="font-semibold"
+                          colSpan="10"
+                        >
+                          No Data Found
+                        </Td>
+                      </Tr>
+                    )}
+                    {matchedSupplierDetails &&
+                      matchedSupplierDetails.map((item, index) => (
+                        <Tr colSpan="2" key={index}>
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center" className="w-32">
+                            {item.inte.map((itemA, indexA) => (
+                              <div key={indexA}>
+                                {itemA.interestDate}
+                                {" / "}
+                                {<Time data={itemA.interestTime} />}
+                              </div>
+                            ))}
+                          </Td>
+                          <Td textAlign="center">{item.secretName}</Td>
+                          <Td textAlign="center">{item.expectedQnty}</Td>
+                          <Td textAlign="center">{item.moderatedPrice}</Td>
+                          <Td textAlign="center">
+                            {item.expectedQnty * item.moderatedPrice}
+                          </Td>
+                          <Td textAlign="center">{item.stockLocation}</Td>
+                          <Td textAlign="center">
+                            <Button
+                              variant="link"
+                              size="xs"
+                              colorScheme="blue"
+                              onClick={() => vehicleopen(item)}
+                            >
+                              VIEW
+                            </Button>
+                          </Td>
+                          <Td textAlign="center">
+                            {item.inte.map((item, index) => (
+                              <div key={index}>{item.interestStatus}</div>
+                            ))}
+                            {item.inte.length === 0 && <div>Pending</div>}
+                          </Td>
+                        </Tr>
+                      ))}
+                  </Tbody>
+                </Table>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                onClick={matchesSupplierlistclose}
+                colorScheme="blue"
+                mr={3}
+              >
                 Close
               </Button>
             </ModalFooter>

@@ -216,7 +216,6 @@ const FixedOrder = () => {
   const [fixedd, setfixedd] = useState([]);
   const fixedclose = () => {
     setfixed(false);
-    setreload(!reload);
   };
   const fixedTable = (props) => {
     setfixed(true);
@@ -243,6 +242,30 @@ const FixedOrder = () => {
 
     //handle change for multiselect
 
+    axios
+      .get(`/v1/requirementCollectionBS/Buyer/${props}`)
+      .then((res) => setBuyerData(res.data[0]));
+  };
+  //usestate
+  let FixedData = [];
+  const [isFixed, setIsFixed] = useState(false);
+  const [FixedDataCollection, setfixedDataCollection] = useState([]);
+  FixedDataCollection.map((item, index) =>
+    item.fixStatus == "fixed" ? FixedData.push(item) : null
+  );
+  const IsFixedClose = () => {
+    setIsFixed(false);
+  };
+  const Fixedlist = (props) => {
+    setIsFixed(true);
+    axios
+      .get(`/v1/requirementCollectionBS/Buyer/SameProduct/fixed/all/${props}`)
+      .then((res) => {
+        setreload(!reload);
+        setfixedDataCollection(res.data);
+        console.log(res.data);
+      });
+    //handle change for multiselect
     axios
       .get(`/v1/requirementCollectionBS/Buyer/${props}`)
       .then((res) => setBuyerData(res.data[0]));
@@ -289,10 +312,61 @@ const FixedOrder = () => {
     axios
       .put(`/v1/interestTable/${FixedId}`, data)
       .then((res) => {
+        matcheslist(buyerId);
+        console.log(res.data);
+        setfixed(false);
+        // formik.resetForm();
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+          //seterrorMessage(error.response.data.message);
+        }
+      });
+    console.log(data);
+  };
+  const RejectCallStatus = (props) => {
+    const locale = "en";
+    var today = new Date();
+    const totime = today.toLocaleTimeString(locale, {
+      hour: "numeric",
+      hour12: false,
+      minute: "numeric",
+    });
+    var dd = String(today.getDate()).padStart(2, "0");
+    var mm = String(today.getMonth() + 1).padStart(2, "0");
+    var yyyy = today.getFullYear();
+    today = dd + "-" + mm + "-" + yyyy;
+    var b = totime;
+    b = b.replace(/\:/g, "");
+    const time = parseInt(b);
+
+    // const data1 = {
+    //   confirmCallStatus: "",
+    //   confirmCallStatusDate: "",
+    //   confirmCallStatusTime: "",
+    // };
+    // axios
+    //   .put(`/v1/requirementCollectionBS/Buyer/${buyerId}`, data1)
+    //   .then((res) => {
+    //     setreload(!reload);
+    //     IsCallStatusClose;
+    //   });
+
+    // const data = {
+    //   fixStatus: "rejected",
+    //   confirmCallStatus: "",
+    //   fixDate: today,
+    //   fixTime: time,
+    // };
+    console.log(props);
+    axios
+      .delete(`/v1/interestTable/${props}`)
+      .then((res) => {
         console.log(res.data);
         fixedclose();
         matcheslist(buyerId);
-        formik.resetForm();
+        // formik.resetForm();
       })
       .catch((error) => {
         if (error.response) {
@@ -531,7 +605,7 @@ const FixedOrder = () => {
                   <Td
                     style={{ textAlign: "center" }}
                     className="font-semibold"
-                    colSpan="8"
+                    colSpan="13"
                   >
                     No Data Found
                   </Td>
@@ -582,7 +656,7 @@ const FixedOrder = () => {
                           colorScheme="blue"
                           variant="link"
                           onClick={() => {
-                            matcheslist(item._id);
+                            Fixedlist(item._id);
                             setBuyerId(item._id);
                             setreload(!reload);
                           }}
@@ -618,6 +692,17 @@ const FixedOrder = () => {
                           Fix
                         </Button>
                       )}
+                      {/* <Button
+                        size="xs"
+                        colorScheme="blue"
+                        onClick={() => {
+                          matcheslist(item._id);
+                          setBuyerId(item._id);
+                          setreload(!reload);
+                        }}
+                      >
+                        Fix
+                      </Button> */}
                     </Td>
                   </Tr>
                 ))}
@@ -962,14 +1047,26 @@ const FixedOrder = () => {
                                   size="xs"
                                   colorScheme="red"
                                   onClick={() => {
-                                    fixedTable(item);
-                                    setFixedId(item.interestId);
+                                    RejectCallStatus(
+                                      item.supplierInterestTableId
+                                    );
+                                    //setFixedId(item.supplierInterestTableId);
                                   }}
                                 >
                                   Rejected
                                 </Button>
                               </ButtonGroup>
                             )}
+                            {/* <Button
+                              size="xs"
+                              colorScheme="red"
+                              onClick={() => {
+                                RejectCallStatus(item.supplierInterestTableId);
+                                //setFixedId(item.supplierInterestTableId);
+                              }}
+                            >
+                              Rejected
+                            </Button> */}
                           </Td>
                         </Tr>
                       ))}
@@ -993,6 +1090,131 @@ const FixedOrder = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
+        <Modal size="5xl" isOpen={isFixed} onClose={IsFixedClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Fixed Suppliers</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="space-y-3">
+                <div className="flex flex-row gap-2">
+                  <div>{BuyerData.secretName}</div>
+                  <div>
+                    <label className="font-semibold">Name:</label>{" "}
+                    {BuyerData.name}
+                  </div>
+                  <div>
+                    <label className="font-semibold">Mobile No:</label>{" "}
+                    {BuyerData.mobileNumber}
+                  </div>
+                </div>
+                <div className="flex flex-row gap-2">
+                  <div>
+                    <label className="font-semibold">Price:</label>{" "}
+                    {BuyerData.product}
+                  </div>
+                  <div>
+                    <label className="font-semibold">Quantity:</label>{" "}
+                    {BuyerData.minrange}-{BuyerData.maxrange}
+                  </div>
+                  <div>
+                    <label className="font-semibold"> Price: </label>{" "}
+                    {BuyerData.minprice}-{BuyerData.maxprice}
+                  </div>
+                  <div>
+                    <label className="font-semibold"> Location: </label>{" "}
+                    {BuyerData.deliverylocation}
+                  </div>
+                </div>
+              </div>
+              <div className="border-gray-500 scroll-smooth border mt-3">
+                <Table
+                  size="sm"
+                  scaleY="44"
+                  variant="striped"
+                  colorScheme="whatsapp"
+                  className="overflow-auto"
+                >
+                  <Thead className="bg-headergreen text-center">
+                    <Tr>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date / Time</Th>
+                      <Th textAlign="center">Supplier Name</Th>
+                      <Th textAlign="center">Quantity</Th>
+                      <Th textAlign="center">Shortlisted qty</Th>
+                      <Th textAlign="center">Moderate Price</Th>
+                      <Th textAlign="center">total Price</Th>
+                      <Th textAlign="center">Landing Price</Th>
+                      <Th textAlign="center">Status</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {FixedData != "" ? null : (
+                      <Tr>
+                        <Td
+                          style={{ textAlign: "center" }}
+                          className="font-semibold"
+                          colSpan="10"
+                        >
+                          No Data Found
+                        </Td>
+                      </Tr>
+                    )}
+                    {FixedData &&
+                      FixedData.map((item, index) => (
+                        <Tr colSpan="2" key={index}>
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center" className="w-32">
+                            {item.shortDate}
+                            {" / "}
+                            {<Time data={item.shortTime} />}
+                          </Td>
+                          <Td textAlign="center">{item.secretName}</Td>
+                          <Td textAlign="center">{item.expectedQnty}</Td>
+                          <Td textAlign="center">{item.shortlistQuantity}</Td>
+                          <Td textAlign="center">{item.moderatedPrice}</Td>
+                          <Td textAlign="center">
+                            {item.shortlistQuantity * item.moderatedPrice}
+                          </Td>
+                          <Td textAlign="center">
+                            <Button
+                              variant="link"
+                              size="xs"
+                              colorScheme="blue"
+                              onClick={() => vehicleopen(item)}
+                            >
+                              VIEW
+                            </Button>
+                          </Td>
+                          <Td textAlign="center">
+                            {item.fixStatus == "fixed" ? (
+                              <div>{item.fixStatus}</div>
+                            ) : (
+                              <div>Pending</div>
+                            )}
+                          </Td>
+                        </Tr>
+                      ))}
+                  </Tbody>
+                </Table>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={IsFixedClose} colorScheme="blue" mr={3}>
+                Close
+              </Button>
+              {/* <Button
+                //onClick={matcheslistclose}
+                colorScheme="blue"
+                // onClick={() => {
+                //   saveinterest();
+                // }}
+              >
+                save
+              </Button> */}
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
         <Modal isOpen={fixed} onClose={fixedclose}>
           <ModalOverlay />
           <ModalContent>
@@ -1001,24 +1223,6 @@ const FixedOrder = () => {
             <ModalBody>
               <Forms>
                 <div className="grid items-center gap-2">
-                  {/* <div className="grid pb-2 gap-2">
-                    <label className="font-semibold">Status :</label>
-                    <select
-                      name="status"
-                      onChange={(e) => {
-                        formik.setFieldValue("callstatus", e.target.value);
-                        e.target.classList.add("change_color");
-                      }}
-                      onBlur={formik.handleBlur}
-                      style={{ outline: 0 }}
-                      className="input-primary"
-                    >
-                      <option value="null">Select Status</option>
-                      <option value="accepted">Accepted</option>
-                      <option value="callback">CallBack</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
-                  </div> */}
                   <div className="flex flex-row gap-2">
                     <label className="font-semibold ">
                       Shortlisted Qty Range :

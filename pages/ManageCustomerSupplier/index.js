@@ -342,7 +342,7 @@ const Supplier = () => {
                   <Td
                     style={{ textAlign: "center" }}
                     className="font-semibold"
-                    colSpan="11"
+                    colSpan="12"
                   >
                     No Data Found
                   </Td>

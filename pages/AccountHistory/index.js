@@ -503,7 +503,7 @@ const AccountHistory = () => {
                   <Td
                     style={{ textAlign: "center" }}
                     className="font-semibold"
-                    colSpan="8"
+                    colSpan="11"
                   >
                     No Data Found
                   </Td>

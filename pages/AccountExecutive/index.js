@@ -513,7 +513,7 @@ const AmountExecutive = () => {
                   <Td
                     style={{ textAlign: "center" }}
                     className="font-semibold"
-                    colSpan="8"
+                    colSpan="11"
                   >
                     No Data Found
                   </Td>
@@ -558,9 +558,19 @@ const AmountExecutive = () => {
                       </Button>
                     </Td>
                     <Td textAlign="center">
-                      <TotalPriceCount data={item} />
+                      {item.totalPrice == "" ? (
+                        <div>0</div>
+                      ) : (
+                        <TotalPriceCount data={item} />
+                      )}
                     </Td>
-                    <Td textAlign="center">{item.paymentCallStatus}</Td>
+                    <Td textAlign="center">
+                      {item.paymentCallStatus ? (
+                        <div>{item.paymentCallStatus}</div>
+                      ) : (
+                        <div>pending</div>
+                      )}
+                    </Td>
                     <Td textAlign="center">
                       {item.paymentConfirmCallStatus ? (
                         <div>{item.paymentConfirmCallStatus}</div>
@@ -569,7 +579,33 @@ const AmountExecutive = () => {
                       )}
                     </Td>
                     <Td textAlign="center">
-                      <Button
+                      {item.paymentConfirmCallStatus ? (
+                        <Button
+                          size="xs"
+                          colorScheme="blue"
+                          // onClick={() => {
+                          //   matcheslist(item._id);
+                          //   setDetail(item);
+                          //   <TotalPriceCount data={item} />;
+                          // }}
+                          disabled
+                        >
+                          call
+                        </Button>
+                      ) : (
+                        <Button
+                          size="xs"
+                          colorScheme="blue"
+                          onClick={() => {
+                            matcheslist(item._id);
+                            setDetail(item);
+                            <TotalPriceCount data={item} />;
+                          }}
+                        >
+                          call
+                        </Button>
+                      )}
+                      {/* <Button
                         size="xs"
                         colorScheme="blue"
                         onClick={() => {
@@ -579,7 +615,7 @@ const AmountExecutive = () => {
                         }}
                       >
                         call
-                      </Button>
+                      </Button> */}
                     </Td>
                   </Tr>
                 ))}

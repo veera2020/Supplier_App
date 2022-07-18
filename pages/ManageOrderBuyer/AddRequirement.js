@@ -84,15 +84,15 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
     enableReinitialize: true,
     initialValues: initialvalue,
     validationSchema: Yup.object().shape({
-      // buyerpname: Yup.string(),
-      // minrange: Yup.number(),
-      // maxrange: Yup.number(),
-      // minprice: Yup.number(),
-      // maxprice: Yup.number(),
-      // pdelivery: Yup.string(),
-      // deliverylocation: Yup.string(),
-      // buyerdeliverydate: Yup.string(),
-      // buyerdeliverytime: Yup.number(),
+      buyerpname: Yup.string(),
+      minrange: Yup.number(),
+      maxrange: Yup.number(),
+      minprice: Yup.number(),
+      maxprice: Yup.number(),
+      pdelivery: Yup.string(),
+      deliverylocation: Yup.string(),
+      buyerdeliverydate: Yup.string(),
+      buyerdeliverytime: Yup.string(),
     }),
     onSubmit: (values) => {
       console.log(values);
@@ -152,6 +152,63 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
         });
     },
   });
+  const Submit = () => {
+    let values = formik.values;
+    const locale = "en";
+    var today = new Date();
+    const totime = today.toLocaleTimeString(locale, {
+      hour: "numeric",
+      hour12: false,
+      minute: "numeric",
+    });
+    console.log(totime);
+    var dd = String(today.getDate()).padStart(2, "0");
+    var mm = String(today.getMonth() + 1).padStart(2, "0");
+    var yyyy = today.getFullYear();
+    today = dd + "-" + mm + "-" + yyyy;
+    // convert time string to number
+    var a = values.buyerdeliverytime;
+    a = a.replace(/\:/g, "");
+    const deleveryDate = parseInt(a);
+    var b = totime;
+    b = b.replace(/\:/g, "");
+    const time = parseInt(b);
+    const data = {
+      requirementAddBy: "telecaller",
+      userId: buyerId,
+      product: values.buyerpname.toLowerCase(),
+      minrange: values.minrange,
+      maxrange: values.maxrange,
+      minprice: values.minprice,
+      maxprice: values.maxprice,
+      pdelivery: values.pdelivery.toLowerCase(),
+      deliverylocation: values.deliverylocation.toLowerCase(),
+      deliveryDate: values.buyerdeliverydate,
+      deliveryTime: deleveryDate,
+      lat: blat,
+      lang: blng,
+      date: today,
+      time: parseFloat(totime),
+      status: "",
+      matchesStatus: "",
+      interestCount: "",
+    };
+    console.log(data);
+    axios
+      .post("/v1/requirementCollectionBS/Buyer", data)
+      .then((res) => {
+        console.log(res.data);
+        setreload(!reload);
+        onClose();
+        formik.resetForm();
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+          seterrorMessage(error.response.data.message);
+        }
+      });
+  };
   const cancelbutton = () => {
     onClose();
     seterrorshow("");
@@ -267,6 +324,7 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
                         : "input-primary"
                     }
                   />
+                  <label className="font-semibold m-2">To</label>
                   <InputFields
                     type="number"
                     name="maxrange"
@@ -306,6 +364,7 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
                         : "input-primary"
                     }
                   />
+                  <label className="font-semibold m-2">To</label>
                   <InputFields
                     type="number"
                     name="maxprice"
@@ -420,6 +479,9 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
             <Button onClick={formik.handleSubmit} colorScheme="blue">
               Save
             </Button>
+            {/* <Button onClick={Submit} colorScheme="blue">
+              Save
+            </Button> */}
           </ModalFooter>
         </ModalContent>
       </Modal>

@@ -160,8 +160,8 @@ const Moderatecustomer = () => {
           const data = {
             moderatedPrice: values.editedPrice,
             moderateStatus: "Moderated",
-            date: today,
-            time: time,
+            moderateDate: today,
+            moderateTime: time,
             //  saveEditPrice: values.saveEditPrice,
           };
           axios
@@ -189,8 +189,8 @@ const Moderatecustomer = () => {
           const data = {
             moderatedPrice: values.editedPrice,
             moderateStatus: "Moderated",
-            date: today,
-            time: time,
+            moderateDate: today,
+            moderateTime: time,
           };
           axios
             .put(`/v1/requirementCollectionBS/Supplier/${id}`, data)
@@ -271,7 +271,7 @@ const Moderatecustomer = () => {
   const isModuratePrice = (props) => {
     setIsModurateopen(true);
     axios
-      .get(`/v1/requirementCollectionBS/Supplier/${props}`)
+      .get(`/v1/requirementCollectionBS/supplier/moderateHistory/all/${props}`)
       .then((res) => setModuratedata(res.data));
     console.log(ModuratePriceList);
   };
@@ -385,9 +385,9 @@ const Moderatecustomer = () => {
             Moderate Customers
           </span>
           <div className="flex items-center gap-3">
-            <Button colorScheme="blue" onClick={() => router.back()}>
+            {/* <Button colorScheme="blue" onClick={() => router.back()}>
               Back
-            </Button>
+            </Button> */}
             <Button colorScheme="blue" onClick={() => router.reload()}>
               Refresh
             </Button>
@@ -718,159 +718,6 @@ const Moderatecustomer = () => {
                     {formik.errors.editedPrice}
                   </FormikErrorMessage>
                 ) : null}
-                {/* {formik.touched.editedPrice && formik.errors.editedPrice ? (
-                      <FormikErrorMessage>
-                        {formik.errors.editedPrice}
-                      </FormikErrorMessage>
-                    ) : null}
-                    <div className="flex flex-col gap-2">
-                      <label className="font-semibold">
-                        Moderate Price
-                        <span className="text-secondary pb-2">*</span>
-                      </label>
-                      <InputFields
-                        type="number"
-                        name="editedPrice"
-                        value={formik.values.editedPrice || ""}
-                        onChange={(e) => {
-                          seterrormessageprice("");
-                          formik.handleChange(e);
-                        }}
-                        // onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        className={
-                          formik.touched.editedPrice &&
-                          formik.errors.editedPrice
-                            ? "input-primary ring-2 ring-secondary border-none"
-                            : "input-primary"
-                        }
-                      />
-                    </div>
-                    {formik.touched.editedPrice && formik.errors.editedPrice ? (
-                      <FormikErrorMessage>
-                        {formik.errors.editedPrice}
-                      </FormikErrorMessage>
-                    ) : null}
-                {/* {formik.values.saveEditPrice != "" ? (
-                  <>
-                    <div className="flex flex-col gap-2">
-                      <label className="font-semibold text-center text-size-lg">
-                        Are you Sure. Do you want to moderate User
-                      </label>
-                    </div>
-                    {/* <div className="flex flex-col gap-2">
-                      <label className="font-semibold">
-                        Edited Price
-                        <span className="text-secondary pb-2">*</span>
-                      </label>
-                      <div>{empdetails.expectedPrice}</div>
-                    </div> */}
-                {/* {formik.touched.editedPrice && formik.errors.editedPrice ? (
-                      <FormikErrorMessage>
-                        {formik.errors.editedPrice}
-                      </FormikErrorMessage>
-                    ) : null}
-                    <div className="flex flex-col gap-2">
-                      <label className="font-semibold">
-                        Moderate Price
-                        <span className="text-secondary pb-2">*</span>
-                      </label>
-                      <InputFields
-                        type="number"
-                        name="editedPrice"
-                        value={formik.values.editedPrice || ""}
-                        onChange={(e) => {
-                          seterrormessageprice("");
-                          formik.handleChange(e);
-                        }}
-                        // onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        className={
-                          formik.touched.editedPrice &&
-                          formik.errors.editedPrice
-                            ? "input-primary ring-2 ring-secondary border-none"
-                            : "input-primary"
-                        }
-                      />
-                    </div>
-                    {formik.touched.editedPrice && formik.errors.editedPrice ? (
-                      <FormikErrorMessage>
-                        {formik.errors.editedPrice}
-                      </FormikErrorMessage>
-                    ) : null}
-                  </>
-                ) : (
-                  <>
-                    <div className="flex flex-col gap-2">
-                      <label className="font-semibold">
-                        Edited Price
-                        <span className="text-secondary pb-2">*</span>
-                      </label>
-                      <InputFields
-                        type="number"
-                        name="editedPrice"
-                        value={formik.values.editedPrice || ""}
-                        // onChange={(e) => {
-                        //   seterrormessageprice("");
-                        //   formik.handleChange(e);
-                        // }}
-                        // // onChange={formik.handleChange}
-                        // onBlur={formik.handleBlur}
-                        className={
-                          formik.touched.editedPrice &&
-                          formik.errors.editedPrice
-                            ? "input-primary ring-2 ring-secondary border-none"
-                            : "input-primary"
-                        }
-                        disabled
-                      />
-                    </div>
-                    {formik.touched.editedPrice && formik.errors.editedPrice ? (
-                      <FormikErrorMessage>
-                        {formik.errors.editedPrice}
-                      </FormikErrorMessage>
-                    ) : null}
-                    <div className="flex flex-col gap-2">
-                      <label className="font-semibold">
-                        Modurate Price
-                        <span className="text-secondary pb-2">*</span>
-                      </label>
-                      <InputFields
-                        type="number"
-                        name="editedPrice"
-                        value={formik.values.editedPrice || ""}
-                        onChange={(e) => {
-                          seterrormessageprice("");
-                          formik.handleChange(e);
-                        }}
-                        // onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        className={
-                          formik.touched.editedPrice &&
-                          formik.errors.editedPrice
-                            ? "input-primary ring-2 ring-secondary border-none"
-                            : "input-primary"
-                        }
-                      />
-                    </div>
-                    {formik.touched.editedPrice && formik.errors.editedPrice ? (
-                      <FormikErrorMessage>
-                        {formik.errors.editedPrice}
-                      </FormikErrorMessage>
-                    ) : null}
-                    <div className="flex flex-col gap-2">
-                      <label className="font-semibold"></label>
-                      <Button
-                        onClick={() =>
-                          formik.setFieldValue("saveEditPrice", "save")
-                        }
-                        colorScheme="blue"
-                      >
-                        save
-                      </Button>
-                    </div>
-                  </>
-                )} */}
               </Forms>
             </ModalBody>
             <ModalFooter>

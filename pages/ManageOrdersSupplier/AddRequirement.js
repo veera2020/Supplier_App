@@ -97,28 +97,28 @@ const AddRequirement = ({ setreload, reload }) => {
     enableReinitialize: true,
     initialValues: initialvalue,
     validationSchema: Yup.object().shape({
-      // type: Yup.string(),
-      // name: Yup.string(),
-      // supplierpname: Yup.string().matches(
-      //   Namepattern,
-      //   "Alphabets only allowed"
-      // ),
-      // stocklocation: Yup.string().matches(addressregex, "Enter Vaild Location"),
-      // stockposition: Yup.string(),
-      // stockavailabilitydate: Yup.string().required(),
-      // packtype: Yup.string().matches(Namepattern, "Alphabets only allowed"),
-      // expprice: Yup.number(),
-      // expquantity: Yup.number(),
-      // paymentmode: Yup.string(),
-      // minimumlot: Yup.number(),
-      // maximumlot: Yup.number(),
-      // stockTakeFromDay: Yup.string(),
-      // stockTakeToDay: Yup.string(),
-      // paymentFromDay: Yup.string(),
-      // paymentToDay: Yup.string(),
+      type: Yup.string(),
+      name: Yup.string(),
+      supplierpname: Yup.string().matches(
+        Namepattern,
+        "Alphabets only allowed"
+      ),
+      stocklocation: Yup.string().matches(addressregex, "Enter Vaild Location"),
+      stockposition: Yup.string(),
+      stockavailabilitydate: Yup.string().required(),
+      packtype: Yup.string().matches(Namepattern, "Alphabets only allowed"),
+      expprice: Yup.number(),
+      expquantity: Yup.number(),
+      paymentmode: Yup.string(),
+      minimumlot: Yup.number(),
+      maximumlot: Yup.number(),
+      stockTakeFromDay: Yup.string(),
+      stockTakeToDay: Yup.string(),
+      paymentFromDay: Yup.string(),
+      paymentToDay: Yup.string(),
     }),
     onSubmit: (values) => {
-      console.log(values);
+      console.log("abab");
       const locale = "en";
       var today = new Date();
       const totime = today.toLocaleTimeString(locale, {
@@ -180,6 +180,68 @@ const AddRequirement = ({ setreload, reload }) => {
         });
     },
   });
+  const Submit = () => {
+    let values = formik.values;
+    const locale = "en";
+    var today = new Date();
+    const totime = today.toLocaleTimeString(locale, {
+      hour: "numeric",
+      hour12: false,
+      minute: "numeric",
+    });
+    var dd = String(today.getDate()).padStart(2, "0");
+    var mm = String(today.getMonth() + 1).padStart(2, "0");
+    var yyyy = today.getFullYear();
+    today = dd + "-" + mm + "-" + yyyy;
+    // convert time string to number
+    var a = values.stockavailabilitytime;
+    a = a.replace(/\:/g, "");
+    const availableTime = parseInt(a);
+    var b = totime;
+    b = b.replace(/\:/g, "");
+    const time = parseInt(b);
+    const data = {
+      requirementAddBy: "telecaller",
+      userId: supplierId,
+      product: values.supplierpname.toLowerCase(),
+      stockLocation: values.stocklocation.toLowerCase(),
+      stockPosition: values.stockposition.toLowerCase(),
+      stockAvailabilityDate: values.stockavailabilitydate,
+      stockAvailabilityTime: availableTime,
+      packType: values.packtype.toLowerCase(),
+      expectedPrice: values.expprice,
+      expectedQnty: values.expquantity,
+      paymentMode: values.paymentmode.toLowerCase(),
+      advance: values.advance,
+      minimumlot: values.minimumlot,
+      maximumlot: values.maximumlot,
+      stockTakeFromDay: values.stockTakeFromDay,
+      stockTakeToDay: values.stockTakeToDay,
+      paymentFromDay: values.paymentFromDay,
+      paymentToDay: values.paymentToDay,
+      date: today,
+      time: time,
+      lat: slat,
+      lang: slng,
+      status: "",
+      moderateStatus: "",
+      moderatedPrice: "",
+    };
+    axios
+      .post("/v1/requirementCollectionBS/Supplier", data)
+      .then((res) => {
+        console.log(res.data);
+        setreload(!reload);
+        onClose();
+        formik.resetForm();
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+          seterrorMessage(error.response.data.message);
+        }
+      });
+  };
   const cancelbutton = () => {
     onClose();
     seterrorshow("");
@@ -662,7 +724,7 @@ const AddRequirement = ({ setreload, reload }) => {
                       </label>
                       <div className="flex flex-row gap-3">
                         <InputFields
-                          type="number"
+                          type="date"
                           name="stockTakeFromDay"
                           placeholder="Enter From Day"
                           value={formik.values.stockTakeFromDay || ""}
@@ -676,9 +738,9 @@ const AddRequirement = ({ setreload, reload }) => {
                           }
                         />
 
-                        <label className="font-semibold">To</label>
+                        <label className="font-semibold m-2">To</label>
                         <InputFields
-                          type="number"
+                          type="date"
                           name="stockTakeToDay"
                           placeholder="Enter To Day"
                           value={formik.values.stockTakeToDay || ""}
@@ -712,7 +774,7 @@ const AddRequirement = ({ setreload, reload }) => {
                       </label>
                       <div className="flex flex-row gap-3">
                         <InputFields
-                          type="number"
+                          type="date"
                           name="paymentFromDay"
                           placeholder="Enter From Day"
                           value={formik.values.paymentFromDay || ""}
@@ -725,9 +787,9 @@ const AddRequirement = ({ setreload, reload }) => {
                               : "input-primary"
                           }
                         />
-                        <label className="font-semibold">To</label>
+                        <label className="font-semibold m-2">To</label>
                         <InputFields
-                          type="number"
+                          type="date"
                           name="paymentToDay"
                           placeholder="Enter To Day"
                           value={formik.values.paymentToDay || ""}
@@ -763,7 +825,10 @@ const AddRequirement = ({ setreload, reload }) => {
             <Button colorScheme="blue" mr={3} onClick={cancelbutton}>
               Cancel
             </Button>
-            <Button onClick={formik.handleSubmit} colorScheme="blue">
+            {/* <Button onClick={formik.handleSubmit} colorScheme="blue">
+              Save
+            </Button> */}
+            <Button onClick={Submit} colorScheme="blue">
               Save
             </Button>
           </ModalFooter>

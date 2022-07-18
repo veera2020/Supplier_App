@@ -296,6 +296,33 @@ const ShortlistOrder = () => {
       .get(`/v1/requirementCollectionBS/Buyer/${props}`)
       .then((res) => setBuyerData(res.data[0]));
   };
+  //usestate
+  let shortlistData = [];
+  const [shortlistSupplier, setShortlistSupplier] = useState(false);
+  const [ShortlistDetails, setShortlistDetails] = useState([]);
+  ShortlistDetails.map((item, index) =>
+    item.shortliststatus == "shortlist" ? shortlistData.push(item) : null
+  );
+  const shortlistSupplierClose = () => {
+    setShortlistSupplier(false);
+    // setreload(!reload);
+  };
+  const shortlist = (props) => {
+    setShortlistSupplier(true);
+    axios
+      .get(`/v1/requirementCollectionBS/Buyer/sameProduct/short/all/${props}`)
+      .then((res) => {
+        setreload(!reload);
+        setShortlistDetails(res.data);
+        console.log(res.data);
+      });
+
+    //handle change for multiselect
+
+    axios
+      .get(`/v1/requirementCollectionBS/Buyer/${props}`)
+      .then((res) => setBuyerData(res.data[0]));
+  };
 
   const UpdatedSupplierCallStatus = () => {
     let values = formik.values;
@@ -341,7 +368,7 @@ const ShortlistOrder = () => {
         console.log(res.data);
         matcheslist(BuyerId);
         setIsSupplierCall(false);
-        formik.resetForm();
+        // formik.resetForm();
       })
       .catch((error) => {
         if (error.response) {
@@ -420,7 +447,7 @@ const ShortlistOrder = () => {
                   price range
                 </Th>
                 <Th textAlign="center" className="border">
-                  No.of suppliers found
+                  No.of suppliers Interested
                 </Th>
                 <Th textAlign="center" className="border">
                   Count of confirmed suppliers
@@ -433,7 +460,7 @@ const ShortlistOrder = () => {
                   <Td
                     style={{ textAlign: "center" }}
                     className="font-semibold"
-                    colSpan="8"
+                    colSpan="10"
                   >
                     No Data Found
                   </Td>
@@ -494,7 +521,19 @@ const ShortlistOrder = () => {
                         </Button>
                       )}
                     </Td>
-                    <Td textAlign="center">{item.shortlist}</Td>
+                    <Td textAlign="center">
+                      <Button
+                        size="md"
+                        colorScheme="blue"
+                        variant="link"
+                        onClick={() => {
+                          shortlist(item._id);
+                          setBuyerId(item._id);
+                        }}
+                      >
+                        {item.shortlist}
+                      </Button>
+                    </Td>
                   </Tr>
                 ))}
             </Tbody>
@@ -1284,6 +1323,145 @@ const ShortlistOrder = () => {
               >
                 save
               </Button> */}
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal
+          size="5xl"
+          isOpen={shortlistSupplier}
+          onClose={shortlistSupplierClose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Shortlist Suppliers</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <div className="space-y-3">
+                <div className="flex flex-row gap-2">
+                  <div>{BuyerData.secretName}</div>
+                  <div>
+                    <label className="font-semibold">Name:</label>{" "}
+                    {BuyerData.name}
+                  </div>
+                  <div>
+                    <label className="font-semibold">Mobile No:</label>{" "}
+                    {BuyerData.mobileNumber}
+                  </div>
+                </div>
+                <div className="flex flex-row gap-2">
+                  <div>
+                    <label className="font-semibold">Price:</label>{" "}
+                    {BuyerData.product}
+                  </div>
+                  <div>
+                    <label className="font-semibold">Quantity:</label>{" "}
+                    {BuyerData.minrange}-{BuyerData.maxrange}
+                  </div>
+                  <div>
+                    <label className="font-semibold"> Price: </label>{" "}
+                    {BuyerData.minprice}-{BuyerData.maxprice}
+                  </div>
+                  <div>
+                    <label className="font-semibold"> Location: </label>{" "}
+                    {BuyerData.deliverylocation}
+                  </div>
+                </div>
+              </div>
+              <div className="border-gray-500 scroll-smooth border mt-3">
+                <Table
+                  size="sm"
+                  scaleY="44"
+                  variant="striped"
+                  colorScheme="whatsapp"
+                  className="overflow-auto"
+                >
+                  <Thead className="bg-headergreen text-center">
+                    <Tr>
+                      <Th textAlign="center">S.No</Th>
+                      <Th textAlign="center">Date / Time</Th>
+                      <Th textAlign="center">Supplier Name</Th>
+                      <Th textAlign="center">Available Quantity</Th>
+                      <Th textAlign="center">Moderate Price</Th>
+                      <Th textAlign="center">Landing price</Th>
+                      <Th textAlign="center">confirmed order qty</Th>
+                      <Th textAlign="center">Status</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {shortlistData != "" ? null : (
+                      <Tr>
+                        <Td
+                          style={{ textAlign: "center" }}
+                          className="font-semibold"
+                          colSpan="11"
+                        >
+                          No Data Found
+                        </Td>
+                      </Tr>
+                    )}
+                    {shortlistData &&
+                      shortlistData.map((item, index) => (
+                        <Tr colSpan="2" key={index}>
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center">
+                            {item.shortDate ? (
+                              <div className="w-32">
+                                {item.shortDate}
+                                {" / "}
+                                {<Time data={item.shortTime} />}
+                              </div>
+                            ) : null}
+                          </Td>
+                          <Td textAlign="center">
+                            <Button
+                              variant="link"
+                              size="xs"
+                              colorScheme="blue"
+                              onClick={() => supplierData(item.id)}
+                            >
+                              {item.secretName}
+                            </Button>
+                          </Td>
+                          <Td textAlign="center">{item.expectedQnty}</Td>
+                          <Td textAlign="center">{item.moderatedPrice}</Td>
+                          <Td textAlign="center">
+                            <Button
+                              variant="link"
+                              size="xs"
+                              colorScheme="blue"
+                              onClick={() => vehicleopen(item)}
+                            >
+                              VIEW
+                            </Button>
+                          </Td>
+                          <Td textAlign="center">
+                            {item.shortlistQuantity ? (
+                              <div>{item.shortlistQuantity}</div>
+                            ) : (
+                              <div>0</div>
+                            )}
+                          </Td>
+                          <Td textAlign="center">
+                            {item.shortliststatus === "shortlist" ? (
+                              <div>{item.shortliststatus}</div>
+                            ) : (
+                              <div>Pending</div>
+                            )}
+                          </Td>
+                        </Tr>
+                      ))}
+                  </Tbody>
+                </Table>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                onClick={shortlistSupplierClose}
+                colorScheme="blue"
+                mr={3}
+              >
+                Close
+              </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
