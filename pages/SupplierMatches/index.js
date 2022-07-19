@@ -274,7 +274,7 @@ const SupplierMatches = () => {
                   <Td
                     style={{ textAlign: "center" }}
                     className="font-semibold"
-                    colSpan="11"
+                    colSpan="12"
                   >
                     No Data Found
                   </Td>
@@ -291,15 +291,16 @@ const SupplierMatches = () => {
                     <Td textAlign="center">{item.date}</Td>
                     <Td textAlign="center">{item.requirementAddBy}</Td>
                     <Td textAlign="center">{item.secretName}</Td>
-                    <Td textAlign="center">
-                      <Button
+                    <Td textAlign="center" className="font-bold">
+                      {item.name}
+                      {/* <Button
                         size="md"
                         colorScheme="blue"
                         variant="link"
                         onClick={() => Supplier(item._id)}
                       >
                         {item.name}
-                      </Button>
+                      </Button> */}
                     </Td>
                     <Td textAlign="center">{item.product}</Td>
                     <Td textAlign="center">

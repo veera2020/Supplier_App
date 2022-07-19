@@ -24,6 +24,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import Geocode, { setLanguage } from "react-geocode";
+import Cookies from "js-cookie";
 //components
 import Forms from "../controls/Forms";
 import FormikErrorMessage from "../controls/FormikErrorMessage";
@@ -116,7 +117,7 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
       b = b.replace(/\:/g, "");
       const time = parseInt(b);
       const data = {
-        requirementAddBy: "telecaller",
+        requirementAddBy: Cookies.get("TelecallerName"),
         userId: buyerId,
         product: values.buyerpname.toLowerCase(),
         minrange: values.minrange,

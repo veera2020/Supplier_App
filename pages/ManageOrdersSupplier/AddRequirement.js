@@ -24,6 +24,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import Geocode, { setLanguage } from "react-geocode";
+import Cookies from "js-cookie";
 //components
 import Forms from "../controls/Forms";
 import FormikErrorMessage from "../controls/FormikErrorMessage";
@@ -120,7 +121,7 @@ const AddRequirement = ({ setreload, reload }) => {
       // paymentToDay: Yup.string(),
     }),
     onSubmit: (values) => {
-      console.log("aaa","hema")
+      console.log("aaa", "hema");
       console.log("abab");
       const locale = "en";
       var today = new Date();
@@ -141,7 +142,7 @@ const AddRequirement = ({ setreload, reload }) => {
       b = b.replace(/\:/g, "");
       const time = parseInt(b);
       const data = {
-        requirementAddBy: "telecaller",
+        requirementAddBy: Cookies.get("TelecallerName"),
         userId: supplierId,
         product: values.supplierpname.toLowerCase(),
         stockLocation: values.stocklocation.toLowerCase(),

@@ -433,7 +433,7 @@ const Buyer = () => {
                         variant="link"
                         onClick={() => isOpenmap(item)}
                       >
-                        MapView
+                        {item.deliverylocation}
                       </Button>
                     </Td>
                     <Td textAlign="center">

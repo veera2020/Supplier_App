@@ -788,13 +788,13 @@ const FixedOrder = () => {
                                     : BuyerData.aliveFeedback
                                   : null}
                                 {BuyerData.statusAccept == "Requirement dead"
-                                  ? BuyerData.aliveFeedback == ""
+                                  ? BuyerData.deadFeedback == ""
                                     ? "null"
                                     : BuyerData.deadFeedback
                                   : null}
                                 {BuyerData.statusAccept ==
                                 "Requirement Alive with modification"
-                                  ? BuyerData.aliveFeedback == ""
+                                  ? BuyerData.modificationFeedback == ""
                                     ? "null"
                                     : BuyerData.modificationFeedback
                                   : null}

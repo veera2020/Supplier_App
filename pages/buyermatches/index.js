@@ -258,21 +258,21 @@ const BuyerMatches = () => {
       .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
       .then((res) => setUpdatedDetails(res.data));
   };
-  // //modal for map
-  // const [slat, setslat] = useState("");
-  // const [slng, setslng] = useState("");
-  // const { isOpen, onOpen, onClose } = useDisclosure();
-  // //mapview
-  // const isOpenmap = (props) => {
-  //   console.log(props);
-  //   onOpen();
-  //   setslat(props.lat);
-  //   setslng(props.lang);
-  // };
-  // const mapStyles = {
-  //   height: "100%",
-  //   width: "100%",
-  // };
+  //modal for map
+  const [slat, setslat] = useState("");
+  const [slng, setslng] = useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  //mapview
+  const isOpenmap = (props) => {
+    console.log(props);
+    onOpen();
+    setslat(props.lat);
+    setslng(props.lang);
+  };
+  const mapStyles = {
+    height: "100%",
+    width: "100%",
+  };
 
   //usestate
   const [matches, setmatches] = useState(false);
@@ -824,13 +824,13 @@ const BuyerMatches = () => {
                                     : BuyerData.aliveFeedback
                                   : null}
                                 {BuyerData.statusAccept == "Requirement dead"
-                                  ? BuyerData.aliveFeedback == ""
+                                  ? BuyerData.deadFeedback == ""
                                     ? "null"
                                     : BuyerData.deadFeedback
                                   : null}
                                 {BuyerData.statusAccept ==
                                 "Requirement Alive with modification"
-                                  ? BuyerData.aliveFeedback == ""
+                                  ? BuyerData.modificationFeedback == ""
                                     ? "null"
                                     : BuyerData.modificationFeedback
                                   : null}
@@ -1139,7 +1139,7 @@ const BuyerMatches = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        {/* <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Map View</ModalHeader>
@@ -1173,7 +1173,7 @@ const BuyerMatches = () => {
               </Button>
             </ModalFooter>
           </ModalContent>
-        </Modal> */}
+        </Modal>
         <Modal size="5xl" isOpen={matches} onClose={matcheslistclose}>
           <ModalOverlay />
           <ModalContent>

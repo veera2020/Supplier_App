@@ -102,22 +102,22 @@ const Supplier = () => {
     enableReinitialize: true,
     initialValues: initialvalue,
     validationSchema: Yup.object().shape({
-      // status: Yup.string(),
-      // statusAccept: Yup.string(),
-      // reasonforcallback: Yup.string(),
-      // dateCallback: Yup.string(),
-      // stockposition: Yup.string(),
-      // packtype: Yup.string(),
-      // expquantity: Yup.number(),
-      // expprice: Yup.number(),
-      // deliverylocation: Yup.string(),
-      // stockavailabilitydate: Yup.string(),
-      // paymentmode: Yup.string(),
-      // advance: Yup.string().required("Enter Advance"),
-      // aliveFeedback: Yup.string(),
-      // deadFeedback: Yup.string(),
-      // ModificationFeedback: Yup.string(),
-      // callbackfeedback: Yup.string(),
+      status: Yup.string(),
+      statusAccept: Yup.string(),
+      reasonforcallback: Yup.string(),
+      dateCallback: Yup.string(),
+      stockposition: Yup.string(),
+      packtype: Yup.string(),
+      expquantity: Yup.number(),
+      expprice: Yup.number(),
+      deliverylocation: Yup.string(),
+      stockavailabilitydate: Yup.string(),
+      paymentmode: Yup.string(),
+      advance: Yup.string(),
+      aliveFeedback: Yup.string(),
+      deadFeedback: Yup.string(),
+      ModificationFeedback: Yup.string(),
+      callbackfeedback: Yup.string(),
     }),
   });
   //table
@@ -263,18 +263,18 @@ const Supplier = () => {
       .get(`/v1/requirementCollectionBS/Supplier/UpdataData/${props}`)
       .then((res) => setUpdatedDetails(res.data));
   };
-  //usestate
-  const [islastTimeUpdatedLocation, setLastTimeUpdatedLocation] =
-    useState(false);
-  const isLastTimeUpdatedLocationClose = () => {
-    setLastTimeUpdatedLocation(false);
-  };
-  const UpdatedLocationList = (props) => {
-    setLastTimeUpdatedLocation(true);
-    axios
-      .get(`/v1/requirementCollectionBS/Supplier/UpdataData/${props}`)
-      .then((res) => setUpdatedDetails(res.data));
-  };
+  // //usestate
+  // const [islastTimeUpdatedLocation, setLastTimeUpdatedLocation] =
+  //   useState(false);
+  // const isLastTimeUpdatedLocationClose = () => {
+  //   setLastTimeUpdatedLocation(false);
+  // };
+  // const UpdatedLocationList = (props) => {
+  //   setLastTimeUpdatedLocation(true);
+  //   axios
+  //     .get(`/v1/requirementCollectionBS/Supplier/UpdataData/${props}`)
+  //     .then((res) => setUpdatedDetails(res.data));
+  // };
   const Time = (props) => {
     const a = props.data;
     console.log(a);
@@ -330,7 +330,7 @@ const Supplier = () => {
                 <Th textAlign="center">name</Th>
                 <Th textAlign="center">Last time updated qty</Th>
                 <Th textAlign="center">Price per kg</Th>
-                <Th textAlign="center">map View</Th>
+                {/* <Th textAlign="center">map View</Th> */}
                 <Th textAlign="center">Stock location</Th>
                 <Th textAlign="center">Status</Th>
                 <Th textAlign="center">Action</Th>
@@ -401,10 +401,10 @@ const Supplier = () => {
                         variant="link"
                         onClick={() => isOpenmap(item)}
                       >
-                        MapView
+                        {item.stockLocation}
                       </Button>
                     </Td>
-                    <Td textAlign="center">
+                    {/* <Td textAlign="center">
                       <Button
                         size="md"
                         colorScheme="blue"
@@ -416,7 +416,7 @@ const Supplier = () => {
                       >
                         {item.stockLocation}
                       </Button>
-                    </Td>
+                    </Td> */}
                     <Td textAlign="center">
                       {item.status === "" ? (
                         <div>Pending</div>
@@ -574,7 +574,7 @@ const Supplier = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <Modal
+        {/* <Modal
           isOpen={islastTimeUpdatedLocation}
           onClose={isLastTimeUpdatedLocationClose}
         >
@@ -636,7 +636,7 @@ const Supplier = () => {
               </Button>
             </ModalFooter>
           </ModalContent>
-        </Modal>
+        </Modal> */}
         <Modal
           // onSubmit={formik.handleSubmit}
           isOpen={isSupplierCallStatus}

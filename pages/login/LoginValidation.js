@@ -26,7 +26,7 @@ import Cookies from "js-cookie";
 import Buttons from "../controls/Buttons";
 import Forms from "../controls/Forms";
 import FormikErrorMessage from "../controls/FormikErrorMessage";
-import axios from "axios";
+import axios from "../../axios";
 const Loginvalidation = () => {
   //usestate
   const [loading, setLoading] = useState(false);
@@ -51,13 +51,13 @@ const Loginvalidation = () => {
       setLoading(true);
       const data = {
         email: values.email,
-        password: values.password,
-      }
+        dateOfBirth: values.password,
+      };
       axios
-        .post("https://kapture.click/v1/adminRegistration/login", data)
+        .post("/v1/manageTelecaller/login", data)
         .then((res) => {
           setLoading(false);
-          Cookies.set("UserData", res.data.adminRegistartion.name);
+          Cookies.set("TelecallerName", res.data.data[0].name);
           router.push("/home");
         })
         .catch((error) => {

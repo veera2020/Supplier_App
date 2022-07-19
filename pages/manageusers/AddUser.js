@@ -75,6 +75,7 @@ const AddUser = ({ setreload, reload }) => {
     contactname2: "",
     contactno2: "",
     email: "",
+    dob: "",
     gstno: "",
     address: "",
     country: "",
@@ -100,6 +101,7 @@ const AddUser = ({ setreload, reload }) => {
       contactname2: Yup.string().matches(Namepattern, "Alphabets only allowed"),
       contactno2: Yup.number().min(8),
       email: Yup.string().email("Invaild Email Format").required("Enter Email"),
+      dob: Yup.string(),
       gstno: Yup.string()
         .required("Enter GST No")
         .matches(gstregex, "Enter Vaild GST No"),
@@ -114,7 +116,11 @@ const AddUser = ({ setreload, reload }) => {
       products: Yup.string().required("Select any Products"),
     }),
     onSubmit: (values) => {
-      console.log(values, "hema");
+      // yyyy-MM-dd
+      const input = values.dob;
+      const [year, month, day] = input.split("-");
+      // dd/mm/yyyy
+      const dateformat = `${day}-${month}-${year}`;
       const data = {
         type: values.type,
         tradeName: values.tradename,
@@ -130,10 +136,12 @@ const AddUser = ({ setreload, reload }) => {
         gpsLocat: values.location,
         gstNo: values.gstno,
         email: values.email,
+        dateOfBirth: dateformat,
         pinCode: values.pincode,
         productDealingWith: values.products,
         createdBy: "telecaller",
       };
+
       axios
         .post("/v1/supplier", data)
         .then((res) => {
@@ -361,6 +369,28 @@ const AddUser = ({ setreload, reload }) => {
               </div>
               {formik.touched.email && formik.errors.email ? (
                 <FormikErrorMessage>{formik.errors.email}</FormikErrorMessage>
+              ) : null}
+              <div className="flex flex-col gap-2">
+                <label className="font-semibold">
+                  Date Of Birth
+                  <span className="text-secondary pb-2">*</span>
+                </label>
+                <InputFields
+                  type="date"
+                  name="dob"
+                  //placeholder="Enter Email"
+                  value={formik.values.dob || ""}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={
+                    formik.touched.dob && formik.errors.dob
+                      ? "input-primary ring-2 ring-secondary border-none"
+                      : "input-primary"
+                  }
+                />
+              </div>
+              {formik.touched.dob && formik.errors.dob ? (
+                <FormikErrorMessage>{formik.errors.dob}</FormikErrorMessage>
               ) : null}
               <div className="flex flex-col gap-2">
                 <label className="font-semibold">
