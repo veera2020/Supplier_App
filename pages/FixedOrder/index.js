@@ -668,10 +668,10 @@ const FixedOrder = () => {
                       )}
                     </Td>
                     <Td>
-                      {item.fixCallStatus == "" ? (
-                        <div>Pending</div>
-                      ) : (
+                      {item.fixCallStatus ? (
                         <div>{item.fixCallStatus}</div>
+                      ) : (
+                        <div>pending</div>
                       )}
                     </Td>
                     <Td>

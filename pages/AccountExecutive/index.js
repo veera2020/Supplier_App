@@ -580,27 +580,42 @@ const AmountExecutive = () => {
                     </Td>
                     <Td textAlign="center">
                       {item.paymentConfirmCallStatus ? (
+                        item.fixed > 0 ? (
+                          <Button
+                            size="xs"
+                            colorScheme="blue"
+                            onClick={() => {
+                              matcheslist(item._id);
+                              setDetail(item);
+                              <TotalPriceCount data={item} />;
+                            }}
+                          >
+                            call
+                          </Button>
+                        ) : (
+                          <Button
+                            size="xs"
+                            colorScheme="blue"
+                            disabled
+                            // onClick={() => {
+                            //   matcheslist(item._id);
+                            //   setDetail(item);
+                            //   <TotalPriceCount data={item} />;
+                            // }}
+                          >
+                            call
+                          </Button>
+                        )
+                      ) : (
                         <Button
                           size="xs"
                           colorScheme="blue"
+                          disabled
                           // onClick={() => {
                           //   matcheslist(item._id);
                           //   setDetail(item);
                           //   <TotalPriceCount data={item} />;
                           // }}
-                          disabled
-                        >
-                          call
-                        </Button>
-                      ) : (
-                        <Button
-                          size="xs"
-                          colorScheme="blue"
-                          onClick={() => {
-                            matcheslist(item._id);
-                            setDetail(item);
-                            <TotalPriceCount data={item} />;
-                          }}
                         >
                           call
                         </Button>

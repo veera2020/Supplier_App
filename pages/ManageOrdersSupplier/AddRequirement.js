@@ -85,6 +85,7 @@ const AddRequirement = ({ setreload, reload }) => {
     expquantity: "",
     expprice: "",
     paymentmode: "",
+    advance: "",
     minimumlot: "",
     maximumlot: "",
     stockTakeFromDay: "",
@@ -97,27 +98,29 @@ const AddRequirement = ({ setreload, reload }) => {
     enableReinitialize: true,
     initialValues: initialvalue,
     validationSchema: Yup.object().shape({
-      type: Yup.string(),
-      name: Yup.string(),
-      supplierpname: Yup.string().matches(
-        Namepattern,
-        "Alphabets only allowed"
-      ),
-      stocklocation: Yup.string().matches(addressregex, "Enter Vaild Location"),
-      stockposition: Yup.string(),
-      stockavailabilitydate: Yup.string().required(),
-      packtype: Yup.string().matches(Namepattern, "Alphabets only allowed"),
-      expprice: Yup.number(),
-      expquantity: Yup.number(),
-      paymentmode: Yup.string(),
-      minimumlot: Yup.number(),
-      maximumlot: Yup.number(),
-      stockTakeFromDay: Yup.string(),
-      stockTakeToDay: Yup.string(),
-      paymentFromDay: Yup.string(),
-      paymentToDay: Yup.string(),
+      // type: Yup.string(),
+      // name: Yup.string(),
+      // supplierpname: Yup.string().matches(
+      //   Namepattern,
+      //   "Alphabets only allowed"
+      // ),
+      // stocklocation: Yup.string().matches(addressregex, "Enter Vaild Location"),
+      // stockposition: Yup.string(),
+      // stockavailabilitydate: Yup.string().required(),
+      // packtype: Yup.string().matches(Namepattern, "Alphabets only allowed"),
+      // expprice: Yup.number(),
+      // expquantity: Yup.number(),
+      // paymentmode: Yup.string(),
+      // advance: Yup.number(),
+      // minimumlot: Yup.string(),
+      // maximumlot: Yup.string(),
+      // stockTakeFromDay: Yup.string(),
+      // stockTakeToDay: Yup.string(),
+      // paymentFromDay: Yup.string(),
+      // paymentToDay: Yup.string(),
     }),
     onSubmit: (values) => {
+      console.log("aaa","hema")
       console.log("abab");
       const locale = "en";
       var today = new Date();
@@ -164,20 +167,21 @@ const AddRequirement = ({ setreload, reload }) => {
         moderateStatus: "",
         moderatedPrice: "",
       };
-      axios
-        .post("/v1/requirementCollectionBS/Supplier", data)
-        .then((res) => {
-          console.log(res.data);
-          setreload(!reload);
-          onClose();
-          formik.resetForm();
-        })
-        .catch((error) => {
-          if (error.response) {
-            console.log(error.response);
-            seterrorMessage(error.response.data.message);
-          }
-        });
+      console.log(data);
+      // axios
+      //   .post("/v1/requirementCollectionBS/Supplier", data)
+      //   .then((res) => {
+      //     console.log(res.data);
+      //     setreload(!reload);
+      //     onClose();
+      //     formik.resetForm();
+      //   })
+      //   .catch((error) => {
+      //     if (error.response) {
+      //       console.log(error.response);
+      //       seterrorMessage(error.response.data.message);
+      //     }
+      //   });
     },
   });
   const Submit = () => {
@@ -227,20 +231,20 @@ const AddRequirement = ({ setreload, reload }) => {
       moderateStatus: "",
       moderatedPrice: "",
     };
-    axios
-      .post("/v1/requirementCollectionBS/Supplier", data)
-      .then((res) => {
-        console.log(res.data);
-        setreload(!reload);
-        onClose();
-        formik.resetForm();
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.log(error.response);
-          seterrorMessage(error.response.data.message);
-        }
-      });
+    // axios
+    //   .post("/v1/requirementCollectionBS/Supplier", data)
+    //   .then((res) => {
+    //     console.log(res.data);
+    //     setreload(!reload);
+    //     onClose();
+    //     formik.resetForm();
+    //   })
+    //   .catch((error) => {
+    //     if (error.response) {
+    //       console.log(error.response);
+    //       seterrorMessage(error.response.data.message);
+    //     }
+    //   });
   };
   const cancelbutton = () => {
     onClose();
@@ -544,7 +548,7 @@ const AddRequirement = ({ setreload, reload }) => {
                       <InputFields
                         type="string"
                         name="packtype"
-                        placeholder="Enter Pack Type"
+                        placeholder="Enter PackType"
                         value={formik.values.packtype || ""}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
@@ -616,7 +620,7 @@ const AddRequirement = ({ setreload, reload }) => {
                       </label>
                       <select
                         name="paymentmode"
-                        value={formik.values.paymentmode}
+                        // value={formik.values.paymentmode}
                         onChange={(e) => {
                           formik.setFieldValue("paymentmode", e.target.value);
                           e.target.classList.add("change_color");
@@ -630,7 +634,7 @@ const AddRequirement = ({ setreload, reload }) => {
                             : "input-primary bg-whitecolor focus-outline-none experience"
                         }
                       >
-                        <option>Select</option>
+                        <option value="null">Select</option>
                         <option value="Credit">Credit</option>
                         <option value="Advance">Advance</option>
                         <option value="COD">COD</option>
@@ -671,13 +675,13 @@ const AddRequirement = ({ setreload, reload }) => {
                     ) : null}
                     <div className="flex flex-col gap-2">
                       <label className="font-semibold">
-                        Minimum Lots
+                        Minimum Lot
                         <span className="text-secondary pb-2">*</span>
                       </label>
                       <InputFields
-                        type="number"
+                        type="string"
                         name="minimumlot"
-                        placeholder="Enter Minimum Lots"
+                        placeholder="Enter Excepted Quantity"
                         value={formik.values.minimumlot || ""}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
@@ -688,20 +692,20 @@ const AddRequirement = ({ setreload, reload }) => {
                         }
                       />
                     </div>
-                    {formik.touched.expprice && formik.errors.expprice ? (
+                    {formik.touched.minimumlot && formik.errors.minimumlot ? (
                       <FormikErrorMessage>
-                        {formik.errors.expprice}
+                        {formik.errors.minimumlot}
                       </FormikErrorMessage>
                     ) : null}
                     <div className="flex flex-col gap-2">
                       <label className="font-semibold">
-                        Multiple of Lots
+                        Multiple Lot
                         <span className="text-secondary pb-2">*</span>
                       </label>
                       <InputFields
-                        type="number"
+                        type="string"
                         name="maximumlot"
-                        placeholder="Enter Excepted Price"
+                        placeholder="Enter Excepted Quantity"
                         value={formik.values.maximumlot || ""}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
@@ -825,12 +829,12 @@ const AddRequirement = ({ setreload, reload }) => {
             <Button colorScheme="blue" mr={3} onClick={cancelbutton}>
               Cancel
             </Button>
-            {/* <Button onClick={formik.handleSubmit} colorScheme="blue">
-              Save
-            </Button> */}
-            <Button onClick={Submit} colorScheme="blue">
+            <Button onClick={formik.handleSubmit} colorScheme="blue">
               Save
             </Button>
+            {/* <Button onClick={Submit} colorScheme="blue">
+              Save
+            </Button> */}
           </ModalFooter>
         </ModalContent>
       </Modal>

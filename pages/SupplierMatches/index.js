@@ -36,7 +36,7 @@ const useTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showLimit, setShowLimit] = useState(10);
   const [gridApi, setGridApi] = useState(null);
-  const [rowData, setRowData] = useState(null);
+  const [rowData, setRowData] = useState([]);
   return {
     currentPage,
     showLimit,
@@ -62,14 +62,13 @@ const SupplierMatches = () => {
   const [productslist, setproductslist] = useState([]);
   const [distance, setdistance] = useState("");
   const [distancetonum, setdistancetonum] = useState("");
-  const [totalprice, setTotalprice] = useState("");
+  const [totalprice, setTotalprice] = useState([]);
   const [Details, setDetails] = useState("");
   useEffect(() => {
     axios
       .get("/v1/requirementCollection/thirdPartyApi/product")
       .then((res) => setproductslist(res.data));
   }, []);
-
   //table
   const EmployeeTable = useTable();
   //get employees
@@ -77,9 +76,9 @@ const SupplierMatches = () => {
     EmployeeTable.setLoading(true);
     const response = await axios.get("/v1/requirementCollectionBS/Supplier");
     if (response.status === 200 && response.data) {
-      EmployeeTable.setRowData(response.data);
+      // EmployeeTable.setRowData(response.data);
       console.log(response.data);
-      //   setreload(!reload);
+      data(response.data);
     } else {
       EmployeeTable.setRowData([]);
     }
@@ -87,6 +86,15 @@ const SupplierMatches = () => {
   useEffect(() => {
     fetchdata(EmployeeTable.currentPage, EmployeeTable.showLimit);
   }, []);
+  // filtering data to moderate price
+  const data = (props) => {
+    let datas = [];
+    let rowData = props;
+    rowData.map((item) =>
+      item.moderatedPrice != null ? datas.push(item) : null
+    );
+    setTotalprice(datas);
+  };
   //usestate
   const [isSupplieropen, setIsSupplieropen] = useState(false);
   const isSupplierclose = () => {
@@ -143,17 +151,16 @@ const SupplierMatches = () => {
       .then((res) => setUpdatedDetails(res.data));
   };
   //usestate
-  const [islastTimeUpdatedLocation, setLastTimeUpdatedLocation] =
-    useState(false);
-  //const [UpdatedDetails, setUpdatedDetails] = useState("");
-  const isLastTimeUpdatedLocationClose = () => {
-    setLastTimeUpdatedLocation(false);
+  const [isIntrestedBuyerOpen, setIsIntrestedBuyerOpen] = useState(false);
+  const [BuyerDetails, setBuyerDetails] = useState("");
+  const isIntrestBuyerDataClose = () => {
+    setIsIntrestedBuyerOpen(false);
   };
-  const UpdatedLocationList = (props) => {
-    setLastTimeUpdatedLocation(true);
+  const IntrestedBuyerData = (props) => {
+    setIsIntrestedBuyerOpen(true);
     axios
-      .get(`/v1/requirementCollectionBS/Supplier/UpdataData/${props}`)
-      .then((res) => setUpdatedDetails(res.data));
+      .get(`/v1/requirementCollectionBS/Supplier/interestData/${props}`)
+      .then((res) => setBuyerDetails(res.data));
   };
   //usestate
   const [isModerate, setIsModerate] = useState(false);
@@ -176,8 +183,8 @@ const SupplierMatches = () => {
   const BuyerMatches = (props) => {
     setIsBuyer(true);
     axios
-      .get(`/v1/requirementCollectionBS/Buyer/UpdataData/${props}`)
-      .then((res) => setModeratePrice(res.data));
+      .get(`/v1/requirementCollectionBS/Supplier/sameProduct/all/data/${props}`)
+      .then((res) => setBuyerMatches(res.data));
   };
   const Time = (props) => {
     const a = props.data;
@@ -256,10 +263,13 @@ const SupplierMatches = () => {
                 <Th textAlign="center" className="border">
                   No.of Buyer found matches
                 </Th>
+                <Th textAlign="center" className="border">
+                  No.of Buyer Intrested
+                </Th>
               </Tr>
             </Thead>
             <Tbody>
-              {EmployeeTable.rowData != "" ? null : (
+              {totalprice != "" ? null : (
                 <Tr>
                   <Td
                     style={{ textAlign: "center" }}
@@ -270,8 +280,8 @@ const SupplierMatches = () => {
                   </Td>
                 </Tr>
               )}
-              {EmployeeTable.rowData &&
-                EmployeeTable.rowData.map((item, index) => (
+              {totalprice &&
+                totalprice.map((item, index) => (
                   <Tr key={index}>
                     <Td textAlign="center">
                       {index +
@@ -327,17 +337,18 @@ const SupplierMatches = () => {
                       </Button>
                     </Td>
                     <Td textAlign="center">
-                      <Button
+                      {item.stockLocation}
+                      {/* <Button
                         size="md"
                         colorScheme="blue"
                         variant="link"
-                        onClick={() => {
-                          UpdatedLocationList(item._id);
-                          // isOpenmap(item);
-                        }}
+                        // onClick={() => {
+                        //   UpdatedLocationList(item._id);
+                        //   // isOpenmap(item);
+                        // }}
                       >
                         {item.stockLocation}
-                      </Button>
+                      </Button> */}
                     </Td>
                     <Td textAlign="center">
                       <Button
@@ -348,7 +359,19 @@ const SupplierMatches = () => {
                           BuyerMatches(item._id);
                         }}
                       >
-                        {item.stockLocation}
+                        {item.sameProductCount}
+                      </Button>
+                    </Td>
+                    <Td textAlign="center">
+                      <Button
+                        size="md"
+                        colorScheme="blue"
+                        variant="link"
+                        onClick={() => {
+                          IntrestedBuyerData(item._id);
+                        }}
+                      >
+                        {item.interestCount}
                       </Button>
                     </Td>
                   </Tr>
@@ -466,13 +489,13 @@ const SupplierMatches = () => {
                                   : SupplierData.aliveFeedback
                                 : null}
                               {SupplierData.statusAccept == "Requirement dead"
-                                ? SupplierData.aliveFeedback == ""
+                                ? SupplierData.deadFeedback == ""
                                   ? "null"
                                   : SupplierData.deadFeedback
                                 : null}
                               {SupplierData.statusAccept ==
                               "Requirement Alive with modification"
-                                ? SupplierData.aliveFeedback == ""
+                                ? SupplierData.modificationFeedback == ""
                                   ? "null"
                                   : SupplierData.modificationFeedback
                                 : null}
@@ -648,15 +671,16 @@ const SupplierMatches = () => {
           </ModalContent>
         </Modal>
         <Modal
-          isOpen={islastTimeUpdatedLocation}
-          onClose={isLastTimeUpdatedLocationClose}
+          size="5xl"
+          isOpen={isIntrestedBuyerOpen}
+          onClose={isIntrestBuyerDataClose}
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader> Location </ModalHeader>
+            <ModalHeader> Intrested Buyer Details </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <div className="border-gray-500 scroll-smooth border">
+              <div className="border-gray-500 scroll-smooth border overflow-y-scroll">
                 <Table
                   size="sm"
                   scaleY="44"
@@ -667,32 +691,48 @@ const SupplierMatches = () => {
                   <Thead className="bg-headergreen text-center">
                     <Tr>
                       <Th textAlign="center">S.No</Th>
-                      <Th textAlign="center">Date</Th>
-                      <Th textAlign="center">Time</Th>
-                      <Th textAlign="center">Location</Th>
+                      <Th textAlign="center">rerquirement raised date</Th>
+                      <Th textAlign="center">registered by whom</Th>
+                      <Th textAlign="center">Requirement id</Th>
+                      <Th textAlign="center">name</Th>
+                      <Th textAlign="center">product</Th>
+                      <Th textAlign="center">Qty range</Th>
+                      <Th textAlign="center">price range</Th>
+                      <Th textAlign="center">Deliver to the location</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {UpdateLocation != "" ? null : (
+                    {BuyerDetails != "" ? null : (
                       <Tr>
                         <Td
                           style={{ textAlign: "center" }}
                           className="font-semibold"
-                          colSpan="4"
+                          colSpan="10"
                         >
                           No Data Found
                         </Td>
                       </Tr>
                     )}
-                    {UpdateLocation &&
-                      UpdateLocation.map((item, index) => (
+                    {BuyerDetails &&
+                      BuyerDetails.map((item, index) => (
                         <Tr colSpan="2" key={index}>
                           <Td textAlign="center">{index + 1}</Td>
                           <Td textAlign="center">{item.date}</Td>
-                          <Td textAlign="center">
-                            <Time data={item.time} />
+                          <Td textAlign="center">{item.createdBy}</Td>
+                          <Td textAlign="center">{item.secretName}</Td>
+                          <Td textAlign="center">{item.name}</Td>
+                          <Td textAlign="center">{item.product}</Td>
+                          <Td textAlign="center" className="w-32">
+                            {item.minrange}
+                            {" - "}
+                            {item.maxrange}
                           </Td>
-                          <Td textAlign="center">{item.stockLocation}</Td>
+                          <Td textAlign="center">
+                            {item.minprice}
+                            {" - "}
+                            {item.maxprice}
+                          </Td>
+                          <Td textAlign="center">{item.deliverylocation}</Td>
                         </Tr>
                       ))}
                   </Tbody>
@@ -701,7 +741,7 @@ const SupplierMatches = () => {
             </ModalBody>
             <ModalFooter>
               <Button
-                onClick={isLastTimeUpdatedLocationClose}
+                onClick={isIntrestBuyerDataClose}
                 colorScheme="blue"
                 mr={3}
               >
@@ -766,10 +806,10 @@ const SupplierMatches = () => {
             </ModalFooter>
           </ModalContent>
         </Modal>
-        <Modal isOpen={isBuyer} onClose={IsBuyerClose} size="4xl">
+        <Modal isOpen={isBuyer} onClose={IsBuyerClose} size="5xl">
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader> Buyer Details </ModalHeader>
+            <ModalHeader> Matched Buyer Details </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <div className="border-gray-500 scroll-smooth border overflow-y-scroll">
@@ -794,24 +834,37 @@ const SupplierMatches = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {EmployeeTable.rowData != "" ? null : (
+                    {isBuyerMatches != "" ? null : (
                       <Tr>
                         <Td
                           style={{ textAlign: "center" }}
                           className="font-semibold"
-                          colSpan="11"
+                          colSpan="10"
                         >
                           No Data Found
                         </Td>
                       </Tr>
                     )}
-                    {ModeratePrice &&
-                      ModeratePrice.map((item, index) => (
+                    {isBuyerMatches &&
+                      isBuyerMatches.map((item, index) => (
                         <Tr colSpan="2" key={index}>
-                          <Td>{index + 1}</Td>
-                          <Td>{item.date}</Td>
-                          <Td>{item.time}</Td>
-                          <Td>{item.deliveryLocation}</Td>
+                          <Td textAlign="center">{index + 1}</Td>
+                          <Td textAlign="center">{item.date}</Td>
+                          <Td textAlign="center">{item.createdBy}</Td>
+                          <Td textAlign="center">{item.secretName}</Td>
+                          <Td textAlign="center">{item.name}</Td>
+                          <Td textAlign="center">{item.product}</Td>
+                          <Td textAlign="center" className="w-32">
+                            {item.minrange}
+                            {" - "}
+                            {item.maxrange}
+                          </Td>
+                          <Td textAlign="center">
+                            {item.minprice}
+                            {" - "}
+                            {item.maxprice}
+                          </Td>
+                          <Td textAlign="center">{item.deliverylocation}</Td>
                         </Tr>
                       ))}
                   </Tbody>
