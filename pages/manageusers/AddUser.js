@@ -141,8 +141,8 @@ const AddUser = ({ setreload, reload }) => {
         pinCode: values.pincode,
         productDealingWith: values.products,
         createdBy: Cookies.get("TelecallerName"),
+        password: dateformat,
       };
-
       axios
         .post("/v1/supplier", data)
         .then((res) => {
@@ -185,7 +185,7 @@ const AddUser = ({ setreload, reload }) => {
             <Forms className="space-y-2">
               <div className="flex flex-col gap-2">
                 <label className="font-semibold">
-                  Type
+                 Type
                   <span className="text-secondary pb-2">*</span>
                 </label>
                 <select

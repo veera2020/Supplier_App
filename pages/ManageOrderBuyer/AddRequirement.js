@@ -189,7 +189,7 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
       lat: blat,
       lang: blng,
       date: today,
-      time: parseFloat(totime),
+      time: time,
       status: "",
       matchesStatus: "",
       interestCount: "",

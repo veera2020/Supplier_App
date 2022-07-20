@@ -99,26 +99,27 @@ const AddRequirement = ({ setreload, reload }) => {
     enableReinitialize: true,
     initialValues: initialvalue,
     validationSchema: Yup.object().shape({
-      // type: Yup.string(),
-      // name: Yup.string(),
-      // supplierpname: Yup.string().matches(
-      //   Namepattern,
-      //   "Alphabets only allowed"
-      // ),
-      // stocklocation: Yup.string().matches(addressregex, "Enter Vaild Location"),
-      // stockposition: Yup.string(),
-      // stockavailabilitydate: Yup.string().required(),
-      // packtype: Yup.string().matches(Namepattern, "Alphabets only allowed"),
-      // expprice: Yup.number(),
-      // expquantity: Yup.number(),
-      // paymentmode: Yup.string(),
-      // advance: Yup.number(),
-      // minimumlot: Yup.string(),
-      // maximumlot: Yup.string(),
-      // stockTakeFromDay: Yup.string(),
-      // stockTakeToDay: Yup.string(),
-      // paymentFromDay: Yup.string(),
-      // paymentToDay: Yup.string(),
+      type: Yup.string(),
+      name: Yup.string(),
+      supplierpname: Yup.string().matches(
+        Namepattern,
+        "Alphabets only allowed"
+      ),
+      stocklocation: Yup.string().matches(addressregex, "Enter Vaild Location"),
+      stockposition: Yup.string(),
+      stockavailabilitydate: Yup.string(),
+      stockavailabilitytime: Yup.string(),
+      packtype: Yup.string().matches(Namepattern, "Alphabets only allowed"),
+      expprice: Yup.number(),
+      expquantity: Yup.number(),
+      paymentmode: Yup.string(),
+      advance: Yup.number(),
+      minimumlot: Yup.string(),
+      maximumlot: Yup.string(),
+      stockTakeFromDay: Yup.string(),
+      stockTakeToDay: Yup.string(),
+      paymentFromDay: Yup.string(),
+      paymentToDay: Yup.string(),
     }),
     onSubmit: (values) => {
       console.log("aaa", "hema");
@@ -169,84 +170,84 @@ const AddRequirement = ({ setreload, reload }) => {
         moderatedPrice: "",
       };
       console.log(data);
-      // axios
-      //   .post("/v1/requirementCollectionBS/Supplier", data)
-      //   .then((res) => {
-      //     console.log(res.data);
-      //     setreload(!reload);
-      //     onClose();
-      //     formik.resetForm();
-      //   })
-      //   .catch((error) => {
-      //     if (error.response) {
-      //       console.log(error.response);
-      //       seterrorMessage(error.response.data.message);
-      //     }
-      //   });
+      axios
+        .post("/v1/requirementCollectionBS/Supplier", data)
+        .then((res) => {
+          console.log(res.data);
+          setreload(!reload);
+          onClose();
+          formik.resetForm();
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.log(error.response);
+            seterrorMessage(error.response.data.message);
+          }
+        });
     },
   });
-  const Submit = () => {
-    let values = formik.values;
-    const locale = "en";
-    var today = new Date();
-    const totime = today.toLocaleTimeString(locale, {
-      hour: "numeric",
-      hour12: false,
-      minute: "numeric",
-    });
-    var dd = String(today.getDate()).padStart(2, "0");
-    var mm = String(today.getMonth() + 1).padStart(2, "0");
-    var yyyy = today.getFullYear();
-    today = dd + "-" + mm + "-" + yyyy;
-    // convert time string to number
-    var a = values.stockavailabilitytime;
-    a = a.replace(/\:/g, "");
-    const availableTime = parseInt(a);
-    var b = totime;
-    b = b.replace(/\:/g, "");
-    const time = parseInt(b);
-    const data = {
-      requirementAddBy: "telecaller",
-      userId: supplierId,
-      product: values.supplierpname.toLowerCase(),
-      stockLocation: values.stocklocation.toLowerCase(),
-      stockPosition: values.stockposition.toLowerCase(),
-      stockAvailabilityDate: values.stockavailabilitydate,
-      stockAvailabilityTime: availableTime,
-      packType: values.packtype.toLowerCase(),
-      expectedPrice: values.expprice,
-      expectedQnty: values.expquantity,
-      paymentMode: values.paymentmode.toLowerCase(),
-      advance: values.advance,
-      minimumlot: values.minimumlot,
-      maximumlot: values.maximumlot,
-      stockTakeFromDay: values.stockTakeFromDay,
-      stockTakeToDay: values.stockTakeToDay,
-      paymentFromDay: values.paymentFromDay,
-      paymentToDay: values.paymentToDay,
-      date: today,
-      time: time,
-      lat: slat,
-      lang: slng,
-      status: "",
-      moderateStatus: "",
-      moderatedPrice: "",
-    };
-    // axios
-    //   .post("/v1/requirementCollectionBS/Supplier", data)
-    //   .then((res) => {
-    //     console.log(res.data);
-    //     setreload(!reload);
-    //     onClose();
-    //     formik.resetForm();
-    //   })
-    //   .catch((error) => {
-    //     if (error.response) {
-    //       console.log(error.response);
-    //       seterrorMessage(error.response.data.message);
-    //     }
-    //   });
-  };
+  // const Submit = () => {
+  //   let values = formik.values;
+  //   const locale = "en";
+  //   var today = new Date();
+  //   const totime = today.toLocaleTimeString(locale, {
+  //     hour: "numeric",
+  //     hour12: false,
+  //     minute: "numeric",
+  //   });
+  //   var dd = String(today.getDate()).padStart(2, "0");
+  //   var mm = String(today.getMonth() + 1).padStart(2, "0");
+  //   var yyyy = today.getFullYear();
+  //   today = dd + "-" + mm + "-" + yyyy;
+  //   // convert time string to number
+  //   var a = values.stockavailabilitytime;
+  //   a = a.replace(/\:/g, "");
+  //   const availableTime = parseInt(a);
+  //   var b = totime;
+  //   b = b.replace(/\:/g, "");
+  //   const time = parseInt(b);
+  //   const data = {
+  //     requirementAddBy: "telecaller",
+  //     userId: supplierId,
+  //     product: values.supplierpname.toLowerCase(),
+  //     stockLocation: values.stocklocation.toLowerCase(),
+  //     stockPosition: values.stockposition.toLowerCase(),
+  //     stockAvailabilityDate: values.stockavailabilitydate,
+  //     stockAvailabilityTime: availableTime,
+  //     packType: values.packtype.toLowerCase(),
+  //     expectedPrice: values.expprice,
+  //     expectedQnty: values.expquantity,
+  //     paymentMode: values.paymentmode.toLowerCase(),
+  //     advance: values.advance,
+  //     minimumlot: values.minimumlot,
+  //     maximumlot: values.maximumlot,
+  //     stockTakeFromDay: values.stockTakeFromDay,
+  //     stockTakeToDay: values.stockTakeToDay,
+  //     paymentFromDay: values.paymentFromDay,
+  //     paymentToDay: values.paymentToDay,
+  //     date: today,
+  //     time: time,
+  //     lat: slat,
+  //     lang: slng,
+  //     status: "",
+  //     moderateStatus: "",
+  //     moderatedPrice: "",
+  //   };
+  //   // axios
+  //   //   .post("/v1/requirementCollectionBS/Supplier", data)
+  //   //   .then((res) => {
+  //   //     console.log(res.data);
+  //   //     setreload(!reload);
+  //   //     onClose();
+  //   //     formik.resetForm();
+  //   //   })
+  //   //   .catch((error) => {
+  //   //     if (error.response) {
+  //   //       console.log(error.response);
+  //   //       seterrorMessage(error.response.data.message);
+  //   //     }
+  //   //   });
+  // };
   const cancelbutton = () => {
     onClose();
     seterrorshow("");
