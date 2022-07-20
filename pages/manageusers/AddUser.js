@@ -20,6 +20,7 @@ import {
   AlertDescription,
   Button,
 } from "@chakra-ui/react";
+import Cookies from "js-cookie";
 const { Country, State, City } = require("country-state-city");
 //components
 import Forms from "../controls/Forms";
@@ -139,7 +140,7 @@ const AddUser = ({ setreload, reload }) => {
         dateOfBirth: dateformat,
         pinCode: values.pincode,
         productDealingWith: values.products,
-        createdBy: "telecaller",
+        createdBy: Cookies.get("TelecallerName"),
       };
 
       axios
