@@ -91,30 +91,30 @@ const AddUser = ({ setreload, reload }) => {
     enableReinitialize: true,
     initialValues: initialvalue,
     validationSchema: Yup.object().shape({
-      type: Yup.string().required("Select any Type"),
-      tradename: Yup.string()
-        .required("Enter Trade Name")
-        .matches(Namepattern, "Alphabets only allowed"),
-      contactname: Yup.string()
-        .required("Enter Primary Contact Name")
-        .matches(Namepattern, "Alphabets only allowed"),
-      contactno: Yup.number().min(8).required("Enter Primary Contact No"),
-      contactname2: Yup.string().matches(Namepattern, "Alphabets only allowed"),
-      contactno2: Yup.number().min(8),
-      email: Yup.string().email("Invaild Email Format").required("Enter Email"),
-      dob: Yup.string(),
-      gstno: Yup.string()
-        .required("Enter GST No")
-        .matches(gstregex, "Enter Vaild GST No"),
-      address: Yup.string().required("Fill Your Address"),
-      country: Yup.string().required("Select any Country Name"),
-      state: Yup.string().required("Select any State Name"),
-      district: Yup.string().required("Select any District Name"),
-      pincode: Yup.string()
-        .required("Enter Pincode")
-        .matches(pincoderegex, "Enter Vaild Pincode"),
-      location: Yup.string().required("Enter Your Location"),
-      products: Yup.string().required("Select any Products"),
+      // type: Yup.string().required("Select any Type"),
+      // tradename: Yup.string()
+      //   .required("Enter Trade Name")
+      //   .matches(Namepattern, "Alphabets only allowed"),
+      // contactname: Yup.string()
+      //   .required("Enter Primary Contact Name")
+      //   .matches(Namepattern, "Alphabets only allowed"),
+      // contactno: Yup.number().min(8).required("Enter Primary Contact No"),
+      // contactname2: Yup.string().matches(Namepattern, "Alphabets only allowed"),
+      // contactno2: Yup.number().min(8),
+      // email: Yup.string().email("Invaild Email Format").required("Enter Email"),
+      // dob: Yup.string(),
+      // gstno: Yup.string()
+      //   .required("Enter GST No")
+      //   .matches(gstregex, "Enter Vaild GST No"),
+      // address: Yup.string().required("Fill Your Address"),
+      // country: Yup.string().required("Select any Country Name"),
+      // state: Yup.string().required("Select any State Name"),
+      // district: Yup.string().required("Select any District Name"),
+      // pincode: Yup.string()
+      //   .required("Enter Pincode")
+      //   .matches(pincoderegex, "Enter Vaild Pincode"),
+      // location: Yup.string().required("Enter Your Location"),
+      // products: Yup.string().required("Select any Products"),
     }),
     onSubmit: (values) => {
       // yyyy-MM-dd

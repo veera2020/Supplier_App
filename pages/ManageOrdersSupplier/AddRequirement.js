@@ -99,27 +99,27 @@ const AddRequirement = ({ setreload, reload }) => {
     enableReinitialize: true,
     initialValues: initialvalue,
     validationSchema: Yup.object().shape({
-      type: Yup.string(),
-      name: Yup.string(),
-      supplierpname: Yup.string().matches(
-        Namepattern,
-        "Alphabets only allowed"
-      ),
-      stocklocation: Yup.string().matches(addressregex, "Enter Vaild Location"),
-      stockposition: Yup.string(),
-      stockavailabilitydate: Yup.string(),
-      stockavailabilitytime: Yup.string(),
-      packtype: Yup.string().matches(Namepattern, "Alphabets only allowed"),
-      expprice: Yup.number(),
-      expquantity: Yup.number(),
-      paymentmode: Yup.string(),
-      advance: Yup.number(),
-      minimumlot: Yup.string(),
-      maximumlot: Yup.string(),
-      stockTakeFromDay: Yup.string(),
-      stockTakeToDay: Yup.string(),
-      paymentFromDay: Yup.string(),
-      paymentToDay: Yup.string(),
+      // type: Yup.string(),
+      // name: Yup.string(),
+      // supplierpname: Yup.string().matches(
+      //   Namepattern,
+      //   "Alphabets only allowed"
+      // ),
+      // stocklocation: Yup.string().matches(addressregex, "Enter Vaild Location"),
+      // stockposition: Yup.string(),
+      // stockavailabilitydate: Yup.string(),
+      // stockavailabilitytime: Yup.string(),
+      // packtype: Yup.string().matches(Namepattern, "Alphabets only allowed"),
+      // expprice: Yup.number(),
+      // expquantity: Yup.number(),
+      // paymentmode: Yup.string(),
+      // advance: Yup.number(),
+      // minimumlot: Yup.string(),
+      // maximumlot: Yup.string(),
+      // stockTakeFromDay: Yup.string(),
+      // stockTakeToDay: Yup.string(),
+      // paymentFromDay: Yup.string(),
+      // paymentToDay: Yup.string(),
     }),
     onSubmit: (values) => {
       console.log("aaa", "hema");
@@ -168,6 +168,8 @@ const AddRequirement = ({ setreload, reload }) => {
         status: "",
         moderateStatus: "",
         moderatedPrice: "",
+        liveStreamDate: "",
+        liveStreamTime: "",
       };
       console.log(data);
       axios

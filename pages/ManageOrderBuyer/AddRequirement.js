@@ -19,9 +19,6 @@ import {
   AlertIcon,
   AlertDescription,
   Button,
-  Radio,
-  RadioGroup,
-  Stack,
 } from "@chakra-ui/react";
 import Geocode, { setLanguage } from "react-geocode";
 import Cookies from "js-cookie";
@@ -68,7 +65,7 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
   };
   //Formik InitialValue
   const initialvalue = {
-    type: "uyer",
+    type: "buyer",
     name: "",
     buyerpname: "",
     minrange: "",
@@ -85,15 +82,15 @@ const AddRequirementForBuyer = ({ setreload, reload }) => {
     enableReinitialize: true,
     initialValues: initialvalue,
     validationSchema: Yup.object().shape({
-      buyerpname: Yup.string(),
-      minrange: Yup.number(),
-      maxrange: Yup.number(),
-      minprice: Yup.number(),
-      maxprice: Yup.number(),
-      pdelivery: Yup.string(),
-      deliverylocation: Yup.string(),
-      buyerdeliverydate: Yup.string(),
-      buyerdeliverytime: Yup.string(),
+      // buyerpname: Yup.string(),
+      // minrange: Yup.number(),
+      // maxrange: Yup.number(),
+      // minprice: Yup.number(),
+      // maxprice: Yup.number(),
+      // pdelivery: Yup.string(),
+      // deliverylocation: Yup.string(),
+      // buyerdeliverydate: Yup.string(),
+      // buyerdeliverytime: Yup.string(),
     }),
     onSubmit: (values) => {
       console.log(values);

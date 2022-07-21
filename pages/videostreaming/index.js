@@ -221,6 +221,32 @@ const VideoStreaming = () => {
                   </Td>
                 </Tr>
               )}
+              <Tr colSpan="2">
+                <Td>1</Td>
+                <Td>name</Td>
+                <Td>live date</Td>
+                <Td>live time</Td>
+                <Td>Product</Td>
+                <Td>status</Td>
+                <Td>
+                  <ButtonGroup spacing="1">
+                    <Button
+                      size="xs"
+                      colorScheme="blue"
+                      onClick={() => setIsApproveOpen(true)}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      size="xs"
+                      colorScheme="red"
+                      onClick={() => setIsRejectOpen(true)}
+                    >
+                      Reject
+                    </Button>
+                  </ButtonGroup>
+                </Td>
+              </Tr>
               {EmployeeTable.rowData &&
                 EmployeeTable.rowData.map((item, index) => (
                   <Tr colSpan="2" key={index}>
@@ -350,14 +376,39 @@ const VideoStreaming = () => {
                     Are you sure, Do you want to REJECT ?
                   </div>
                   <div className="font-semibold text-sm">Reason For Reject</div>
-                  <Textarea
+                  {/* <Textarea
                     name="resonReject"
                     onChange={(e) => {
                       setReason(e.target.value);
                       seterrormessage(null);
                     }}
                     className="border border-graycolor w-36 bg-whitecolor focus-outline-none experience m-2"
-                  />
+                  /> */}
+                  <select
+                    name="resonReject"
+                    // value={formik.values.name}
+                    onChange={(e) => {
+                      e.target.classList.add("change_color");
+                      setReason(e.target.value);
+                    }}
+                    // onBlur={formik.handleBlur}
+                    className={
+                      "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                    }
+                  >
+                    <option name="resonReject" value="null">
+                      Select
+                    </option>
+                    <option name="resonReject" value="Change Your Time">
+                      Change Your Time
+                    </option>
+                    <option name="resonReject" value=" Change Your Date">
+                      Change Your Date
+                    </option>
+                    <option name="resonReject" value="Call for Reason">
+                      Call for Reason
+                    </option>
+                  </select>
                   {errormessage && (
                     <div className="pb-5">
                       <Alert status="error">
