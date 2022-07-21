@@ -850,7 +850,7 @@ const Buyer = () => {
                           </>
                         ) : null}
                       </div>
-                      <label className="font-semibold">(FeedBack)</label>
+
                       <Textarea
                         type="string"
                         name="callbackfeedback"
@@ -874,9 +874,6 @@ const Buyer = () => {
                     {/* {statusfb == "Requirement Alive" ? <></> : ""} */}
                     {formik.values.statusAccept == "Requirement Alive" ? (
                       <>
-                        <label className="font-semibold">
-                          (No Change Done)
-                        </label>
                         <Textarea
                           type="string"
                           name="aliveFeedback"
@@ -895,7 +892,6 @@ const Buyer = () => {
                     ) : null}
                     {formik.values.statusAccept == "Requirement dead" ? (
                       <>
-                        <label className="font-semibold ">(Reject)</label>
                         <Textarea
                           type="string"
                           name="deadFeedback"
@@ -1038,7 +1034,6 @@ const Buyer = () => {
                           ) : null}
                         </div> */}
                         <div className="grid pb-2 gap-2">
-                          <label className="font-semibold ">(Feedback)</label>
                           <Textarea
                             type="string"
                             name="ModificationFeedback"

@@ -407,7 +407,7 @@ const BuyerMatches = () => {
   };
   const Time = (props) => {
     const a = props.data;
-    console.log(a);
+
     const first2Str = String(a).slice(0, 2); // 👉️ '13'
     const second2Str = String(a).slice(2, 4); // 👉️ '13'
     const final = first2Str + ":" + second2Str;
