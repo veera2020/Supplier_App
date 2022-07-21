@@ -68,7 +68,9 @@ const VideoStreaming = () => {
 
   const fetchdata = async (page = 1) => {
     EmployeeTable.setLoading(true);
-    const response = await axios.get("/v1/supplierAppUser/responceAll/all");
+    const response = await axios.get(
+      "/v1/requirementCollectionBS/SupplierLiveStrem/all/data"
+    );
     if (response.status === 200 && response.data) {
       EmployeeTable.setRowData(response.data);
       console.log(response.data);
@@ -92,10 +94,10 @@ const VideoStreaming = () => {
   };
   const axiosApproovefunc = () => {
     const data = {
-      status: "Approved",
+      liveStreamStatus: "Approved",
     };
     axios
-      .put(`/v1/supplierAppUser/${id}`, data)
+      .put(`/v1/requirementCollectionBS/Supplier/${id}`, data)
       .then((res) => {
         setreload(!reload);
         onApproveClose();
@@ -124,11 +126,11 @@ const VideoStreaming = () => {
   };
   const axiosfunc = () => {
     const data = {
-      reason: reason,
-      status: "Rejected",
+      liveStreamReason: reason,
+      liveStreamStatus: "Rejected",
     };
     axios
-      .put(`/v1/supplierAppUser/${id}`, data)
+      .put(`/v1/requirementCollectionBS/Supplier/${id}`, data)
       .then((res) => {
         setreload(!reload);
         onRejectClose();
@@ -142,14 +144,13 @@ const VideoStreaming = () => {
   //usestate
   const [isSupplierDetails, setIsSuppierDetails] = useState(false);
   const [details, setDetails] = useState("");
+  console.log(details);
   const isSupplierDetailsClose = () => {
     setIsSuppierDetails(false);
   };
   const SupplierDetail = (props) => {
     setIsSuppierDetails(true);
-    axios
-      .get(`/v1/supplierAppUser/responce/${props}`)
-      .then((res) => setDetails(res.data[0]));
+    axios.get(`/v1/supplier/${props}`).then((res) => setDetails(res.data));
   };
   //usestate
   const [isProductDetails, setIsProductDetails] = useState(false);
@@ -162,6 +163,22 @@ const VideoStreaming = () => {
     axios
       .get(`/v1/supplierAppUser/responce/${props}`)
       .then((res) => setPDetails(res.data[0].supplierslotsubmits.data[0]));
+  };
+  const Time = (props) => {
+    const a = props.data;
+    console.log(a);
+    const first2Str = String(a).slice(0, 2); // 👉️ '13'
+    const second2Str = String(a).slice(2, 4); // 👉️ '13'
+    const final = first2Str + ":" + second2Str;
+    return <>{final}</>;
+  };
+  const Date = (props) => {
+    // yyyy-MM-dd
+    const input = props.data;
+    const [year, month, day] = input.split("-");
+    // dd/mm/yyyy
+    const dateformat = `${day}-${month}-${year}`;
+    return <>{dateformat}</>;
   };
   return (
     <>
@@ -200,13 +217,13 @@ const VideoStreaming = () => {
           >
             <Thead className="bg-headergreen">
               <Tr>
-                <Th>S.No</Th>
-                <Th>Supplier_Id</Th>
-                <Th>Date</Th>
-                <Th>Time</Th>
-                <Th>Product</Th>
-                <Th>Status</Th>
-                <Th>Action</Th>
+                <Th textAlign="center">S.No</Th>
+                <Th textAlign="center">Supplier_Id</Th>
+                <Th textAlign="center">Date</Th>
+                <Th textAlign="center">Time</Th>
+                <Th textAlign="center">Product</Th>
+                <Th textAlign="center">Status</Th>
+                <Th textAlign="center">Action</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -221,83 +238,38 @@ const VideoStreaming = () => {
                   </Td>
                 </Tr>
               )}
-              <Tr colSpan="2">
-                <Td>1</Td>
-                <Td>name</Td>
-                <Td>live date</Td>
-                <Td>live time</Td>
-                <Td>Product</Td>
-                <Td>status</Td>
-                <Td>
-                  <ButtonGroup spacing="1">
-                    <Button
-                      size="xs"
-                      colorScheme="blue"
-                      onClick={() => setIsApproveOpen(true)}
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      size="xs"
-                      colorScheme="red"
-                      onClick={() => setIsRejectOpen(true)}
-                    >
-                      Reject
-                    </Button>
-                  </ButtonGroup>
-                </Td>
-              </Tr>
               {EmployeeTable.rowData &&
                 EmployeeTable.rowData.map((item, index) => (
                   <Tr colSpan="2" key={index}>
-                    <Td>{index + 1}</Td>
-                    <Td>
+                    <Td textAlign="center">{index + 1}</Td>
+                    <Td textAlign="center">
                       <Button
                         size="md"
                         colorScheme="blue"
                         variant="link"
                         onClick={() => {
-                          SupplierDetail(item._id);
+                          SupplierDetail(item.userId);
                         }}
                       >
                         {item.secretName}
                       </Button>
                     </Td>
-                    <Td>
-                      {item.supplierslots.data == ""
-                        ? "Null"
-                        : item.supplierslots.data[0].slotDate}
+                    <Td textAlign="center">
+                      {<Date data={item.liveStreamDate} />}
                     </Td>
-                    <Td>
-                      {item.supplierslots.data == ""
-                        ? "Null"
-                        : item.supplierslots.data[0].slotTime}
+                    <Td textAlign="center">
+                      {<Time data={item.liveStreamTime} />}
                     </Td>
-                    <Td>
-                      {item.supplierslotsubmits.data == "" ? (
-                        "Null"
-                      ) : (
-                        <Button
-                          size="md"
-                          colorScheme="blue"
-                          variant="link"
-                          onClick={() => {
-                            ProductDetail(item._id);
-                          }}
-                        >
-                          {item.supplierslotsubmits.data[0].product}
-                        </Button>
-                      )}
-                    </Td>
-                    <Td>
-                      {item.status === "" ? (
+                    <Td textAlign="center">{item.product}</Td>
+                    <Td textAlign="center">
+                      {item.liveStreamStatus === "" ? (
                         <div>Pending</div>
                       ) : (
-                        <div>{item.status}</div>
+                        <div>{item.liveStreamStatus}</div>
                       )}
                     </Td>
-                    <Td>
-                      {item.status === "" ? (
+                    <Td textAlign="center">
+                      {item.liveStreamStatus === "" ? (
                         <ButtonGroup
                           spacing="1"
                           onClick={() => setId(item._id)}
@@ -317,13 +289,13 @@ const VideoStreaming = () => {
                             Reject
                           </Button>
                         </ButtonGroup>
-                      ) : item.status == "Approved" ? (
+                      ) : item.liveStreamStatus == "Approved" ? (
                         <Button size="xs" colorScheme="green">
-                          {item.status}
+                          {item.liveStreamStatus}
                         </Button>
-                      ) : item.status == "Rejected" ? (
+                      ) : item.liveStreamStatus == "Rejected" ? (
                         <Button size="xs" colorScheme="red">
-                          {item.status}
+                          {item.liveStreamStatus}
                         </Button>
                       ) : null}
                     </Td>
@@ -375,7 +347,9 @@ const VideoStreaming = () => {
                   <div className="text-md pb-3">
                     Are you sure, Do you want to REJECT ?
                   </div>
-                  <div className="font-semibold text-sm">Reason For Reject</div>
+                  <div className="font-semibold text-sm py-2">
+                    Reason For Reject
+                  </div>
                   {/* <Textarea
                     name="resonReject"
                     onChange={(e) => {
@@ -393,7 +367,7 @@ const VideoStreaming = () => {
                     }}
                     // onBlur={formik.handleBlur}
                     className={
-                      "input-primary bg-whitecolor focus-outline-none ring-2 ring-secondary border-none experience"
+                      "input-primary bg-whitecolor focus-outline-none experience"
                     }
                   >
                     <option name="resonReject" value="null">
@@ -447,12 +421,12 @@ const VideoStreaming = () => {
               <div className="p-4 ">
                 <div className="border border-graycolor cursor-pointer">
                   <div className="grid grid-cols-6 px-4 px-1">
-                    <div className="col-span-3 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
+                    {/* <div className="col-span-3 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
                       Supplier_Id
                     </div>
                     <div className="col-span-3 border-b p-1">
                       {details.secretName}
-                    </div>
+                    </div> */}
                     <div className="col-span-3 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
                       Trade Name
                     </div>
@@ -463,7 +437,7 @@ const VideoStreaming = () => {
                       Company Type
                     </div>
                     <div className="col-span-3 border-b p-1">
-                      {details.companyType}
+                      {details.companytype}
                     </div>
                     <div className="col-span-3 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
                       Primary Contact Name
@@ -477,7 +451,7 @@ const VideoStreaming = () => {
                     <div className="col-span-3 border-b p-1">
                       {details.primaryContactNumber}
                     </div>
-                    {details.secondaryContactName == null ? null : (
+                    {details.secondaryContactName == "" ? null : (
                       <>
                         <div className="col-span-3 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
                           Secondary Contact Name
@@ -519,7 +493,7 @@ const VideoStreaming = () => {
                       Country
                     </div>
                     <div className="col-span-3 border-b p-1">
-                      {details.country}
+                      {details.countries}
                     </div>
                     <div className="col-span-3 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
                       State
@@ -537,19 +511,19 @@ const VideoStreaming = () => {
                       Pincode
                     </div>
                     <div className="col-span-3 border-b p-1">
-                      {details.pincode}
+                      {details.pinCode}
                     </div>
                     <div className="col-span-3 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
                       Location
                     </div>
                     <div className="col-span-3 border-b p-1">
-                      {details.location}
+                      {details.gpsLocat}
                     </div>
                     <div className="col-span-3 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
                       Product Dealing
                     </div>
                     <div className="col-span-3 border-b p-1">
-                      {details.productDealing}
+                      {details.productDealingWith}
                     </div>
                     <div className="col-span-3 text-blue-500 text-semibold border-r border-b border-graycolor p-1">
                       Date Of Birth

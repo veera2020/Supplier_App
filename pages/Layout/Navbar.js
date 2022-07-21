@@ -168,7 +168,7 @@ export default function Navbar({ defaultOpenKeys }) {
         </Menu.Item>
         <Menu.Item key="18">
           <Link href="/videostreaming">
-            <a>Video Streaming</a>
+            <a>Live Streaming</a>
           </Link>
         </Menu.Item>
 

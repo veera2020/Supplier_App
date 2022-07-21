@@ -437,9 +437,7 @@ const FixedOrder = () => {
     console.log(a);
     const first2Str = String(a).slice(0, 2); // 👉️ '13'
     const second2Str = String(a).slice(2, 4); // 👉️ '13'
-    const first2Num = Number(first2Str);
-    const second2Num = Number(second2Str);
-    const final = first2Num + ":" + second2Num;
+    const final = first2Str + ":" + second2Str;
     return <>{final}</>;
   };
   return (
