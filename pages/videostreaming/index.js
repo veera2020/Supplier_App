@@ -262,14 +262,14 @@ const VideoStreaming = () => {
                     </Td>
                     <Td textAlign="center">{item.product}</Td>
                     <Td textAlign="center">
-                      {item.liveStreamStatus === "" ? (
+                      {!item.liveStreamStatus ? (
                         <div>Pending</div>
                       ) : (
                         <div>{item.liveStreamStatus}</div>
                       )}
                     </Td>
                     <Td textAlign="center">
-                      {item.liveStreamStatus === "" ? (
+                      {!item.liveStreamStatus ? (
                         <ButtonGroup
                           spacing="1"
                           onClick={() => setId(item._id)}
